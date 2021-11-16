@@ -75,11 +75,11 @@ def find_annual_return(buy_price:float, sell_price:float, days_diff:int, days_in
     return: annual return for investment as percentage float
     """
 
-    # Set up compound interest 'magic'
+    # Set up compound interest 'magic', daily compound interest
     x_temp = pow((sell_price/buy_price), 1/days_diff)
 
     # Compute annual return
-    annual_return = round((x_temp-1)*days_in_year*1000000)
+    annual_return = round((x_temp-1)*(days_in_year*1000000))
     annual_return /= 10000
 
     return annual_return
@@ -121,8 +121,11 @@ def parse_investment_input(file_name:str, columns:list=['Symbol','BuyDate','Sell
     df = pd.read_csv(file_name, usecols=columns)
     investment_dict = {}
     for i in range(df.shape[0]):
-        investment_dict[i] = {} # Initialize dict to hold investment data
-        for c in columns: # Loop through columns, fill out value dict
+        # Initialize value dict to hold investment data
+        investment_dict[i] = {} 
+
+        # Loop through columns, fill out value dict
+        for c in columns: 
             investment_dict[i][c] = df[c][i]
 
     return investment_dict
