@@ -117,7 +117,7 @@ def parse_investment_input(file_name:str, columns:list=['Symbol','BuyDate','Sell
     arg file_name: investment input file name
     return: a dictionary where keys are tickers and values are dictionary with investment data
     """
-
+    
     df = pd.read_csv(file_name, usecols=columns)
     investment_dict = {}
     for i in range(df.shape[0]):
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     now_time = datetime.now()
     start_time = datetime(now_time.year - 5, now_time.month, now_time.day)
     for i in investments:
-
+        
         # Grab investment dict from investments
         investment = investments[i]
         print("\nChecking Alpha Return for %s.\n===============================" % investment['Symbol'])
