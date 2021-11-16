@@ -28,7 +28,7 @@ def download_stock(stock:str, buy_date, sell_date):
         print('Could not acquire information for: %s' % (stock))
         return 0
     
-    return stock_buy_price, stock_sell_price
+    return round(stock_buy_price, 2), round(stock_sell_price, 2)
 
 
 def parse_sp500_historical_csv(file_name:str, columns:tuple, four_digit_years:bool=True):
@@ -106,7 +106,7 @@ def compute_alpha_return(benchmark: tuple, inv: tuple, buy_date: tuple, sell_dat
     print("Benchmark annual return:", annual_return_benchmark)
 
     # Return return differential between investment and benchmark
-    return annual_return_inv - annual_return_benchmark
+    return round(annual_return_inv - annual_return_benchmark, 4)
 
 
 def parse_investment_input(file_name:str, columns:list=['Symbol','BuyDate','SellDate','Volume']):
@@ -166,8 +166,8 @@ if __name__ == '__main__':
         inv_prices = download_stock(investment['Symbol'], 
                                     datetime(bd_int[2], bd_int[0], bd_int[1]),
                                     datetime(sd_int[2], sd_int[0], sd_int[1]))
-        if not inv_prices: # If prices for this investment could not be acquired, skip
-            continue
+        # If prices for this investment could not be acquired, skip
+        if not inv_prices: continue
         print("This is Investment buy and sell prices", inv_prices)
         
         # Find benchmark market (sp500) and investment prices on buy and sell date
