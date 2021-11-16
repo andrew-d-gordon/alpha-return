@@ -230,5 +230,3 @@ if __name__ == '__main__':
     minutes, seconds = divmod(duration.seconds, 60)
     print('alpha_return.py')
     print(f'The script took {minutes} minutes and {seconds} seconds to run.')
-    
-#https://www.kite.com/python/answers/how-to-read-specific-column-from-csv-file-in-python#:~:text=To%20read%20a%20CSV%20file,the%20column%20name%20to%20read.
