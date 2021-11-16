@@ -128,9 +128,9 @@ def analyze_investments(investment:dict, benchmark:str='^GSPC', log_output=True)
     return (investment, benchmark, return_differential)
 
 
-def parse_sp500_historical_csv(file_name:str, columns:tuple, four_digit_years:bool=True):
+def parse_market_index_historical_csv(file_name:str, columns:tuple, four_digit_years:bool=True):
     """
-    Note: Columns in csv must not be separated by spaces to be parsed by pandas
+    Note: Columns in csv must not be separated by spaces to be parsed by pandas.
 
     arg file_name: str relating to csv file to parse
     arg column_index: int relating to the desired columns
@@ -197,7 +197,7 @@ if __name__ == '__main__':
     # Retrieve S&P500 data closing prices
     columns = ["Date", "Close"]
     sp500_csv_file = 'src/SP500_CSV/HistoricalPrices.csv'
-    sp500_dict = parse_sp500_historical_csv(sp500_csv_file, columns)
+    sp500_dict = parse_market_index_historical_csv(sp500_csv_file, columns)
 
     # Retrieve Investment Data
     test_file = 'investments1'
@@ -215,7 +215,8 @@ if __name__ == '__main__':
     # Print results
     res = list(res)
     for r in res:
-        print("\nAlpha Annual Return for {0} against benchmark {1}: {2}.".format(r[0]['Symbol'], benchmarks['sp500'], r[2]))
+        print("=====================================")
+        print("Alpha Annual Return for {0} against benchmark {1}: {2}.".format(r[0]['Symbol'], benchmarks['sp500'], r[2]))
         print("Start Date: {0} and End Date: {1}\n".format(r[0]['BuyDate'], r[0]['SellDate']))
 
     # Find return on investments (non-threaded)
