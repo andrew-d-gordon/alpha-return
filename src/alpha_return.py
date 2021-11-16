@@ -6,9 +6,13 @@ from pandas import DataFrame
 import pandas_datareader.data as web
 
 
-def download_stock(stock:str, buy_date, sell_date):
+def retrieve_market_value(ticker:str, buy_date, sell_date):
     """
-    arg stock: ticker symbol of stock to retrieve price for
+    Serves to retrieve the market value for a given investment/index for a buy and sell date.
+
+    arg ticker: ticker symbol of investment/index to retrieve price for
+    arg buy_date: datetime date corresponding to start date for desired query
+    arg sell_date: datetime date corresponding to end date for desired query
     return: returns value of stock 
     """
 
@@ -17,16 +21,16 @@ def download_stock(stock:str, buy_date, sell_date):
         return
 
     try:
-        stock_buy_info = web.get_data_yahoo(symbols=stock, start=buy_date, end=buy_date)
-        stock_sell_info = web.get_data_yahoo(symbols=stock, start=sell_date, end=sell_date)
-        stock_buy_price = float(stock_buy_info['Adj Close'].tail(1)[0])
-        stock_sell_price = float(stock_sell_info['Adj Close'].tail(1)[0])
+        inv_buy_info = web.get_data_yahoo(symbols=ticker, start=buy_date, end=buy_date)
+        inv_sell_info = web.get_data_yahoo(symbols=ticker, start=sell_date, end=sell_date)
+        inv_buy_price = float(inv_buy_info['Adj Close'].tail(1)[0])
+        inv_sell_price = float(inv_sell_info['Adj Close'].tail(1)[0])
     except:
         #bad_names.append(stock)
-        print('Could not acquire information for: %s' % (stock))
+        print('Could not acquire information for: %s' % (ticker))
         return 0
     
-    return round(stock_buy_price, 2), round(stock_sell_price, 2)
+    return round(inv_buy_price, 2), round(inv_sell_price, 2)
 
 
 def find_annual_return(buy_price:float, sell_price:float, days_diff:int, days_in_year=365.25):
@@ -78,6 +82,7 @@ def analyze_investments(investment:dict, benchmark:str='^GSPC', log_output=True)
     arg log_output: boolean to determine whether or not to log output to src/Input_Investments/test_returns
     return: none, displays relevant information to alpha return on investments
     """
+
     # Pull off investment data
     ticker = investment['Symbol']
     buy_date_raw = investment['BuyDate']
@@ -93,16 +98,24 @@ def analyze_investments(investment:dict, benchmark:str='^GSPC', log_output=True)
     sell_date = (sd_int[2], sd_int[0], sd_int[1])
 
     # Find investment prices on buy and sell date
-    inv_prices = download_stock(ticker, 
-                                datetime(bd_int[2], bd_int[0], bd_int[1]),
-                                datetime(sd_int[2], sd_int[0], sd_int[1]))
+    inv_prices = retrieve_market_value(ticker, 
+                        datetime(bd_int[2], bd_int[0], bd_int[1]),
+                        datetime(sd_int[2], sd_int[0], sd_int[1]))
     # If prices for this investment could not be acquired, skip
     if not inv_prices: 
         print("Information regarding investment could not be found for: %s" % (ticker))
         return -1
     
-    # Find benchmark market (sp500) and investment prices on buy and sell date
-    benchmark_prices = (sp500_dict[buy_date_raw], sp500_dict[sell_date_raw])
+    # Find benchmark market index values on buy and sell date
+    try: # If we have prices locally, utilize those
+        benchmark_prices = (sp500_dict[buy_date_raw], sp500_dict[sell_date_raw])
+    except KeyError: # If we do not have prices locally, retrieve them from Yahoo and save off.
+        benchmark_prices = retrieve_market_value(benchmark, 
+                                datetime(bd_int[2], bd_int[0], bd_int[1]),
+                                datetime(sd_int[2], sd_int[0], sd_int[1]))
+        # Save fetch call to Yahoo to local dict
+        sp500_dict[buy_date_raw] = benchmark_prices[0]
+        sp500_dict[sell_date_raw] = benchmark_prices[1]
     
     # Find return differential
     return_differential, i_return, b_return = compute_alpha_return(benchmark_prices, inv_prices, buy_date, sell_date)
