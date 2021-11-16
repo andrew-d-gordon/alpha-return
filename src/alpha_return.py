@@ -1,8 +1,5 @@
 from datetime import datetime
 from concurrent import futures
-from os import error, name
-from numpy import double
-from numpy.typing import _128Bit
 
 import pandas as pd
 from pandas import DataFrame
@@ -14,7 +11,8 @@ def download_stock(stock:str, buy_date, sell_date):
     arg stock: ticker symbol of stock to retrieve price for
     return: returns value of stock 
     """
-    if now_time <= buy_date: # If sell date is prior to or the same as the buy date
+
+    if sell_date <= buy_date: # If sell date is prior to or the same as the buy date
         print('bad: %s and %s, buy time greater than or equal to now_time' % (buy_date, sell_date))
         return
 
@@ -23,11 +21,12 @@ def download_stock(stock:str, buy_date, sell_date):
         stock_sell_info = web.get_data_yahoo(symbols=stock, start=sell_date, end=sell_date)
         stock_buy_price = float(stock_buy_info['Adj Close'].tail(1)[0])
         stock_sell_price = float(stock_sell_info['Adj Close'].tail(1)[0])
-        print("Stock buy price for %s on %s:" % (stock, str(buy_date)), stock_buy_price)
-        print("Stock sell price for %s on %s:" % (stock, str(sell_date)), stock_sell_price)
-    except error:
+        #print("Stock buy price for %s on %s:" % (stock, str(buy_date)), stock_buy_price)
+        #print("Stock sell price for %s on %s:" % (stock, str(sell_date)), stock_sell_price)
+    except:
         #bad_names.append(stock)
-        print('bad: %s' % (stock))
+        print('Could not acquire information for: %s' % (stock))
+        return 0
     
     return stock_buy_price, stock_sell_price
 
@@ -41,6 +40,7 @@ def parse_sp500_historical_csv(file_name:str, columns:tuple, four_digit_years:bo
     arg four_digit_years: if 'yyyy' desired for year column in dict, append '20' or '19' respectively.
     return: generates dictionary with day as key and closing price as value
     """
+
     # Read desired csv file with date and closing price columns
     df = pd.read_csv(file_name, usecols=columns)
     date_column = columns[0]
@@ -74,6 +74,7 @@ def find_annual_return(buy_price:float, sell_price:float, days_diff:int, days_in
     arg days_diff: difference in days between buy and sell date
     return: annual return for investment as percentage float
     """
+
     # Set up compound interest 'magic'
     x_temp = pow((sell_price/buy_price), 1/days_diff)
 
@@ -108,56 +109,76 @@ def compute_alpha_return(benchmark: tuple, inv: tuple, buy_date: tuple, sell_dat
     return annual_return_inv - annual_return_benchmark
 
 
+def parse_investment_input(file_name:str, columns:list=['Symbol','BuyDate','SellDate','Volume']):
+    """
+    Input files must follow format described in docs/Input_Investments.md.
+    Example Return: {'AMZN':{'BuyDate':'01/04/2021','SellDate':'01/04/2021','Volume':1}}
+
+    arg file_name: investment input file name
+    return: a dictionary where keys are tickers and values are dictionary with investment data
+    """
+
+    df = pd.read_csv(file_name, usecols=columns)
+    investment_dict = {}
+    for i in range(df.shape[0]):
+        investment_dict[i] = {} # Initialize dict to hold investment data
+        for c in columns: # Loop through columns, fill out value dict
+            investment_dict[i][c] = df[c][i]
+
+    return investment_dict
+
+
 if __name__ == '__main__':
 
     # Retrieve S&P500 data closing prices
     columns = ["Date", "Close"]
-    file_name = 'src/SP500_CSV/HistoricalPrices.csv'
-    sp500_dict = parse_sp500_historical_csv(file_name, columns)
+    sp500_csv_file = 'src/SP500_CSV/HistoricalPrices.csv'
+    sp500_dict = parse_sp500_historical_csv(sp500_csv_file, columns)
+
+    # Retrieve Investment Data
+    investment_input_file = 'src/Input_Investments/investments1.csv'
+    investments = parse_investment_input(investment_input_file)
+    for i in investments:
+        print(i, investments[i])
 
     # Set investment data
     now_time = datetime.now()
     start_time = datetime(now_time.year - 5, now_time.month, now_time.day)
-    #print(start_time)
-    #print(now_time.year, now_time.month, now_time.day)
+    for i in investments:
 
-    investment_tickers = ['AMZN', 'AAPL', '^GSPC', 'BTC-USD']
-    for inv in investment_tickers:
-        print("Checking Alpha Return for %s.\n===============================" % inv)
-        investment_data = { # Eventually will want to parse input somewhere
-            'name': inv,
-            'buy_date': '01/04/2021',
-            'sell_date': '11/12/2021',
-            'volume': '1'
-        }
+        # Grab investment dict from investments
+        investment = investments[i]
+        print("\nChecking Alpha Return for %s.\n===============================" % investment['Symbol'])
 
         # Format respective dates for buying and selling, int tuple: (yyyy, mm, dd)
-        buy_date_split = investment_data['buy_date'].split('/')
+        buy_date_split = investment['BuyDate'].split('/')
         bd_int = [int(x) for x in buy_date_split]
         buy_date = (bd_int[2], bd_int[0], bd_int[1])
 
-        sell_date_split = investment_data['sell_date'].split('/')
+        sell_date_split = investment['SellDate'].split('/')
         sd_int = [int(x) for x in sell_date_split]
         sell_date = (sd_int[2], sd_int[0], sd_int[1])
 
         # Find investment prices on buy and sell date
-        inv_prices = download_stock(investment_data['name'], 
+        inv_prices = download_stock(investment['Symbol'], 
                                     datetime(bd_int[2], bd_int[0], bd_int[1]),
                                     datetime(sd_int[2], sd_int[0], sd_int[1]))
+        if not inv_prices: # If prices for this investment could not be acquired, skip
+            continue
         print("This is Investment buy and sell prices", inv_prices)
         
-
         # Find benchmark market (sp500) and investment prices on buy and sell date
-        benchmark_prices = (sp500_dict[investment_data['buy_date']], sp500_dict[investment_data['sell_date']])
+        benchmark_prices = (sp500_dict[investment['BuyDate']], sp500_dict[investment['SellDate']])
         print("This is Benchmark buy and sell prices:", benchmark_prices)
 
         # Find return differential
         return_differential = compute_alpha_return(benchmark_prices, inv_prices, buy_date, sell_date)
 
-        if return_differential > 0:
+        if return_differential > 0: # Print results
             print("Alpha Return:", return_differential)
         else:
             print("No Alpha Return:", return_differential)
+
     
 
 #https://www.kite.com/python/answers/how-to-read-specific-column-from-csv-file-in-python#:~:text=To%20read%20a%20CSV%20file,the%20column%20name%20to%20read.
