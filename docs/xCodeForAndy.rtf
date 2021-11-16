@@ -1,0 +1,276 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deftab692{\fonttbl{\f0\fnil\fcharset0 Menlo-Regular;}}
+{\colortbl ;\red0\green116\blue0;\red0\green0\blue0;\red170\green13\blue145;\red11\green79\blue121;\red92\green38\blue153;\red15\green104\blue160;\red28\green0\blue207;\red46\green13\blue110;\red63\green110\blue116;\red38\green71\blue75;\red196\green26\blue22;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\tx692\cf1\f0\fs28\lang9 //\cf2\par
+\cf1 //  ViewController.swift\cf2\par
+\cf1 //  InvRtnSwft3\cf2\par
+\cf1 //\cf2\par
+\cf1 //  Created by Thomas Gordon on 11/16/16.\cf2\par
+\cf1 //  Copyright \'a9 2016 Hyperborean Software. All rights reserved.\cf2\par
+\cf1 //\cf2\par
+\cf1 // below imports everything, including math functions.\cf2\par
+\cf3 import\cf2  UIKit\par
+\par
+\par
+\cf1 //class ViewController: UIViewController \{\cf2\par
+  \cf3 class\cf2  \cf4 ViewController\cf2 : \cf5 UIViewController\cf2 , \cf5 UITextFieldDelegate\cf2  \{\par
+    \cf3 @IBOutlet\cf2  \cf3 var\cf2  \cf6 eventStartText\cf2 : \cf5 UITextField\cf2 !\par
+    \par
+    \cf1 // structure that works as global, constructor?\cf2\par
+    \cf3 struct\cf2  \cf4 invRtnStruct\cf2  \{\par
+        \cf1 //var buyDate:Date\cf2\par
+        \cf1 //var <#name#> = <#value#>\cf2\par
+        \cf3 static\cf2  \cf3 let\cf2  \cf6 daysinyr\cf2 : \cf5 Double\cf2  = \cf7 365.25\cf2\par
+    \}\par
+    \par
+    \par
+    \cf1 // outlets\cf2\par
+    \par
+    \cf3 @IBOutlet\cf2  \cf3 weak\cf2  \cf3 var\cf2  \cf6 inputBuyPrice\cf2 : \cf5 UITextField\cf2 !\par
+    \par
+    \par
+    \cf3 @IBOutlet\cf2  \cf3 weak\cf2  \cf3 var\cf2  \cf6 inputSellPrice\cf2 : \cf5 UITextField\cf2 !\par
+    \par
+    \cf3 @IBOutlet\cf2  \cf3 weak\cf2  \cf3 var\cf2  \cf6 outputResult\cf2 : \cf5 UILabel\cf2 !\par
+    \par
+    \cf3 @IBOutlet\cf2  \cf3 weak\cf2  \cf3 var\cf2  \cf6 daysDisp\cf2 : \cf5 UILabel\cf2 !\par
+    \par
+    \cf3 @IBOutlet\cf2  \cf3 weak\cf2  \cf3 var\cf2  \cf6 sellDateDisp\cf2 : \cf5 UITextField\cf2 !\par
+    \par
+    \cf3 @IBOutlet\cf2  \cf3 weak\cf2  \cf3 var\cf2  \cf6 buyDateDisp\cf2 : \cf5 UITextField\cf2 !\par
+    \par
+    \cf3 @IBOutlet\cf2  \cf3 weak\cf2  \cf3 var\cf2  \cf6 datePicker\cf2 : \cf5 UIDatePicker\cf2 !\par
+\par
+    \cf3 override\cf2  \cf3 func\cf2  \cf6 viewDidLoad\cf2 () \{\par
+        \cf3 super\cf2 .\cf8 viewDidLoad\cf2 ()\par
+       \par
+        \cf1 // good, initialized date pickers to current date\cf2\par
+        \cf9 inputBuyPrice\cf2 .\cf5 text\cf2  = \cf3 nil\cf2\par
+        \cf9 inputSellPrice\cf2 .\cf5 text\cf2  = \cf3 nil\cf2\par
+        \cf9 outputResult\cf2 .\cf5 text\cf2  = \cf3 nil\cf2\par
+        \cf9 daysDisp\cf2 .\cf5 text\cf2  = \cf3 nil\cf2\par
+        \par
+        \cf1 // inittializes the date pickers for todays date buy/sell\cf2\par
+        \cf3 let\cf2  stringCurrentDate = \cf10 currentDate\cf2 ()\par
+        \cf9 buyDateDisp\cf2 .\cf5 text\cf2  = stringCurrentDate\par
+        \cf9 sellDateDisp\cf2 .\cf5 text\cf2  = stringCurrentDate\par
+        \par
+        \par
+        \par
+        \par
+     \cf1 //   let datePicker:UIDatePicker = UIDatePicker()\cf2\par
+     \cf1 //   datePicker.datePickerMode = UIDatePickerMode.date\cf2\par
+     \cf1 //   sender.inputView = datePicker\cf2\par
+\par
+    \cf1 //    let currentDate = NSDate()\cf2\par
+       \cf1 // buyDateDisp.text=xformatter.string(currentDate)\cf2\par
+    \}\par
+\par
+    \cf3 override\cf2  \cf3 func\cf2  \cf6 didReceiveMemoryWarning\cf2 () \{\par
+        \cf3 super\cf2 .\cf8 didReceiveMemoryWarning\cf2 ()\par
+        \cf1 // Dispose of any resources that can be recreated.\cf2\par
+    \}\par
+\par
+    \cf1 // actions\cf2\par
+    \par
+    \par
+    \cf3 @IBAction\cf2  \cf3 func\cf2  \cf6 buyPrAction\cf2 (\cf6 _\cf2  sender: \cf3 Any\cf2 ) \{\par
+        \cf1 //let buyPrice = NSString(string:inputBuyPrice.text!).doubleValue\cf2\par
+        \cf8 resignFirstResponder\cf2 ()\par
+    \}\par
+    \par
+    \par
+    \cf3 @IBAction\cf2  \cf3 func\cf2  \cf6 sellPrAction\cf2 (\cf6 _\cf2  sender: \cf3 Any\cf2 ) \{\par
+        \cf1 //let sellPrice = NSString(string: inputSellPrice.text!).doubleValue\cf2\par
+        \cf8 resignFirstResponder\cf2 ()\par
+    \}\par
+    \par
+    \par
+    \cf3 @IBAction\cf2  \cf3 func\cf2  \cf6 computeReturn\cf2 (\cf6 _\cf2  sender: \cf3 Any\cf2 ) \{\par
+        \cf1 // what happens when you press the Compute Return button\cf2\par
+        \cf1 // all the other inputs (prices, dates) have to happen first\cf2\par
+        \par
+        \cf1 // declarations\cf2\par
+        \cf3 var\cf2  buyPrice:\cf5 Double\cf2\par
+        \cf3 var\cf2  sellPrice:\cf5 Double\cf2\par
+        \cf3 var\cf2  daysDiff:\cf5 Double\cf2\par
+        \cf3 var\cf2  finalReturn:\cf5 Double\cf2\par
+        \cf3 var\cf2  stringReturn:\cf5 String\cf2\par
+        \cf3 var\cf2  daysReturnStr:\cf5 String\cf2\par
+        \par
+        \par
+              \cf1 // compounding is daily, this is in days\cf2\par
+        \par
+        \cf1 // this converts the string input from user to a double number\cf2\par
+        \cf1 // this happens in the button, not in the individual text fields\cf2\par
+        \cf1 // kind of painful syntax\cf2\par
+        buyPrice = \cf5 NSString\cf2 (\cf9 string\cf2 :\cf9 inputBuyPrice\cf2 .\cf5 text\cf2 !).\cf5 doubleValue\cf2\par
+        sellPrice = \cf5 NSString\cf2 (\cf9 string\cf2 : \cf9 inputSellPrice\cf2 .\cf5 text\cf2 !).\cf5 doubleValue\cf2\par
+        \cf3 if\cf2  (buyPrice == \cf7 0\cf2 )\{\par
+            \par
+            \cf3 let\cf2  alert = \cf5 UIAlertController\cf2 (\cf8 title\cf2 : \cf11 "Alert"\cf2 , \cf8 message\cf2 : \cf11 "Buy Price can't be 0.  Make buy price .000001"\cf2 , \cf8 preferredStyle\cf2 : \cf5 UIAlertController\cf2 .\cf5 Style\cf2 .\cf8 alert\cf2 )\par
+            alert.\cf8 addAction\cf2 (\cf5 UIAlertAction\cf2 (\cf8 title\cf2 : \cf11 "Click"\cf2 , \cf8 style\cf2 : \cf5 UIAlertAction\cf2 .\cf5 Style\cf2 .\cf3 default\cf2 , \cf8 handler\cf2 : \cf3 nil\cf2 ))\par
+            \cf3 self\cf2 .\cf8 present\cf2 (alert, \cf8 animated\cf2 : \cf3 true\cf2 , \cf8 completion\cf2 : \cf3 nil\cf2 )\par
+            \cf3 return\cf2\par
+            \par
+        \}\par
+        \cf1 // start date analysis\cf2\par
+        \cf3 let\cf2  formatter =  \cf5 DateFormatter\cf2 ()\par
+        formatter.\cf8 dateFormat\cf2  = \cf11 "MMM dd, yyyy"\cf2\par
+        \cf3 let\cf2  buyDate = formatter.\cf8 date\cf2 (\cf8 from\cf2 : \cf9 buyDateDisp\cf2 .\cf5 text\cf2 !)\par
+        \cf3 let\cf2  sellDate = formatter.\cf8 date\cf2 (\cf8 from\cf2 : \cf9 sellDateDisp\cf2 .\cf5 text\cf2 !)\par
+        \par
+        \cf3 let\cf2  calendar = \cf5 NSCalendar\cf2 .\cf5 current\cf2  \cf3 as\cf2  \cf5 NSCalendar\cf2\par
+        \cf1 //var calendar: NSCalendar = NSCalendar.currentCalendar()\cf2\par
+        calendar.\cf5 timeZone\cf2  = \cf5 TimeZone\cf2 (\cf8 identifier\cf2 : \cf11 "UTC"\cf2 )!\par
+       \cf1 /* let components = calendar.dateComponents(unitFlags, from: buyDate!)\cf2\par
+\cf1         NSLog("year= \\(components.year)")\cf2\par
+\cf1         NSLog(" month= \\(components.month)")\cf2\par
+\cf1         NSLog(" day= \\(components.day)") */\cf2\par
+        \cf1 //let currentDate = NSDate()\cf2\par
+        \cf1 // initialize to current date\cf2\par
+        \cf1 //let calendar = Calendar.current()\cf2\par
+        \cf3 let\cf2  date1 = calendar.\cf8 startOfDay\cf2 (\cf3 for\cf2 : buyDate!)\par
+        \cf3 let\cf2  date2 = calendar.\cf8 startOfDay\cf2 (\cf3 for\cf2 : sellDate!)\par
+        \cf3 if\cf2  (date1 >= date2) \{\par
+            \par
+            \cf3 let\cf2  alert = \cf5 UIAlertController\cf2 (\cf8 title\cf2 : \cf11 "Alert"\cf2 , \cf8 message\cf2 : \cf11 "buy date must be less than sell date"\cf2 , \cf8 preferredStyle\cf2 : \cf5 UIAlertController\cf2 .\cf5 Style\cf2 .\cf8 alert\cf2 )\par
+            alert.\cf8 addAction\cf2 (\cf5 UIAlertAction\cf2 (\cf8 title\cf2 : \cf11 "Click"\cf2 , \cf8 style\cf2 : \cf5 UIAlertAction\cf2 .\cf5 Style\cf2 .\cf3 default\cf2 , \cf8 handler\cf2 : \cf3 nil\cf2 ))\par
+            \cf3 self\cf2 .\cf8 present\cf2 (alert, \cf8 animated\cf2 : \cf3 true\cf2 , \cf8 completion\cf2 : \cf3 nil\cf2 )\par
+            \cf3 return\cf2\par
+            \par
+        \}\par
+\par
+        \cf3 let\cf2  flags = \cf5 NSCalendar\cf2 .\cf5 Unit\cf2 .\cf5 day\cf2\par
+        \cf1 // does the subtraction of two dates and puts result in component.day\cf2\par
+        \cf3 let\cf2  components = calendar.\cf8 components\cf2 (flags, \cf8 from\cf2 : date1, \cf8 to\cf2 : date2)\par
+        NSLog(\cf11 " day= \cf2\\(\cf5 String\cf2 (\cf9 describing\cf2 : components.\cf5 day\cf2 ))\cf11 "\cf2 )\par
+        \cf1 // add 1 because setting time to 0 cuts off 1 day\cf2\par
+        daysDiff = \cf5 Double\cf2 (components.\cf5 day\cf2 !) + \cf7 1\cf2\par
+    \par
+\par
+        \cf1 //let dayHourMinuteSecond: NSCalendarUnit = [.Day, .Hour, .Minute, .Second]\cf2\par
+        \cf1 //let difference = NSCalendar.calendar().components(dayHourMinuteSecond, fromDate: date, toDate: self, options: [])\cf2\par
+        \par
+        \cf1 // function call, kind of clumsy syntax but it works, syntax: function variable: calling variable\cf2\par
+        finalReturn = \cf10 findReturn\cf2 (\cf10 buyPrice\cf2 : buyPrice, \cf10 sellPrice\cf2 : sellPrice, \cf10 daysDiff\cf2 : daysDiff)\par
+        \par
+        \par
+        \cf1 // convert numeric answer to string for display\cf2\par
+        stringReturn = \cf5 String\cf2 (finalReturn)\par
+        daysReturnStr = \cf5 String\cf2 (daysDiff)\par
+        \par
+        \cf8 NSLog\cf2 (\cf11 "return is: %f"\cf2 , finalReturn)\par
+        \cf1 // this is working, last buydate inside of compute return\cf2\par
+        NSLog(\cf11 "date from picker is:"\cf2 )\par
+        NSLog(\cf9 buyDateDisp\cf2 .\cf5 text\cf2 !)\par
+        \cf1 //NSLog( buyDateDisp.text!)\cf2\par
+        \cf9 outputResult\cf2 .\cf5 text\cf2  = stringReturn\par
+        \cf1 // this is the line it's dying on\cf2\par
+        \cf9 daysDisp\cf2 .\cf5 text\cf2  = daysReturnStr\par
+        \par
+        \cf1 // reset the input fields after the calculations have been done\cf2\par
+        \cf1 // so another scenario can be input\cf2\par
+        \par
+    \}\par
+    \par
+    \cf3 @IBAction\cf2  \cf3 func\cf2  \cf6 resetScreen\cf2 (\cf6 _\cf2  sender: \cf3 Any\cf2 ) \{\par
+        \cf1 // clear the fields from the last calculation\cf2\par
+        \cf9 inputBuyPrice\cf2 .\cf5 text\cf2  = \cf3 nil\cf2\par
+        \cf9 inputSellPrice\cf2 .\cf5 text\cf2  = \cf3 nil\cf2\par
+        \cf9 outputResult\cf2 .\cf5 text\cf2  = \cf3 nil\cf2\par
+        \cf9 daysDisp\cf2 .\cf5 text\cf2  = \cf3 nil\cf2\par
+        \cf3 let\cf2  stringCurrentDate = \cf10 currentDate\cf2 ()\par
+        \cf9 buyDateDisp\cf2 .\cf5 text\cf2  = stringCurrentDate\par
+        \cf9 sellDateDisp\cf2 .\cf5 text\cf2  = stringCurrentDate\par
+\par
+    \}\par
+   \par
+    \cf3 @IBAction\cf2  \cf3 func\cf2  \cf6 showVersion\cf2 (\cf6 _\cf2  sender: \cf3 Any\cf2 ) \{\par
+        \cf1 // show the version of this app\cf2\par
+        \cf1 // version set in identity clicking InvRtnSwft3\cf2\par
+        \cf3 let\cf2  versionNumberString =\par
+            \cf5 Bundle\cf2 .\cf5 main\cf2 .\cf8 object\cf2 (\cf8 forInfoDictionaryKey\cf2 : \cf11 "CFBundleShortVersionString"\cf2 )\par
+                \cf3 as\cf2 ! \cf5 String\cf2\par
+        \cf3 let\cf2  alert = \cf5 UIAlertController\cf2 (\cf8 title\cf2 : \cf11 "Version is: "\cf2 , \cf8 message\cf2 : \cf11 "InvRtnSwft3 Version is: "\cf2 +versionNumberString, \cf8 preferredStyle\cf2 : \cf5 UIAlertController\cf2 .\cf5 Style\cf2 .\cf8 alert\cf2 )\par
+        alert.\cf8 addAction\cf2 (\cf5 UIAlertAction\cf2 (\cf8 title\cf2 : \cf11 "Click"\cf2 , \cf8 style\cf2 : \cf5 UIAlertAction\cf2 .\cf5 Style\cf2 .\cf3 default\cf2 , \cf8 handler\cf2 : \cf3 nil\cf2 ))\par
+        \cf3 self\cf2 .\cf8 present\cf2 (alert, \cf8 animated\cf2 : \cf3 true\cf2 , \cf8 completion\cf2 : \cf3 nil\cf2 )\par
+        \cf3 return\cf2\par
+        \par
+    \}\par
+    \par
+    \cf3 @IBAction\cf2  \cf3 func\cf2  \cf6 sellDateAction\cf2 (\cf6 _\cf2  sender: \cf5 UITextField\cf2 ) \{\par
+        \cf3 let\cf2  datePicker:\cf5 UIDatePicker\cf2  = \cf5 UIDatePicker\cf2 ()\par
+        datePicker.\cf5 datePickerMode\cf2  = \cf5 UIDatePicker\cf2 .\cf5 Mode\cf2 .\cf8 date\cf2\par
+        sender.\cf5 inputView\cf2  = datePicker\par
+        datePicker.\cf8 addTarget\cf2 (\cf3 self\cf2 , \cf8 action\cf2 : \cf3 #selector\cf2 (\cf10 datePickerChangedSell\cf2 (\cf10 sender\cf2 :)), \cf3 for\cf2 : .\cf5 valueChanged\cf2 )\par
+        \cf8 resignFirstResponder\cf2 ()\par
+    \}\par
+    \par
+    \par
+    \cf3 @IBAction\cf2  \cf3 func\cf2  \cf6 buyDateAction\cf2 (\cf6 _\cf2  sender: \cf5 UITextField\cf2 ) \{\par
+        \par
+        \cf3 let\cf2  datePicker:\cf5 UIDatePicker\cf2  = \cf5 UIDatePicker\cf2 ()\par
+        datePicker.\cf5 datePickerMode\cf2  = \cf5 UIDatePicker\cf2 .\cf5 Mode\cf2 .\cf8 date\cf2\par
+        \cf1 // stackoverflow said this is what assigns the datepicker action\cf2\par
+        sender.\cf5 inputView\cf2  = datePicker\par
+        datePicker.\cf8 addTarget\cf2 (\cf3 self\cf2 , \cf8 action\cf2 : \cf3 #selector\cf2 (\cf10 datePickerChanged\cf2 (\cf10 sender\cf2 :)), \cf3 for\cf2 : .\cf5 valueChanged\cf2 )\par
+        \cf8 resignFirstResponder\cf2 ()\par
+    \}\par
+    \par
+    \cf1 // start functions\cf2\par
+    \cf3 @objc\cf2  \cf3 func\cf2  \cf6 datePickerChanged\cf2 (\cf6 sender\cf2 : \cf5 UIDatePicker\cf2 ) \{\par
+        \par
+        \par
+        \cf3 let\cf2  formatter = \cf5 DateFormatter\cf2 ()\par
+        formatter.\cf5 dateStyle\cf2  = .\cf8 medium\cf2\par
+        \cf9 buyDateDisp\cf2 .\cf5 text\cf2  = formatter.\cf8 string\cf2 (\cf8 from\cf2 : sender.\cf5 date\cf2 )\par
+        \par
+        \par
+        \par
+    \}\par
+    \par
+    \cf3 @objc\cf2  \cf3 func\cf2  \cf6 datePickerChangedSell\cf2 (\cf6 sender\cf2 : \cf5 UIDatePicker\cf2 ) \{\par
+        \par
+        \cf3 let\cf2  formatter = \cf5 DateFormatter\cf2 ()\par
+        formatter.\cf5 dateStyle\cf2  = .\cf8 medium\cf2\par
+        \cf9 sellDateDisp\cf2 .\cf5 text\cf2  = formatter.\cf8 string\cf2 (\cf8 from\cf2 : sender.\cf5 date\cf2 )\par
+        \par
+        \par
+        \par
+    \}\par
+\par
+    \cf1 // local function, function doesn't know variables in the ViewController, only passed\cf2\par
+    \cf3 func\cf2  \cf6 findReturn\cf2 (\cf6 buyPrice\cf2 : \cf5 Double\cf2 , \cf6 sellPrice\cf2 : \cf5 Double\cf2 , \cf6 daysDiff\cf2 : \cf5 Double\cf2 ) -> \cf5 Double\cf2\{\par
+        \cf1 // declarations\cf2\par
+        \cf3 var\cf2  xtemp:\cf5 Double\cf2\par
+        \cf3 var\cf2  annualReturn:\cf5 Double\cf2\par
+        \cf1 // initialization\cf2\par
+        \cf1 // accounts for leap years, roughly speaking\cf2\par
+       \cf1 //  daysinyr=365.25\cf2\par
+        \par
+        \cf1 // the magic of compound interest\cf2\par
+        xtemp = \cf8 pow\cf2 ((sellPrice/buyPrice),(\cf7 1\cf2 /daysDiff))\par
+        \par
+        \cf1 // convert the return to an annual return from a daily return\cf2\par
+        annualReturn = \cf8 round\cf2 ((xtemp-\cf7 1\cf2 )*(\cf9 invRtnStruct\cf2 .\cf9 daysinyr\cf2 *\cf7 1000000\cf2 ))\par
+        annualReturn = annualReturn/\cf7 10000\cf2\par
+        \par
+        \cf3 return\cf2  annualReturn\par
+        \par
+    \}\par
+    \cf3 func\cf2  \cf6 currentDate\cf2 () -> \cf5 String\cf2\{\par
+        \cf3 let\cf2  formatter = \cf5 DateFormatter\cf2 ()\par
+        \cf1 //formatter.locale = myLocale\cf2\par
+        formatter.\cf5 dateStyle\cf2  = .\cf8 medium\cf2\par
+        formatter.\cf5 timeStyle\cf2  = .\cf8 medium\cf2\par
+        formatter.\cf8 dateFormat\cf2  = \cf11 "MMM dd, yyyy"\cf2\par
+        \cf3 let\cf2  dateStr = formatter.\cf8 string\cf2 (\cf8 from\cf2 : \cf5 Date\cf2 ())\par
+        \cf3 return\cf2  dateStr\par
+\par
+    \}\par
+    \par
+\}\par
+\par
+}
+ 
