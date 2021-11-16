@@ -1,5 +1,6 @@
 from datetime import datetime
 from concurrent import futures
+from os import error
 
 import pandas as pd
 from pandas import DataFrame
@@ -25,8 +26,9 @@ def retrieve_market_value(ticker:str, buy_date, sell_date):
         inv_sell_info = web.get_data_yahoo(symbols=ticker, start=sell_date, end=sell_date)
         inv_buy_price = float(inv_buy_info['Adj Close'].tail(1)[0])
         inv_sell_price = float(inv_sell_info['Adj Close'].tail(1)[0])
-    except:
+    except error:
         #bad_names.append(stock)
+        print(error)
         print('Could not acquire information for: %s' % (ticker))
         return 0
     
@@ -108,22 +110,22 @@ def analyze_investments(investment:dict, benchmark:str='^GSPC', log_output=True)
     
     # Find benchmark market index values on buy and sell date
     try: # If we have prices locally, utilize those
-        benchmark_prices = (sp500_dict[buy_date_raw], sp500_dict[sell_date_raw])
+        benchmark_prices = (benchmark_dict[buy_date_raw], benchmark_dict[sell_date_raw])
     except KeyError: # If we do not have prices locally, retrieve them from Yahoo and save off.
-        benchmark_prices = retrieve_market_value(benchmark, 
+        benchmark_prices = retrieve_market_value(benchmark,
                                 datetime(bd_int[2], bd_int[0], bd_int[1]),
                                 datetime(sd_int[2], sd_int[0], sd_int[1]))
         # Save fetch call to Yahoo to local dict
-        sp500_dict[buy_date_raw] = benchmark_prices[0]
-        sp500_dict[sell_date_raw] = benchmark_prices[1]
+        benchmark_dict[buy_date_raw] = benchmark_prices[0]
+        benchmark_dict[sell_date_raw] = benchmark_prices[1]
     
     # Find return differential
     return_differential, i_return, b_return = compute_alpha_return(benchmark_prices, inv_prices, buy_date, sell_date)
 
     if log_output: # If logging of output is desired, write to output file for test.
-        output_file = open('src/Input_Investments/test_returns/'+test_file+'_'+ticker+'_returns', 'w')
+        output_file = open('src/Input_Investments/test_returns/'+test_file+'_'+ticker+'_'+market_index+'_returns', 'w')
         log_lines = [] # List holding lines to write to output file
-        log_lines.append("Checking Alpha Return for %s investment.\n=====================================\n"%ticker)
+        log_lines.append("Checking Alpha Return for %s investment against %s.\n=====================================\n"% (ticker,market_index))
         log_lines.append("Buy and Sell dates: {0}, {1}\n".format(buy_date_raw, sell_date_raw))
         log_lines.append("Investment Buy and Sell prices: {0}\n".format(inv_prices))
         log_lines.append("Investment Annual Return: {0}\n".format(i_return))
@@ -205,15 +207,30 @@ if __name__ == '__main__':
     start_time = datetime.now()
 
     # Initialize Benchmark Options
-    benchmarks = {'sp500':'^GSPC','dow':'^DJI','nasdaq':'^IXIC'}
+    benchmarks = {
+        'sp500':{
+            'ticker':'^GSPC',
+            'csv':'src/Benchmark_CSVs/sp500.csv'},
+        'dow':{
+            'ticker':'^DJI',
+            'csv':''},
+        'nasdaq': {
+            'ticker':'^IXIC',
+            'csv':''},
+        'bitcoin': {
+            'ticker':'BTC-USD',
+            'csv':''
+        }
+    }
 
     # Retrieve S&P500 data closing prices
     columns = ["Date", "Close"]
-    sp500_csv_file = 'src/SP500_CSV/HistoricalPrices.csv'
-    sp500_dict = parse_market_index_historical_csv(sp500_csv_file, columns)
+    market_index = 'bitcoin'
+    benchmark_csv = benchmarks[market_index]['csv']
+    benchmark_dict = parse_market_index_historical_csv(benchmark_csv, columns) if benchmark_csv != '' else {}
 
     # Retrieve Investment Data
-    test_file = 'investments2'
+    test_file = 'investments1'
     investment_input_file = 'src/Input_Investments/{0}.csv'.format(test_file)
     investments = parse_investment_input(investment_input_file)
 
@@ -223,13 +240,14 @@ if __name__ == '__main__':
     max_workers = 50 # Set the maximum thread number
     workers = min(max_workers, len(investments.keys())) # In case a smaller number of stocks than threads was passed in
     with futures.ThreadPoolExecutor(workers) as executor:
-        res = executor.map(analyze_investments, [investments[i] for i in investments]) # Process investment data
+        # Process investment data
+        res = executor.map(analyze_investments, [investments[i] for i in investments], [benchmarks[market_index]['ticker'] for i in range(len(investments))]) 
 
     # Print results
     res = list(res)
     for r in res:
         print("=====================================")
-        print("Alpha Annual Return for {0} against benchmark {1}: {2}.".format(r[0]['Symbol'], benchmarks['sp500'], r[2]))
+        print("Alpha Annual Return for {0} against benchmark {1}: {2}.".format(r[0]['Symbol'], market_index, r[2]))
         print("Start Date: {0} and End Date: {1}\n".format(r[0]['BuyDate'], r[0]['SellDate']))
 
     # Find return on investments (non-threaded)
