@@ -213,7 +213,7 @@ if __name__ == '__main__':
     sp500_dict = parse_market_index_historical_csv(sp500_csv_file, columns)
 
     # Retrieve Investment Data
-    test_file = 'investments1'
+    test_file = 'investments2'
     investment_input_file = 'src/Input_Investments/{0}.csv'.format(test_file)
     investments = parse_investment_input(investment_input_file)
 
