@@ -29,42 +29,6 @@ def download_stock(stock:str, buy_date, sell_date):
     return round(stock_buy_price, 2), round(stock_sell_price, 2)
 
 
-def parse_sp500_historical_csv(file_name:str, columns:tuple, four_digit_years:bool=True):
-    """
-    Note: Columns in csv must not be separated by spaces to be parsed by pandas
-
-    arg file_name: str relating to csv file to parse
-    arg column_index: int relating to the desired columns
-    arg four_digit_years: if 'yyyy' desired for year column in dict, append '20' or '19' respectively.
-    return: generates dictionary with day as key and closing price as value
-    """
-
-    # Read desired csv file with date and closing price columns
-    df = pd.read_csv(file_name, usecols=columns)
-    date_column = columns[0]
-    price_column = columns[1]
-    
-    # Convert data frame into dictionary for O(1) lookups by date later
-    sp500_closing_dict = {}
-    for i in range(df.shape[0]):
-
-        # Pull off date for key
-        date = df[date_column][i]
-
-        # If years desired as 'yyyy' instead of 'yy', make conversion
-        if four_digit_years: 
-            date_split = str(date).split('/')
-            if 59 < int(date_split[-1]) <= 99: # If Pre 2000s, append '19'
-                date_split[-1] = '19' + date_split[-1]
-            else: # If Post 2000s, append '20', will need revisiting by 2099...
-                date_split[-1] = '20' + date_split[-1]
-            date = '/'.join(date_split)
-
-        sp500_closing_dict[date] = df[price_column][i]
-
-    return sp500_closing_dict
-
-
 def find_annual_return(buy_price:float, sell_price:float, days_diff:int, days_in_year=365.25):
     """
     arg buy_price: buy price for investment
@@ -102,28 +66,6 @@ def compute_alpha_return(benchmark: tuple, inv: tuple, buy_date: tuple, sell_dat
 
     # Return return differential between investment and benchmark
     return round(annual_return_inv - annual_return_benchmark, 4), annual_return_inv, annual_return_benchmark
-
-
-def parse_investment_input(file_name:str, columns:list=['Symbol','BuyDate','SellDate','Volume']):
-    """
-    Input files must follow format described in docs/Input_Investments.md.
-    Example Return: {'AMZN':{'BuyDate':'01/04/2021','SellDate':'01/04/2021','Volume':1}}
-
-    arg file_name: investment input file name
-    return: a dictionary where keys are tickers and values are dictionary with investment data
-    """
-
-    df = pd.read_csv(file_name, usecols=columns)
-    investment_dict = {}
-    for i in range(df.shape[0]):
-        # Initialize value dict to hold investment data
-        investment_dict[i] = {} 
-
-        # Loop through columns, fill out value dict
-        for c in columns: 
-            investment_dict[i][c] = df[c][i]
-
-    return investment_dict
 
 
 def analyze_investments(investment:dict, benchmark:str='^GSPC', log_output=True):
@@ -184,6 +126,64 @@ def analyze_investments(investment:dict, benchmark:str='^GSPC', log_output=True)
         output_file.writelines(log_lines)
         
     return (investment, benchmark, return_differential)
+
+
+def parse_sp500_historical_csv(file_name:str, columns:tuple, four_digit_years:bool=True):
+    """
+    Note: Columns in csv must not be separated by spaces to be parsed by pandas
+
+    arg file_name: str relating to csv file to parse
+    arg column_index: int relating to the desired columns
+    arg four_digit_years: if 'yyyy' desired for year column in dict, append '20' or '19' respectively.
+    return: generates dictionary with day as key and closing price as value
+    """
+
+    # Read desired csv file with date and closing price columns
+    df = pd.read_csv(file_name, usecols=columns)
+    date_column = columns[0]
+    price_column = columns[1]
+    
+    # Convert data frame into dictionary for O(1) lookups by date later
+    sp500_closing_dict = {}
+    for i in range(df.shape[0]):
+
+        # Pull off date for key
+        date = df[date_column][i]
+
+        # If years desired as 'yyyy' instead of 'yy', make conversion
+        if four_digit_years: 
+            date_split = str(date).split('/')
+            if 59 < int(date_split[-1]) <= 99: # If Pre 2000s, append '19'
+                date_split[-1] = '19' + date_split[-1]
+            else: # If Post 2000s, append '20', will need revisiting by 2099...
+                date_split[-1] = '20' + date_split[-1]
+            date = '/'.join(date_split)
+
+        sp500_closing_dict[date] = df[price_column][i]
+
+    return sp500_closing_dict
+
+
+def parse_investment_input(file_name:str, columns:list=['Symbol','BuyDate','SellDate','Volume']):
+    """
+    Input files must follow format described in docs/Input_Investments.md.
+    Example Return: {'AMZN':{'BuyDate':'01/04/2021','SellDate':'01/04/2021','Volume':1}}
+
+    arg file_name: investment input file name
+    return: a dictionary where keys are tickers and values are dictionary with investment data
+    """
+
+    df = pd.read_csv(file_name, usecols=columns)
+    investment_dict = {}
+    for i in range(df.shape[0]):
+        # Initialize value dict to hold investment data
+        investment_dict[i] = {} 
+
+        # Loop through columns, fill out value dict
+        for c in columns: 
+            investment_dict[i][c] = df[c][i]
+
+    return investment_dict
 
 
 if __name__ == '__main__':
