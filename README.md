@@ -1,5 +1,7 @@
 # Alpha Return
 
-Prototyping for Alpha Return application. Takes investments and finds alpha in comparison to S&P 500 and other markets/benchmarks such as the Dow Jones or Bitcoin.
+Compare your investments against the S&P500 to see if you are getting [Alpha](https://www.investopedia.com/terms/a/alpha.asp) returns. The returns from the benchmark (S&P500) and your investment are in the form of [Annual Return](https://www.investopedia.com/terms/a/annual-return.asp).
 
-Alpha will be represented as annual return comparisons as well as total percentage differential.
+This a Python based application supported by Pandas datareader as well as WSJ's S&P500 historical data.
+
+Intuitive methods to input and analyze sets of investments will be made available shortly.
