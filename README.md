@@ -22,7 +22,7 @@ With `market_index` set to `"sp500"` in alpha_return.py's main function as well 
 
 Output for return on individual investments against the benchmark market index/investment is sent to src/Input_Investments/test_returns.
 
-The above AAPL row from investments1 against the sp500 results in `src/Input_Investments/test_returns/investments1_AAPL_sp500_returns`:
+The above AAPL row from investments1 against the sp500 results in **src/Input_Investments/test_returns/investments1_AAPL_sp500_returns**:
 
 `Checking Alpha Return for AAPL investment against sp500.`
 
@@ -40,7 +40,7 @@ The above AAPL row from investments1 against the sp500 results in `src/Input_Inv
 
 `No Alpha Return: -9.915`
 
-Similarly the Bitcoin row from investments against the S&P500 results in `src/Input_Investments/test_returns/investments1_BTC-USD_sp500_returns`:
+Similarly the Bitcoin row from investments against the S&P500 results in **src/Input_Investments/test_returns/investments1_BTC-USD_sp500_returns**:
 
 `Checking Alpha Return for BTC-USD investment against sp500.`
 
