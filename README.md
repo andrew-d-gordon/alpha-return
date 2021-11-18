@@ -57,5 +57,3 @@ Similarly, the Bitcoin row from investments1 against the S&P500 results in **src
 `Benchmark Annual Return: 27.5679`
 
 `Alpha Return: 47.4385`
-
-Intuitive methods to input and analyze sets of investments will be made available shortly.
