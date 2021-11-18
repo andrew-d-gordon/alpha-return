@@ -40,7 +40,7 @@ The above AAPL row from investments1 against the sp500 results in **src/Input_In
 
 `No Alpha Return: -9.915`
 
-Similarly the Bitcoin row from investments against the S&P500 results in **src/Input_Investments/test_returns/investments1_BTC-USD_sp500_returns**:
+Similarly, the Bitcoin row from investments1 against the S&P500 results in **src/Input_Investments/test_returns/investments1_BTC-USD_sp500_returns**:
 
 `Checking Alpha Return for BTC-USD investment against sp500.`
 
