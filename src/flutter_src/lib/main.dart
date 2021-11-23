@@ -98,7 +98,7 @@ class Home extends StatelessWidget {
                     investmentRow('AMZN', '01/04/2021', '11/12/2021'),
                     investmentRow('VTI', '01/04/2021', '11/12/2021'),
                     investmentRow('BTC-USD', '01/04/2021', '11/12/2021'),
-                    investmentRow('AAPL', '01/04/2021', '11/12/2021'),
+                    investmentRow('AAPL', '01/06/2021', '11/15/2021'),
                     investmentRow('AMZN', '01/04/2021', '11/12/2021'),
                     investmentRow('VTI', '01/04/2021', '11/12/2021'),
                     investmentRow('BTC-USD', '01/04/2021', '11/12/2021'),
@@ -115,14 +115,28 @@ class Home extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Center(
-              child: Container(
-                  padding: const EdgeInsets.all(10.0),
-                  child: const BenchmarkDropdown(),
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    child: const BenchmarkDropdown(),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                   ),
-              ),
+                  Center(
+                    child: FloatingActionButton(
+                      child: const Text('+INV'),
+                      onPressed: () {print("Adding Investment");}, //Add investment input window
+                      backgroundColor: Colors.lightGreen,
+                      hoverColor: Colors.greenAccent,
+                      hoverElevation: 10.0,
+                    ),
+                  ),
+                ],
+              )
             )
           ),
           Expanded(
@@ -157,11 +171,6 @@ class Home extends StatelessWidget {
           ),
         ]
       ),
-      /*floatingActionButton: const FloatingActionButton(
-        child: Text('click'),
-        onPressed: null,
-        backgroundColor: Colors.lightGreen,
-      ),*/
     backgroundColor: Colors.white,
     );
   }
