@@ -19,9 +19,14 @@ BoxDecoration investmentBoxDecoration(Color c, Color borderC) {
 Row investmentRow(String symbol, String buyDate, String sellDate) {
   return Row( // Convert rows to stateful objects with alterable vars
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    crossAxisAlignment: CrossAxisAlignment.center,
     children: <Widget>[
+      const Expanded(
+          flex: 2,
+          child: InvestmentCheckBox(),
+      ),
       Expanded(
-          flex: 1,
+          flex: 5,
           child: Container(
             margin: const EdgeInsets.all(0.0),
             decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
@@ -32,7 +37,7 @@ Row investmentRow(String symbol, String buyDate, String sellDate) {
           )
       ),
       Expanded(
-          flex: 1,
+          flex: 5,
           child: Container(
             margin: const EdgeInsets.all(0.0),
             decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
@@ -43,7 +48,7 @@ Row investmentRow(String symbol, String buyDate, String sellDate) {
           )
       ),
       Expanded(
-          flex: 1,
+          flex: 5,
           child: Container(
             margin: const EdgeInsets.all(0.0),
             decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
@@ -86,13 +91,23 @@ class Home extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                 //color: Colors.cyan,
-                child: Column(
+                child: ListView(
+                  padding: const EdgeInsets.all(1.0),
                   children: <Widget>[ // Where Investments live...
                     investmentRow('AAPL', '01/04/2021', '11/12/2021'),
                     investmentRow('AMZN', '01/04/2021', '11/12/2021'),
                     investmentRow('VTI', '01/04/2021', '11/12/2021'),
                     investmentRow('BTC-USD', '01/04/2021', '11/12/2021'),
+                    investmentRow('AAPL', '01/04/2021', '11/12/2021'),
+                    investmentRow('AMZN', '01/04/2021', '11/12/2021'),
+                    investmentRow('VTI', '01/04/2021', '11/12/2021'),
+                    investmentRow('BTC-USD', '01/04/2021', '11/12/2021'),
+                    investmentRow('AAPL', '01/04/2021', '11/12/2021'),
+                    investmentRow('AMZN', '01/04/2021', '11/12/2021'),
+                    investmentRow('VTI', '01/04/2021', '11/12/2021'),
+                    investmentRow('BTC-USD', '01/04/2021', '11/12/2021'),
                   ],
+                  scrollDirection: Axis.vertical,
                 )
               ),
             ),
@@ -111,7 +126,7 @@ class Home extends StatelessWidget {
             )
           ),
           Expanded(
-            flex: 2,
+            flex: 1,
             child: Center(
               child: Container(
                 //padding: EdgeInsets.all(10.0),
@@ -147,7 +162,7 @@ class Home extends StatelessWidget {
         onPressed: null,
         backgroundColor: Colors.lightGreen,
       ),*/
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.white,
     );
   }
 }
@@ -201,6 +216,36 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+class InvestmentCheckBox extends StatefulWidget {
+  const InvestmentCheckBox({Key? key}) : super(key: key);
+
+  @override
+  _InvestmentCheckBoxState createState() => _InvestmentCheckBoxState();
+}
+
+class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
+  bool checkedValue = false;
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CheckboxListTile(
+        value: checkedValue,
+        checkColor: Colors.black,
+        contentPadding: EdgeInsets.all(1.0),
+        dense: false,
+        activeColor: Colors.greenAccent,
+        tileColor: Colors.white,
+        selectedTileColor: Colors.green,
+        onChanged: (newValue) {
+          setState(() {
+            checkedValue = newValue!;
+          });
+        },
+      ),
     );
   }
 }
