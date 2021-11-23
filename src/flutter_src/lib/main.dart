@@ -20,24 +20,17 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Alpha Return'),
         centerTitle: true,
-        backgroundColor: Colors.green,
+        backgroundColor: Color(0xff66b366),
       ),
-      body: Center(
-        /*child: Text(
-          'hello brother',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2.0,
-            color: Colors.grey,
-            fontFamily: 'Merriweather',
-          )
-        ),*/
-        child: IconButton(
-          onPressed: () {print('you clicked me');},
-          icon: Icon(Icons.add),
-          color: Colors.lightGreen,
-        ),
+      body: /*Padding(
+        padding: EdgeInsets.all(30.0),
+        child: Text('Hello'),
+      ),*/
+      Container(
+        padding: EdgeInsets.all(20.0),
+        margin: EdgeInsets.all(30.0),
+        color: Colors.green,
+        child: Text('Hello')
       ),
       floatingActionButton: const FloatingActionButton(
         child: Text('click'),
