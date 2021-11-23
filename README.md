@@ -57,3 +57,8 @@ Similarly, the Bitcoin row from investments1 against the S&P500 results in **src
 `Benchmark Annual Return: 27.5679`
 
 `Alpha Return: 47.4385`
+
+
+Here is the current proof of concept for mobile dev being done with Flutter and Dart in Android Studio.
+
+![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/flutter_demo/docs/images/nexus_demo_beta.png?raw=true)
