@@ -6,6 +6,25 @@ void main() => runApp(MaterialApp(
   home: Home(),
 ));
 
+// Implement +INV Button and Edit Invs Button
+
+// select all/deselect, remember cache even when scrolling far off (listtile cacherecall?)
+
+// Add closeout button for investment input section, same wit edit invs, clear inv to be added/del'd when
+// close out pressed
+
+// Dart with firebase, see if python backend possible for computing alpha return
+
+// If python not viable as backend, see if dart has built in api calls available for market data
+
+// Flutter integration with firebase to store user info/market data into firestore
+
+// Remember investment sets
+
+// Color pallette wheel
+
+
+
 BoxDecoration investmentBoxDecoration(Color c, Color borderC) {
   return BoxDecoration(
     border: Border.all(
@@ -69,6 +88,13 @@ Row investmentRow(String symbol, String buyDate, String sellDate) {
 // the state of the widget cannot change over time
 
 class Home extends StatelessWidget {
+  List<List<String>> investments = [
+    ['AAPL', '01/04/2021', '11/12/2021'],
+    ['AMZN', '01/04/2021', '11/12/2021'],
+    ['VTI', '01/04/2021', '11/12/2021'],
+    ['BTC-USD', '01/04/2021', '11/12/2021'],
+    ['AAPL', '01/06/2021', '11/15/2021'],
+    ['AMZN', '01/06/2021', '11/15/2021']];
 
   // Used to say the build function will override our build
   // instead of stateless widget super class build
@@ -94,18 +120,7 @@ class Home extends StatelessWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(1.0),
                   children: <Widget>[ // Where Investments live...
-                    investmentRow('AAPL', '01/04/2021', '11/12/2021'),
-                    investmentRow('AMZN', '01/04/2021', '11/12/2021'),
-                    investmentRow('VTI', '01/04/2021', '11/12/2021'),
-                    investmentRow('BTC-USD', '01/04/2021', '11/12/2021'),
-                    investmentRow('AAPL', '01/06/2021', '11/15/2021'),
-                    investmentRow('AMZN', '01/04/2021', '11/12/2021'),
-                    investmentRow('VTI', '01/04/2021', '11/12/2021'),
-                    investmentRow('BTC-USD', '01/04/2021', '11/12/2021'),
-                    investmentRow('AAPL', '01/04/2021', '11/12/2021'),
-                    investmentRow('AMZN', '01/04/2021', '11/12/2021'),
-                    investmentRow('VTI', '01/04/2021', '11/12/2021'),
-                    investmentRow('BTC-USD', '01/04/2021', '11/12/2021'),
+                    for (var i in investments) investmentRow(i[0], i[1], i[2]),
                   ],
                   scrollDirection: Axis.vertical,
                 )
