@@ -89,12 +89,12 @@ Row investmentRow(String symbol, String buyDate, String sellDate) { // Create in
 // the state of the widget cannot change over time
 
 List<List<String>> investments = [
-  ['AAPL', '01/04/2021', '11/12/2021'],
+  /*['AAPL', '01/04/2021', '11/12/2021'],
   ['AMZN', '01/04/2021', '11/12/2021'],
   ['VTI', '01/04/2021', '11/12/2021'],
   ['BTC-USD', '01/04/2021', '11/12/2021'],
   ['AAPL', '01/06/2021', '11/15/2021'],
-  ['AMZN', '01/06/2021', '11/15/2021']];
+  ['AMZN', '01/06/2021', '11/15/2021']*/];
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -283,7 +283,8 @@ class DialogExample extends StatefulWidget {
   //const DialogExample(List<Row> investmentRows, {Key? key}) : super(key: key);
   final List<Row> investmentRows;
   final Function() notifyParent;
-  DialogExample(this.investmentRows, this.notifyParent);
+  const DialogExample(this.investmentRows, this.notifyParent);
+  //const DialogExample({Key? key, this.investmentRows, this.notifyParent}) : super(key: key);
 
   @override
   _DialogExampleState createState() => _DialogExampleState();
