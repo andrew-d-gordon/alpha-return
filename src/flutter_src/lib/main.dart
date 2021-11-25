@@ -10,6 +10,10 @@ void main() => runApp(MaterialApp(
 
 // Implement +INV Button and Edit Invs Button
 
+// Remember checkbox data, need a check value list to maintain along with investmentrows
+// Can loop through this list to determine which rows to consider when computing alpha return
+// On sel all/desel all set to all false/all true
+
 // select all/deselect, remember cache even when scrolling far off (listtile cacherecall?)
 
 // Add closeout button for investment input section, same wit edit invs, clear inv to be added/del'd when
@@ -24,7 +28,6 @@ void main() => runApp(MaterialApp(
 // Remember investment sets
 
 // Color pallette wheel
-
 
 BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoration Widget
   return BoxDecoration(
@@ -64,7 +67,8 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    investmentRows = [for (var i in investments) InvestmentRow(symbol: i[0], buyDate: i[1], sellDate: i[2])];
+    investmentRows = [for (var i in investments)
+      InvestmentRow(symbol: i[0], buyDate: i[1], sellDate: i[2], notify: refresh)];
   }
 
   @override
@@ -211,11 +215,13 @@ class InvestmentRow extends StatefulWidget {
   final String symbol;
   final String buyDate;
   final String sellDate;
+  final Function() notify;
   const InvestmentRow({
     Key? key,
     required this.symbol,
     required this.buyDate,
-    required this.sellDate}) : super(key: key);
+    required this.sellDate,
+    required this.notify}) : super(key: key);
 
   @override
   _InvestmentRowState createState() => _InvestmentRowState();
@@ -228,9 +234,9 @@ class _InvestmentRowState extends State<InvestmentRow> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        const Expanded(
+        Expanded(
           flex: 2,
-          child: InvestmentCheckBox(),
+          child: InvestmentCheckBox(notify: widget.notify),
         ),
         Expanded(
           flex: 5,
@@ -271,7 +277,8 @@ class _InvestmentRowState extends State<InvestmentRow> {
 }
 
 class InvestmentCheckBox extends StatefulWidget { // Investment Checkbox class
-  const InvestmentCheckBox({Key? key}) : super(key: key);
+  final Function() notify;
+  const InvestmentCheckBox({Key? key, required this.notify}) : super(key: key);
 
   @override
   _InvestmentCheckBoxState createState() => _InvestmentCheckBoxState();
@@ -294,6 +301,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
           setState(() {
             checkedValue = newValue!;
             // Notify parent to take account of checkboxes
+            widget.notify();
           });
         },
       ),
@@ -373,7 +381,11 @@ class _DialogExampleState extends State<DialogExample> {
                             _ticker = _t.text;
                             _buyDate = _b.text;
                             _sellDate= _s.text;
-                            widget.investmentRows.add(InvestmentRow(symbol: _ticker, buyDate: _buyDate, sellDate: _sellDate));
+                            widget.investmentRows.add(InvestmentRow(
+                                symbol: _ticker,
+                                buyDate: _buyDate,
+                                sellDate: _sellDate,
+                                notify: widget.notifyParent));
                             widget.notifyParent(); // Notify parent to update rows
                           });
                           Navigator.pop(context); // if vars set correct
