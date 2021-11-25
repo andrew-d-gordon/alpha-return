@@ -36,52 +36,6 @@ BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoratio
   );
 }
 
-Row investmentRow(String symbol, String buyDate, String sellDate) { // Create investment row
-  return Row( // Convert rows to stateful objects with alterable vars
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: <Widget>[
-      const Expanded(
-          flex: 2,
-          child: InvestmentCheckBox(),
-      ),
-      Expanded(
-          flex: 5,
-          child: Container(
-            margin: const EdgeInsets.all(0.0),
-            decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
-            child: Text(
-                symbol,
-                style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          )
-      ),
-      Expanded(
-          flex: 5,
-          child: Container(
-            margin: const EdgeInsets.all(0.0),
-            decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
-            child: Text(
-              buyDate,
-              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          )
-      ),
-      Expanded(
-          flex: 5,
-          child: Container(
-            margin: const EdgeInsets.all(0.0),
-            decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
-            child: Text(
-              sellDate,
-              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          ),
-      ),
-    ],
-  );
-}
-
 // Stateful Widgets
 // the state of the widget can change over time
 
@@ -105,9 +59,13 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  List<Row> investmentRows = [for (var i in investments) investmentRow(i[0], i[1], i[2])];
-
   refresh() {setState(() {});} // Refresh Callback for descendant widgets
+  List<InvestmentRow> investmentRows = [];
+
+  @override
+  void initState() {
+    investmentRows = [for (var i in investments) InvestmentRow(symbol: i[0], buyDate: i[1], sellDate: i[2])];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -248,6 +206,70 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
   }
 }
 
+// Investment Row Class
+class InvestmentRow extends StatefulWidget {
+  final String symbol;
+  final String buyDate;
+  final String sellDate;
+  const InvestmentRow({
+    Key? key,
+    required this.symbol,
+    required this.buyDate,
+    required this.sellDate}) : super(key: key);
+
+  @override
+  _InvestmentRowState createState() => _InvestmentRowState();
+}
+
+class _InvestmentRowState extends State<InvestmentRow> {
+  @override
+  Widget build(BuildContext context) {
+    return Row( // Convert rows to stateful objects with alterable vars
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        const Expanded(
+          flex: 2,
+          child: InvestmentCheckBox(),
+        ),
+        Expanded(
+          flex: 5,
+          child: Container(
+            margin: const EdgeInsets.all(0.0),
+            decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
+            child: Text(
+              widget.symbol,
+              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            ),
+          )
+        ),
+        Expanded(
+          flex: 5,
+          child: Container(
+            margin: const EdgeInsets.all(0.0),
+            decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
+            child: Text(
+              widget.buyDate,
+              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            ),
+          )
+        ),
+        Expanded(
+          flex: 5,
+          child: Container(
+            margin: const EdgeInsets.all(0.0),
+            decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
+            child: Text(
+              widget.sellDate,
+              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class InvestmentCheckBox extends StatefulWidget { // Investment Checkbox class
   const InvestmentCheckBox({Key? key}) : super(key: key);
 
@@ -271,6 +293,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
         onChanged: (newValue) {
           setState(() {
             checkedValue = newValue!;
+            // Notify parent to take account of checkboxes
           });
         },
       ),
@@ -280,8 +303,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
 
 // Dialog Box for Creating Investment Row
 class DialogExample extends StatefulWidget {
-  //const DialogExample(List<Row> investmentRows, {Key? key}) : super(key: key);
-  final List<Row> investmentRows;
+  final List<InvestmentRow> investmentRows;
   final Function() notifyParent;
   const DialogExample(this.investmentRows, this.notifyParent);
   //const DialogExample({Key? key, this.investmentRows, this.notifyParent}) : super(key: key);
@@ -351,7 +373,7 @@ class _DialogExampleState extends State<DialogExample> {
                             _ticker = _t.text;
                             _buyDate = _b.text;
                             _sellDate= _s.text;
-                            widget.investmentRows.add(investmentRow(_ticker, _buyDate, _sellDate));
+                            widget.investmentRows.add(InvestmentRow(symbol: _ticker, buyDate: _buyDate, sellDate: _sellDate));
                             widget.notifyParent(); // Notify parent to update rows
                           });
                           Navigator.pop(context); // if vars set correct
@@ -408,7 +430,7 @@ class _DialogExampleState extends State<DialogExample> {
   }
 }
 
-class AlwaysDisabledFocusNode extends FocusNode {
+class AlwaysDisabledFocusNode extends FocusNode { // Helps dismiss keyboard for TextField
   @override
   bool get hasFocus => false;
 }
