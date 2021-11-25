@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:date_format/date_format.dart';
 
 void main() => runApp(MaterialApp(
   home: Home(),
@@ -87,26 +88,34 @@ Row investmentRow(String symbol, String buyDate, String sellDate) { // Create in
 // Stateless Widgets
 // the state of the widget cannot change over time
 
-class Home extends StatelessWidget {
+List<List<String>> investments = [
+  ['AAPL', '01/04/2021', '11/12/2021'],
+  ['AMZN', '01/04/2021', '11/12/2021'],
+  ['VTI', '01/04/2021', '11/12/2021'],
+  ['BTC-USD', '01/04/2021', '11/12/2021'],
+  ['AAPL', '01/06/2021', '11/15/2021'],
+  ['AMZN', '01/06/2021', '11/15/2021']];
+
+class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
 
-  final List<List<String>> investments = [
-    ['AAPL', '01/04/2021', '11/12/2021'],
-    ['AMZN', '01/04/2021', '11/12/2021'],
-    ['VTI', '01/04/2021', '11/12/2021'],
-    ['BTC-USD', '01/04/2021', '11/12/2021'],
-    ['AAPL', '01/06/2021', '11/15/2021'],
-    ['AMZN', '01/06/2021', '11/15/2021']];
+  @override
+  State<Home> createState() => _HomeState();
+}
 
-  // Used to say the build function will override our build
-  // instead of stateless widget super class build
+class _HomeState extends State<Home> {
+
+  List<Row> investmentRows = [for (var i in investments) investmentRow(i[0], i[1], i[2])];
+
+  refresh() {setState(() {});} // Refresh Callback for descendant widgets
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Alpha Return'),
         centerTitle: true,
-        backgroundColor: Color(0xff66b366),
+        backgroundColor: const Color(0xff66b366),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -122,7 +131,7 @@ class Home extends StatelessWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(1.0),
                   children: <Widget>[ // Where Investments live...
-                    for (var i in investments) investmentRow(i[0], i[1], i[2]),
+                    for (var r in investmentRows) r,
                   ],
                   scrollDirection: Axis.vertical,
                 )
@@ -147,7 +156,7 @@ class Home extends StatelessWidget {
                     width: 100,
                     height: 60,
                     alignment: Alignment.center,
-                    child: const DialogExample()
+                    child: DialogExample(investmentRows, refresh),
                   ),
                 ],
               )
@@ -271,7 +280,10 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
 
 // Dialog Box for Creating Investment Row
 class DialogExample extends StatefulWidget {
-  const DialogExample({Key? key}) : super(key: key);
+  //const DialogExample(List<Row> investmentRows, {Key? key}) : super(key: key);
+  final List<Row> investmentRows;
+  final Function() notifyParent;
+  DialogExample(this.investmentRows, this.notifyParent);
 
   @override
   _DialogExampleState createState() => _DialogExampleState();
@@ -285,14 +297,12 @@ class _DialogExampleState extends State<DialogExample> {
   final TextEditingController _b = TextEditingController();
   final TextEditingController _s = TextEditingController();
 
-  DateTime _buyDateTime = DateTime.now();
-  DateTime _sellDateTime = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-          children: <Widget>[FloatingActionButton(onPressed: () {
+        children: <Widget>[
+          FloatingActionButton(onPressed: () {
             showDialog(
               context: context,
               builder: (context) {
@@ -312,19 +322,12 @@ class _DialogExampleState extends State<DialogExample> {
                             hintText: "Buy Date as 'dd/mm/yy'",
                             border: OutlineInputBorder(),
                         ),
+                        focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
                         controller: _b,
                         onTap: () {
-                          showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2019, 1),
-                            lastDate: DateTime(2021, 12),
-                          ).then((pickedDate) {
-                            print("This is picked date $pickedDate");
-                            setState((){
-                              _b.text = pickedDate.toString();
-                            });
-                          });
+                          //_b.text = DateTime.now().toString();
+                          _b.text = formatDate(DateTime.now(), [mm, '/', dd, '/', yyyy]);
+                          _selectDate(context, _b);
                         }
                       ),
                       TextField(
@@ -332,37 +335,12 @@ class _DialogExampleState extends State<DialogExample> {
                           hintText: "Sell Date as 'dd/mm/yy'",
                           border: OutlineInputBorder(),
                         ),
+                        focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
                         controller: _s,
                         onTap: () {
-                          _s.text = DateTime.now().toString();
-                          showCupertinoModalPopup(
-                            context: context,
-                            builder: (_) =>
-                              Container(
-                                height: 500,
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 400,
-                                      child: CupertinoDatePicker(
-                                          mode: CupertinoDatePickerMode.date,
-                                          initialDateTime: DateTime.now(),
-                                          onDateTimeChanged: (val) {
-                                            setState(() {
-                                              _s.text = val.toString();
-                                            });
-                                          }),
-                                    ),
-                                    // Close the modal
-                                    CupertinoButton(
-                                      child: const Text('OK'),
-                                      onPressed: () => Navigator.of(context).pop(),
-                                    )
-                                  ],
-                                )
-                              ),
-                          );
+                          //_s.text = DateTime.now().toString();
+                          _s.text = formatDate(DateTime.now(), [mm, '/', dd, '/', yyyy]);
+                          _selectDate(context, _s);
                         }
                       ),
                       TextButton(
@@ -372,14 +350,14 @@ class _DialogExampleState extends State<DialogExample> {
                             _ticker = _t.text;
                             _buyDate = _b.text;
                             _sellDate= _s.text;
+                            widget.investmentRows.add(investmentRow(_ticker, _buyDate, _sellDate));
+                            widget.notifyParent(); // Notify parent to update rows
                           });
                           Navigator.pop(context); // if vars set correct
                           print("$_ticker $_buyDate $_sellDate");
 
                           // Reset text in controllers
-                          _t.text = '';
-                          _b.text = '';
-                          _s.text = '';
+                          _t.text = _b.text = _s.text = '';
                         },
                       ),
                     ],
@@ -388,30 +366,48 @@ class _DialogExampleState extends State<DialogExample> {
               },
             );
           },
-            child: const Text("+Inv"),
-            backgroundColor: Colors.lightGreen,
-            hoverColor: Colors.greenAccent,
-            hoverElevation: 10.0,
-          )
-        ])
-      );
+          child: const Text("+Inv"),
+          backgroundColor: Colors.lightGreen,
+          hoverColor: Colors.greenAccent,
+          hoverElevation: 10.0,
+        )
+      ])
+    );
   }
 
-}
-
-// Date Picker for Investment
-class DatePicker extends StatefulWidget {
-  const DatePicker({Key? key}) : super(key: key);
-
-  @override
-  _DatePickerState createState() => _DatePickerState();
-}
-
-class _DatePickerState extends State<DatePicker> {
-  final TimeOfDay selectedTime = TimeOfDay.now();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
+  _selectDate(BuildContext context, TextEditingController t) { // Date picker
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 500,
+        color: const Color.fromARGB(255, 255, 255, 255),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 400,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: DateTime.now(),
+                maximumDate: DateTime.now(),
+                onDateTimeChanged: (val) {
+                  setState(() {
+                    t.text = formatDate(val, [mm, '/', dd, '/', yyyy]);
+                  });
+                }),
+            ),
+            // Close the modal
+            CupertinoButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            )
+          ],
+        )
+      ),
+    );
   }
+}
+
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
 }
