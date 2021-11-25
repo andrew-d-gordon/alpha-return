@@ -24,8 +24,7 @@ void main() => runApp(MaterialApp(
 // Color pallette wheel
 
 
-
-BoxDecoration investmentBoxDecoration(Color c, Color borderC) {
+BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoration Widget
   return BoxDecoration(
     border: Border.all(
       color: borderC,
@@ -35,7 +34,7 @@ BoxDecoration investmentBoxDecoration(Color c, Color borderC) {
   );
 }
 
-Row investmentRow(String symbol, String buyDate, String sellDate) {
+Row investmentRow(String symbol, String buyDate, String sellDate) { // Create investment row
   return Row( // Convert rows to stateful objects with alterable vars
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -88,6 +87,8 @@ Row investmentRow(String symbol, String buyDate, String sellDate) {
 // the state of the widget cannot change over time
 
 class Home extends StatelessWidget {
+  Home({Key? key}) : super(key: key);
+
   List<List<String>> investments = [
     ['AAPL', '01/04/2021', '11/12/2021'],
     ['AMZN', '01/04/2021', '11/12/2021'],
@@ -141,14 +142,11 @@ class Home extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  Center(
-                    child: FloatingActionButton(
-                      child: const Text('+INV'),
-                      onPressed: () {print("Adding Investment");}, //Add investment input window
-                      backgroundColor: Colors.lightGreen,
-                      hoverColor: Colors.greenAccent,
-                      hoverElevation: 10.0,
-                    ),
+                  Container(
+                    width: 100,
+                    height: 60,
+                    alignment: Alignment.center,
+                    child: DialogExample()
                   ),
                 ],
               )
@@ -171,14 +169,14 @@ class Home extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                   ),
                   child: const Text(
-                      'Compute Alpha Return',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                        color: Colors.white,
-                        //fontFamily: 'Merriweather',
-                      ),
+                    'Compute Alpha Return',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                      color: Colors.white,
+                      //fontFamily: 'Merriweather',
+                    ),
                   ),
                 ),
               ),
@@ -244,7 +242,7 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
   }
 }
 
-class InvestmentCheckBox extends StatefulWidget {
+class InvestmentCheckBox extends StatefulWidget { // Investment Checkbox class
   const InvestmentCheckBox({Key? key}) : super(key: key);
 
   @override
@@ -259,7 +257,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
       child: CheckboxListTile(
         value: checkedValue,
         checkColor: Colors.black,
-        contentPadding: EdgeInsets.all(1.0),
+        contentPadding: const EdgeInsets.all(1.0),
         dense: false,
         activeColor: Colors.greenAccent,
         tileColor: Colors.white,
@@ -271,5 +269,72 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
         },
       ),
     );
+  }
+}
+
+// Dialog Box for Creating Investment Row
+class DialogExample extends StatefulWidget {
+  const DialogExample({Key? key}) : super(key: key);
+
+  @override
+  _DialogExampleState createState() => _DialogExampleState();
+}
+
+class _DialogExampleState extends State<DialogExample> {
+  String _ticker = "";
+  String _buyDate = "";
+  String _sellDate = "";
+  final TextEditingController _t = TextEditingController();
+  final TextEditingController _b = TextEditingController();
+  final TextEditingController _s = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+          children: <Widget>[FloatingActionButton(onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return Dialog(
+                  child: Column(
+                    children: <Widget>[
+                      TextField(
+                        decoration: const InputDecoration(hintText: "Ticker Symbol"),
+                        controller: _t,
+                      ),
+                      TextField(
+                        decoration: const InputDecoration(hintText: "Buy Date as 'dd/mm/yy'"),
+                        controller: _b,
+                      ),
+                      TextField(
+                        decoration: const InputDecoration(hintText: "Sell Date as 'dd/mm/yy'"),
+                        controller: _s,
+                      ),
+                      FlatButton(
+                        child: const Text("Add Investment"),
+                        onPressed: (){
+                          setState((){
+                            _ticker = _t.text;
+                            _buyDate = _b.text;
+                            _sellDate= _s.text;
+                          });
+                          Navigator.pop(context);
+                          print("$_ticker $_buyDate $_sellDate");
+                        },
+                      ),
+                    ],
+                  )
+                );
+              },
+            );
+          },
+            child: const Text("+Inv"),
+            backgroundColor: Colors.lightGreen,
+            hoverColor: Colors.greenAccent,
+            hoverElevation: 10.0,
+          )
+        ])
+      );
   }
 }
