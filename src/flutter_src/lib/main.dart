@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
 
 void main() => runApp(MaterialApp(
   home: Home(),
@@ -89,7 +90,7 @@ Row investmentRow(String symbol, String buyDate, String sellDate) { // Create in
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
 
-  List<List<String>> investments = [
+  final List<List<String>> investments = [
     ['AAPL', '01/04/2021', '11/12/2021'],
     ['AMZN', '01/04/2021', '11/12/2021'],
     ['VTI', '01/04/2021', '11/12/2021'],
@@ -146,7 +147,7 @@ class Home extends StatelessWidget {
                     width: 100,
                     height: 60,
                     alignment: Alignment.center,
-                    child: DialogExample()
+                    child: const DialogExample()
                   ),
                 ],
               )
@@ -155,28 +156,24 @@ class Home extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Center(
-              child: Container(
-                //padding: EdgeInsets.all(10.0),
-                //color: Colors.lightGreen,
-                child: TextButton(
-                  onPressed: () {print("Computing Alpha Return");},
-                  style: TextButton.styleFrom(
-                    primary: Colors.white,
-                    backgroundColor: Colors.green,
-                    shadowColor: Colors.black,
-                    elevation: 5,
-                    padding: const EdgeInsets.all(10.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                  ),
-                  child: const Text(
-                    'Compute Alpha Return',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                      color: Colors.white,
-                      //fontFamily: 'Merriweather',
-                    ),
+              child: TextButton(
+                onPressed: () {print("Computing Alpha Return");},
+                style: TextButton.styleFrom(
+                  primary: Colors.white,
+                  backgroundColor: Colors.green,
+                  shadowColor: Colors.black,
+                  elevation: 5,
+                  padding: const EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                ),
+                child: const Text(
+                  'Compute Alpha Return',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                    color: Colors.white,
+                    //fontFamily: 'Merriweather',
                   ),
                 ),
               ),
@@ -288,6 +285,9 @@ class _DialogExampleState extends State<DialogExample> {
   final TextEditingController _b = TextEditingController();
   final TextEditingController _s = TextEditingController();
 
+  DateTime _buyDateTime = DateTime.now();
+  DateTime _sellDateTime = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -298,20 +298,74 @@ class _DialogExampleState extends State<DialogExample> {
               builder: (context) {
                 return Dialog(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       TextField(
-                        decoration: const InputDecoration(hintText: "Ticker Symbol"),
+                        decoration: const InputDecoration(
+                          hintText: "Ticker Symbol",
+                          border: OutlineInputBorder(),
+                        ),
                         controller: _t,
                       ),
                       TextField(
-                        decoration: const InputDecoration(hintText: "Buy Date as 'dd/mm/yy'"),
+                        decoration: const InputDecoration(
+                            hintText: "Buy Date as 'dd/mm/yy'",
+                            border: OutlineInputBorder(),
+                        ),
                         controller: _b,
+                        onTap: () {
+                          showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2019, 1),
+                            lastDate: DateTime(2021, 12),
+                          ).then((pickedDate) {
+                            print("This is picked date $pickedDate");
+                            setState((){
+                              _b.text = pickedDate.toString();
+                            });
+                          });
+                        }
                       ),
                       TextField(
-                        decoration: const InputDecoration(hintText: "Sell Date as 'dd/mm/yy'"),
+                        decoration: const InputDecoration(
+                          hintText: "Sell Date as 'dd/mm/yy'",
+                          border: OutlineInputBorder(),
+                        ),
                         controller: _s,
+                        onTap: () {
+                          _s.text = DateTime.now().toString();
+                          showCupertinoModalPopup(
+                            context: context,
+                            builder: (_) =>
+                              Container(
+                                height: 500,
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 400,
+                                      child: CupertinoDatePicker(
+                                          mode: CupertinoDatePickerMode.date,
+                                          initialDateTime: DateTime.now(),
+                                          onDateTimeChanged: (val) {
+                                            setState(() {
+                                              _s.text = val.toString();
+                                            });
+                                          }),
+                                    ),
+                                    // Close the modal
+                                    CupertinoButton(
+                                      child: const Text('OK'),
+                                      onPressed: () => Navigator.of(context).pop(),
+                                    )
+                                  ],
+                                )
+                              ),
+                          );
+                        }
                       ),
-                      FlatButton(
+                      TextButton(
                         child: const Text("Add Investment"),
                         onPressed: (){
                           setState((){
@@ -319,8 +373,13 @@ class _DialogExampleState extends State<DialogExample> {
                             _buyDate = _b.text;
                             _sellDate= _s.text;
                           });
-                          Navigator.pop(context);
+                          Navigator.pop(context); // if vars set correct
                           print("$_ticker $_buyDate $_sellDate");
+
+                          // Reset text in controllers
+                          _t.text = '';
+                          _b.text = '';
+                          _s.text = '';
                         },
                       ),
                     ],
@@ -336,5 +395,23 @@ class _DialogExampleState extends State<DialogExample> {
           )
         ])
       );
+  }
+
+}
+
+// Date Picker for Investment
+class DatePicker extends StatefulWidget {
+  const DatePicker({Key? key}) : super(key: key);
+
+  @override
+  _DatePickerState createState() => _DatePickerState();
+}
+
+class _DatePickerState extends State<DatePicker> {
+  final TimeOfDay selectedTime = TimeOfDay.now();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
