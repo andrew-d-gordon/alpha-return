@@ -58,7 +58,12 @@ Similarly, the Bitcoin row from investments1 against the S&P500 results in **src
 
 `Alpha Return: 47.4385`
 
+# Cross Platform App Development
 
 Here is the current proof of concept for mobile dev being done with Flutter and Dart in Android Studio.
 
-![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/flutter_demo/docs/images/nexus_demo_beta.png?raw=true)
+![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta.png?raw=true)
+
+![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_add_investment.png?raw=true)
+
+![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_add_investment_2.png?raw=true)
