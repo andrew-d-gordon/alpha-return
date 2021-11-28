@@ -94,7 +94,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    for (int i=investmentCount; i<investments.length; i++) {
+    for (int i=investmentCount; i<investments.length; i++) { //Refresh investment data
       print("This is investment count: ${investmentCount}");
       List inv = investments[i];
       investmentRows.add(InvestmentRow(symbol: inv[0],
