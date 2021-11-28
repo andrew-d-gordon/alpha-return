@@ -8,20 +8,13 @@ void main() => runApp(MaterialApp(
   home: Home(),
 ));
 
-// Implement +INV Button and Edit Invs Button
+// Delete button for investments, Edit on tap/button for investments
+// Make a dialog example clone but for editing fields of a row (must know row id)
 
-// Remember checkbox data, need a check value list to maintain along with investmentrows
-// Pass id num for each row (when generating initial investmentRows list)
-// Pass said id to the checkbox for each row, then can change higher level val with widget.selectedInvestments[i] value
-// Can loop through this list to determine which rows to consider when computing alpha return
-// On sel all/desel all set to all false/all true
-// When speaking of setting the checkbox/recalling it, it is in terms of setting the inital value for checkbox to be
-// the value in selectedInvesmtnets respective row
+// Shift row information into checkboxlisttile title var? Conflicts with edit on tap...
 
-// select all/deselect, remember cache even when scrolling far off (listtile cacherecall?)
-
-// Add closeout button for investment input section, same wit edit invs, clear inv to be added/del'd when
-// close out pressed
+// Add closeout button for investment input section/make modal area smaller
+// clear inv to be added/del'd when close out pressed
 
 // Dart with firebase, see if python backend possible for computing alpha return
 
