@@ -11,8 +11,12 @@ void main() => runApp(MaterialApp(
 // Implement +INV Button and Edit Invs Button
 
 // Remember checkbox data, need a check value list to maintain along with investmentrows
+// Pass id num for each row (when generating initial investmentRows list)
+// Pass said id to the checkbox for each row, then can change higher level val with widget.selectedInvestments[i] value
 // Can loop through this list to determine which rows to consider when computing alpha return
 // On sel all/desel all set to all false/all true
+// When speaking of setting the checkbox/recalling it, it is in terms of setting the inital value for checkbox to be
+// the value in selectedInvesmtnets respective row
 
 // select all/deselect, remember cache even when scrolling far off (listtile cacherecall?)
 
@@ -27,7 +31,7 @@ void main() => runApp(MaterialApp(
 
 // Remember investment sets
 
-// Color pallette wheel
+// Color scheme modifier
 
 BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoration Widget
   return BoxDecoration(
@@ -45,13 +49,13 @@ BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoratio
 // Stateless Widgets
 // the state of the widget cannot change over time
 
-List<List<String>> investments = [
+/*List<List<String>> investments = [
   /*['AAPL', '01/04/2021', '11/12/2021'],
   ['AMZN', '01/04/2021', '11/12/2021'],
   ['VTI', '01/04/2021', '11/12/2021'],
   ['BTC-USD', '01/04/2021', '11/12/2021'],
   ['AAPL', '01/06/2021', '11/15/2021'],
-  ['AMZN', '01/06/2021', '11/15/2021']*/];
+  ['AMZN', '01/06/2021', '11/15/2021']*/];*/
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -63,16 +67,47 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   refresh() {setState(() {});} // Refresh Callback for descendant widgets
+  List<List> investments = [ // Symbol, BuyDate, SellDate, Selected (t/f)
+    /*['AAPL', '01/04/2021', '11/12/2021', false],
+    ['AMZN', '01/04/2021', '11/12/2021', false],
+    ['VTI', '01/04/2021', '11/12/2021', false],
+    ['BTC-USD', '01/04/2021', '11/12/2021', false],
+    ['AAPL', '01/06/2021', '11/15/2021', false],
+    ['AMZN', '01/06/2021', '11/15/2021', false]*/];
   List<InvestmentRow> investmentRows = [];
+  List<bool> investmentsSelected = []; // Holds selection status of investments
+  int row = 0;
+  int investmentCount = 0;
 
   @override
-  void initState() {
-    investmentRows = [for (var i in investments)
-      InvestmentRow(symbol: i[0], buyDate: i[1], sellDate: i[2], notify: refresh)];
+  void initState() { // Would ideally fill investments with saved investments
+    for (int i=0; i<investments.length; i++) { // Load Investment rows/refresh
+      List inv = investments[i];
+      investmentRows.add(InvestmentRow(symbol: inv[0],
+          buyDate: inv[1],
+          sellDate: inv[2],
+          notify: refresh,
+          investments: investments,
+          row: i));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    for (int i=investmentCount; i<investments.length; i++) {
+      print("This is investment count: ${investmentCount}");
+      List inv = investments[i];
+      investmentRows.add(InvestmentRow(symbol: inv[0],
+          buyDate: inv[1],
+          sellDate: inv[2],
+          notify: refresh,
+          investments: investments,
+          row: i));
+      investmentCount+=1;
+      // For deletion of rows, decrement investment count by num deleted
+      // Delete in investments by shifting deleted elements to the end, chop end off and refresh
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Alpha Return'),
@@ -118,7 +153,7 @@ class _HomeState extends State<Home> {
                     width: 100,
                     height: 60,
                     alignment: Alignment.center,
-                    child: DialogExample(investmentRows, refresh),
+                    child: DialogExample(investments: investments, notify: refresh),
                   ),
                 ],
               )
@@ -215,19 +250,24 @@ class InvestmentRow extends StatefulWidget {
   final String symbol;
   final String buyDate;
   final String sellDate;
+  final List<List> investments;
+  final int row;
   final Function() notify;
   const InvestmentRow({
     Key? key,
     required this.symbol,
     required this.buyDate,
     required this.sellDate,
-    required this.notify}) : super(key: key);
+    required this.notify,
+    required this.investments,
+    required this.row}) : super(key: key);
 
   @override
   _InvestmentRowState createState() => _InvestmentRowState();
 }
 
 class _InvestmentRowState extends State<InvestmentRow> {
+
   @override
   Widget build(BuildContext context) {
     return Row( // Convert rows to stateful objects with alterable vars
@@ -236,7 +276,9 @@ class _InvestmentRowState extends State<InvestmentRow> {
       children: <Widget>[
         Expanded(
           flex: 2,
-          child: InvestmentCheckBox(notify: widget.notify),
+          child: InvestmentCheckBox(notify: widget.notify,
+            investments: widget.investments,
+            row: widget.row,),
         ),
         Expanded(
           flex: 5,
@@ -278,7 +320,12 @@ class _InvestmentRowState extends State<InvestmentRow> {
 
 class InvestmentCheckBox extends StatefulWidget { // Investment Checkbox class
   final Function() notify;
-  const InvestmentCheckBox({Key? key, required this.notify}) : super(key: key);
+  final List<List> investments;
+  final int row;
+  const InvestmentCheckBox({Key? key,
+    required this.notify,
+    required this.investments,
+    required this.row}) : super(key: key);
 
   @override
   _InvestmentCheckBoxState createState() => _InvestmentCheckBoxState();
@@ -286,6 +333,12 @@ class InvestmentCheckBox extends StatefulWidget { // Investment Checkbox class
 
 class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
   bool checkedValue = false;
+
+  @override
+  void initState() {
+    checkedValue = widget.investments[widget.row][3] as bool;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -300,6 +353,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
         onChanged: (newValue) {
           setState(() {
             checkedValue = newValue!;
+            widget.investments[widget.row][3] = newValue;
             // Notify parent to take account of checkboxes
             widget.notify();
           });
@@ -311,10 +365,11 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
 
 // Dialog Box for Creating Investment Row
 class DialogExample extends StatefulWidget {
-  final List<InvestmentRow> investmentRows;
-  final Function() notifyParent;
-  const DialogExample(this.investmentRows, this.notifyParent);
-  //const DialogExample({Key? key, this.investmentRows, this.notifyParent}) : super(key: key);
+  //final List<InvestmentRow> investmentRows;
+  final List<List> investments;
+  final Function() notify;
+  const DialogExample({Key? key,
+    required this.investments, required this.notify,}) : super(key: key);
 
   @override
   _DialogExampleState createState() => _DialogExampleState();
@@ -376,17 +431,18 @@ class _DialogExampleState extends State<DialogExample> {
                       ),
                       TextButton(
                         child: const Text("Add Investment"),
-                        onPressed: (){
-                          setState((){
+                        onPressed: () {
+                          setState(() {
                             _ticker = _t.text;
                             _buyDate = _b.text;
                             _sellDate= _s.text;
-                            widget.investmentRows.add(InvestmentRow(
-                                symbol: _ticker,
-                                buyDate: _buyDate,
-                                sellDate: _sellDate,
-                                notify: widget.notifyParent));
-                            widget.notifyParent(); // Notify parent to update rows
+                            widget.investments.add([
+                                _ticker,
+                                _buyDate,
+                                _sellDate,
+                                true]);
+                            print(widget.investments);
+                            widget.notify(); // Notify parent to update rows
                           });
                           Navigator.pop(context); // if vars set correct
                           print("$_ticker $_buyDate $_sellDate");
