@@ -8,12 +8,11 @@ void main() => runApp(MaterialApp(
   home: Home(),
 ));
 
-// Delete button for investments, Edit on tap/button for investments
-// Make a dialog example clone but for editing fields of a row (must know row id)
+// Run compute alpha return calculations, perhaps modularize main.dart to multiple files
 
-// Shift row information into checkboxlisttile title var? Conflicts with edit on tap...
+// Make a dialog example clone but for editing fields of a row (must know row id) ?
 
-// Add closeout button for investment input section/make modal area smaller
+// investment input section/make modal area smaller
 // clear inv to be added/del'd when close out pressed
 
 // Dart with firebase, see if python backend possible for computing alpha return
@@ -111,7 +110,7 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           //Expanded(flex: 3, child: Image.asset('assets/alpha1.png')),
           Expanded(
-            flex: 3, // Portion of width we want it to take up '3/6'
+            flex: 4, // Portion of width we want it to take up '3/6'
             child: Center(
               child: Container(
                 decoration: const BoxDecoration(
@@ -382,6 +381,8 @@ class _DialogExampleState extends State<DialogExample> {
   final TextEditingController _b = TextEditingController();
   final TextEditingController _s = TextEditingController();
 
+  double dialogFontSize = 22.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -402,6 +403,7 @@ class _DialogExampleState extends State<DialogExample> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         TextField(
+                          style: TextStyle(fontSize: dialogFontSize),
                           decoration: const InputDecoration(
                             hintText: "Ticker Symbol",
                             border: OutlineInputBorder(),
@@ -409,6 +411,7 @@ class _DialogExampleState extends State<DialogExample> {
                           controller: _t,
                         ),
                         TextField(
+                          style: TextStyle(fontSize: dialogFontSize),
                           decoration: const InputDecoration(
                               hintText: "Buy Date as 'dd/mm/yy'",
                               border: OutlineInputBorder(),
@@ -422,6 +425,7 @@ class _DialogExampleState extends State<DialogExample> {
                           }
                         ),
                         TextField(
+                          style: TextStyle(fontSize: dialogFontSize),
                           decoration: const InputDecoration(
                             hintText: "Sell Date as 'dd/mm/yy'",
                             border: OutlineInputBorder(),
@@ -435,7 +439,7 @@ class _DialogExampleState extends State<DialogExample> {
                           }
                         ),
                         TextButton(
-                          child: const Text("Add Investment"),
+                          child: Text("Add Investment", style: TextStyle(fontSize: dialogFontSize)),
                           onPressed: () {
                             setState(() {
                               _ticker = _t.text;
