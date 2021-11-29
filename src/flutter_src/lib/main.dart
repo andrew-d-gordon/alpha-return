@@ -276,20 +276,35 @@ class _HomeState extends State<Home> {
                     if (investments[i][3]) {
                       // Get buy and sell closing prices
                       List inv = investments[i];
-                      double invBuyPrice = await retrieveMarketValue(inv[0], inv[1]);
-                      double invSellPrice = await retrieveMarketValue(inv[0], inv[2]);
-                      double benchBuyPrice = await retrieveMarketValue(benchmarkTicker, inv[1]);
-                      double benchSellPrice = await retrieveMarketValue(benchmarkTicker, inv[2]);
+                      investmentsAnalyzed[inv[0]] = {};
+
+                      await retrieveMarketValue(inv[0], inv[1]).then((val) => { // Add error checks, continue on error, remove error prone rows/notify user
+                        investmentsAnalyzed[inv[0]]['buyPrice'] = val
+                      });
+                      await retrieveMarketValue(inv[0], inv[2]).then((val) => {
+                        investmentsAnalyzed[inv[0]]['sellPrice'] = val
+                      });
+                      await retrieveMarketValue(benchmarkTicker, inv[1]).then((val) => {
+                        investmentsAnalyzed[inv[0]]['benchBuyPrice'] = val
+                      });
+                      await retrieveMarketValue(benchmarkTicker, inv[2]).then((val) => {
+                        investmentsAnalyzed[inv[0]]['benchSellPrice'] = val
+                      });
                       int daysDiff = daysBetween(stringToDateTime(inv[1]), stringToDateTime(inv[2]));
 
                       // Set Investment Analysis attributes in investmentsAnalyzed
-                      investmentsAnalyzed[inv[0]] = {};
-                      investmentsAnalyzed[inv[0]]['buyPrice'] = invBuyPrice;
-                      investmentsAnalyzed[inv[0]]['sellPrice'] = invSellPrice;
-                      investmentsAnalyzed[inv[0]]['daysDiff'] = daysBetween(stringToDateTime(inv[1]), stringToDateTime(inv[2]));
-                      investmentsAnalyzed[inv[0]]['annualReturn'] = computeAnnualReturn(invBuyPrice, invSellPrice, daysDiff);
+                      investmentsAnalyzed[inv[0]]['daysDiff'] = daysDiff;
+                      investmentsAnalyzed[inv[0]]['annualReturn'] = computeAnnualReturn(
+                          investmentsAnalyzed[inv[0]]['buyPrice'],
+                          investmentsAnalyzed[inv[0]]['sellPrice'],
+                          daysDiff);
+
                       investmentsAnalyzed[inv[0]]['benchmark'] = benchmark[0]; // Make non null
-                      investmentsAnalyzed[inv[0]]['benchmarkAnnualReturn'] = computeAnnualReturn(benchBuyPrice, benchSellPrice, daysDiff);
+                      investmentsAnalyzed[inv[0]]['benchmarkAnnualReturn'] = computeAnnualReturn(
+                          investmentsAnalyzed[inv[0]]['benchBuyPrice'],
+                          investmentsAnalyzed[inv[0]]['benchSellPrice'],
+                          daysDiff);
+
                       investmentsAnalyzed[inv[0]]['alphaReturn'] = computeAlphaReturn(
                           investmentsAnalyzed[inv[0]]['annualReturn'],
                           investmentsAnalyzed[inv[0]]['benchmarkAnnualReturn']
@@ -349,7 +364,6 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.benchmark);
     return DropdownButton<String>(
       value: widget.benchmark[0],
       icon: const Icon(Icons.arrow_downward),
