@@ -4,6 +4,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:date_format/date_format.dart';
 
+// Find closing prices of a supplied investment on a specified date
+double retrieveMarketValue(String ticker, DateTime date) {
+  double datePrice = 0.0;
+
+  // Want to use finquote to accomplish price retrieval
+
+  return datePrice;
+}
+
 void main() => runApp(MaterialApp(
   home: Home(),
 ));
@@ -35,19 +44,13 @@ BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoratio
   );
 }
 
+
+
 // Stateful Widgets
 // the state of the widget can change over time
 
 // Stateless Widgets
 // the state of the widget cannot change over time
-
-/*List<List<String>> investments = [
-  /*['AAPL', '01/04/2021', '11/12/2021'],
-  ['AMZN', '01/04/2021', '11/12/2021'],
-  ['VTI', '01/04/2021', '11/12/2021'],
-  ['BTC-USD', '01/04/2021', '11/12/2021'],
-  ['AAPL', '01/06/2021', '11/15/2021'],
-  ['AMZN', '01/06/2021', '11/15/2021']*/];*/
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -58,18 +61,21 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  refresh() {setState(() {});} // Refresh Callback for descendant widgets
-  List<List> investments = [ // Symbol, BuyDate, SellDate, Selected (t/f)
+  // Refresh Callback for descendant widgets to notify parent of updated values
+  refresh() {setState(() {});}
+
+  // Variable data utilized to generate investment rows and their state variables
+  // investments has an investment specified as: [Symbol, BuyDate, SellDate, Selected (t/f)]
+  List<List> investments = [
     ['AAPL', '01/04/2021', '11/12/2021', false],
     ['AMZN', '01/04/2021', '11/12/2021', false],
     ['VTI', '01/04/2021', '11/12/2021', false],
     ['BTC-USD', '01/04/2021', '11/12/2021', false],
     ['AAPL', '01/06/2021', '11/15/2021', false],
     ['AMZN', '01/06/2021', '11/15/2021', false]];
+
+  // Holds investmentRows built from investments
   List<InvestmentRow> investmentRows = [];
-  List<bool> investmentsSelected = []; // Holds selection status of investments
-  int row = 0;
-  int investmentCount = 0;
 
   @override
   void initState() { // Would ideally fill investments with saved investments
@@ -95,7 +101,6 @@ class _HomeState extends State<Home> {
           notify: refresh,
           investments: investments,
           row: i));
-      //investmentCount+=1;
     }
 
     return Scaffold(
@@ -169,7 +174,19 @@ class _HomeState extends State<Home> {
             flex: 1,
             child: Center(
               child: TextButton(
-                onPressed: () {print("Computing Alpha Return");},
+                onPressed: () {
+                  print("Computing Alpha Return");
+                  // Want to queue computing for alpha return of each row in
+                  // investments with investment[3] set to true
+
+                  // We would then like to build out a modified Dialog Example
+                  // with annual return of each investment, of the benchmark, and
+                  // the inherent alpha return.
+
+                  // Weighted Annual return would be computed as follows (would need % of portfolio metric on investments)
+                  // (percentage_i1*i1_annual_return + percentage_i2*i2_annual_return + ... + percentage_in*in_annual_return)
+                  // Where i(1->n) is a selected investment with an associated annual return and percentage of portfolio specified
+                },
                 style: TextButton.styleFrom(
                   primary: Colors.white,
                   backgroundColor: Colors.green,
@@ -198,6 +215,7 @@ class _HomeState extends State<Home> {
   }
 }
 
+// Benchmark Dropdown Widget
 class BenchmarkDropdown extends StatefulWidget {
   const BenchmarkDropdown({Key? key}) : super(key: key);
 
@@ -250,7 +268,7 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
   }
 }
 
-// Investment Row Class
+// Investment Row Widget
 class InvestmentRow extends StatefulWidget {
   final String symbol;
   final String buyDate;
@@ -323,6 +341,7 @@ class _InvestmentRowState extends State<InvestmentRow> {
   }
 }
 
+// Investment Row CheckboxListTile Widget
 class InvestmentCheckBox extends StatefulWidget { // Investment Checkbox class
   final Function() notify;
   final List<List> investments;
@@ -361,7 +380,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
   }
 }
 
-// Dialog Box for Creating Investment Row
+// Button and Dialog Modal for Creating Investment Row Widget
 class DialogExample extends StatefulWidget {
   //final List<InvestmentRow> investmentRows;
   final List<List> investments;
@@ -507,11 +526,13 @@ class _DialogExampleState extends State<DialogExample> {
   }
 }
 
+// Disable focus node function for focusing date picker instead of keyboard
 class AlwaysDisabledFocusNode extends FocusNode { // Helps dismiss keyboard for TextField
   @override
   bool get hasFocus => false;
 }
 
+// Delete Investments Button Widget
 class DeleteInvestmentsButton extends StatefulWidget {
   final List<List> investments;
   final Function() notify;
