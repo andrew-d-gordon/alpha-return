@@ -524,9 +524,7 @@ class _DeleteInvestmentsButtonState extends State<DeleteInvestmentsButton> {
   Widget build(BuildContext context) {
     return FloatingActionButton(onPressed: () {
       setState(() {
-        print(widget.investments);
         widget.investments.removeWhere((row) => row[3] == true); // Remove selected rows
-        print(widget.investments);
         widget.notify(); // Notify parent of updates
       });
     },
