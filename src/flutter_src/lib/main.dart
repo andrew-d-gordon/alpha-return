@@ -217,7 +217,7 @@ class _HomeState extends State<Home> {
             flex: 1,
             child: Center(
               child: TextButton(
-                onPressed: () {
+                onPressed: () async {
                   print("Computing Alpha Return");
                   // Want to queue computing for alpha return of each row in
                   // investments with investment[3] set to true
@@ -229,12 +229,14 @@ class _HomeState extends State<Home> {
                       List inv = investments[i];
                       // Get buy and sell closing prices
                       symbols.add(inv[0]);
-                      buyPrices.add(retrieveInvestmentPrice(inv[0], inv[1]));
-                      sellPrices.add(retrieveInvestmentPrice(inv[0], inv[2]));
+                      double buyPrice = await retrieveInvestmentPrice(inv[0], inv[1]);
+                      double sellPrice = await retrieveInvestmentPrice(inv[0], inv[2]);
+                      buyPrices.add(buyPrice);
+                      sellPrices.add(sellPrice);
                     }
                   }
-                  for (var i in buyPrices) print(i);
-                  for (var i in sellPrices) print(i);
+                  for (var i in buyPrices) print("Entry in Buy Prices: $i");
+                  for (var j in sellPrices) print("Entry in Sell Prices: $j");
 
                   // We would then like to build out a modified Dialog Example
                   // with annual return of each investment, of the benchmark, and
