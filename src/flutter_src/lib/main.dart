@@ -437,6 +437,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
 // Error check +Inv investment, return error string, "" if no error
 String errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr) {
   String nullError = "Bad input, each attribute must be filled";
+  String badCharactersError = "Bad input, invalid characters in ticker";
   String offsetDateError = "Bad input, buy date must occur before the sell date";
   String sameDateError = "Bad input, buy and sell dates must be different";
 
@@ -454,8 +455,9 @@ String errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr
       int.parse(sellDateSplit[0]),
       int.parse(sellDateSplit[1]));
 
-  // Error check dates
-  if (buyDate.compareTo(sellDate) > 0) { // If buyDate is after sellDate
+  if (!(RegExp(r'^[A-Za-z^]+$').hasMatch(ticker))) { // Valid ticker characters check
+    return badCharactersError;
+  } else if (buyDate.compareTo(sellDate) > 0) { // If buyDate is after sellDate
     // Show alert dialog with invalid dates message
     return offsetDateError;
   } else if (buyDate.compareTo(sellDate) == 0) { // If buyDate==sellDate
