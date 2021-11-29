@@ -16,9 +16,7 @@ Future<double> retrieveMarketValue(String ticker, String dateStr) async {
   List dateSplit = dateStr.split('/');
   DateTime date = DateTime(int.parse(dateSplit[2]), int.parse(dateSplit[0]), int.parse(dateSplit[1]));
   int dateUnixStamp = date.toUtc().millisecondsSinceEpoch ~/ 1000;
-  print("this is unixTimeStamp for $dateStr: $dateUnixStamp ${dateUnixStamp+secondsInADay}");
-
-  print("Ticker requested is: $ticker on date: $date\nThe output is:\n=========\n");
+  print("============================================\nTicker requested is: $ticker on date: $date\n");
   //Example url which is produced
   //https://query2.finance.yahoo.com/v8/finance/chart/AAPL?symbol=AAPL&period1=1636704000&period2=1636790400&interval=1d&events=history
   //String url = 'https://$authority/$unencodedPath/$ticker?&symbol=$ticker&period1=$dateUnixStamp&period2=${dateUnixStamp+secondsInADay}&interval=1d&events=history';
@@ -35,7 +33,6 @@ Future<double> retrieveMarketValue(String ticker, String dateStr) async {
   };
 
   Uri uri = Uri.https(authority, unencodedPath, queryParemeters); // Build URI
-  print("This is uri: $uri");
   http.Response res = await http.get(uri); // Run Get Request for Investment Data
   if (res.statusCode == 200) { // If response is valid, parse body data for price
     Map<String, dynamic> body = jsonDecode(res.body);
@@ -43,7 +40,7 @@ Future<double> retrieveMarketValue(String ticker, String dateStr) async {
 
     // Extract quote dict with pricing info for desired date
     Map<String, dynamic> quote = body['chart']['result'][0]['indicators']['quote'][0];
-    print('This is body returned:\n==========\n$quote');
+    print('This is quote returned:\n$quote\n\n');
     dateClosePrice = quote['close'][0];
   } else {
     print('Response was invalid with status code: ${res.statusCode}');
@@ -580,7 +577,6 @@ class _DialogExampleState extends State<DialogExample> {
                               // Display error message
                               print(error);
                             }
-
                           },
                         ),
                       ],
@@ -590,7 +586,7 @@ class _DialogExampleState extends State<DialogExample> {
               },
             );
           },
-          child: const Text("+Inv"),
+          child: const Text("+INV"),
           backgroundColor: Colors.lightGreen,
           hoverColor: Colors.greenAccent,
           hoverElevation: 10.0,
