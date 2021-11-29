@@ -52,10 +52,6 @@ Future<double> retrieveMarketValue(String ticker, String dateStr) async {
   return dateClosePrice;
 }
 
-Future<double> retrieveInvestmentPrice(String ticker, String dateStr) async {
-  return await retrieveMarketValue(ticker, dateStr); // Need to hold up main onPressed to wait for these price values before continuing
-}
-
 void main() => runApp(MaterialApp(
   home: Home(),
 ));
@@ -86,8 +82,6 @@ BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoratio
     color: c,
   );
 }
-
-
 
 // Stateful Widgets
 // the state of the widget can change over time
@@ -229,8 +223,8 @@ class _HomeState extends State<Home> {
                       List inv = investments[i];
                       // Get buy and sell closing prices
                       symbols.add(inv[0]);
-                      double buyPrice = await retrieveInvestmentPrice(inv[0], inv[1]);
-                      double sellPrice = await retrieveInvestmentPrice(inv[0], inv[2]);
+                      double buyPrice = await retrieveMarketValue(inv[0], inv[1]);
+                      double sellPrice = await retrieveMarketValue(inv[0], inv[2]);
                       buyPrices.add(buyPrice);
                       sellPrices.add(sellPrice);
                     }
