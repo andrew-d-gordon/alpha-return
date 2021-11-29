@@ -9,11 +9,16 @@ import 'package:fin_quote/fin_quote.dart';
 import 'package:http/http.dart' as http;
 
 // To do:
-// Run compute alpha return calculations, perhaps modularize main.dart to multiple files
+// Modularize main.dart to multiple files
+
+// Add unique identifiers for symbols, probably just use counter as key instead of ticker
+// Add error message in AddInvestmentDialog to specify why investment invalid
+// Figure out how to interpolate binance/coincap market values like with yahoo
+// Unrequire dependency for fin_quote
 
 // Make a dialog example clone but for editing fields of a row (must know row id) ?
 
-// investment input section/make modal area smaller
+// Investment input section/make modal area smaller
 // clear inv to be added/del'd when close out pressed
 
 // Dart with firebase, see if python backend possible for computing alpha return
