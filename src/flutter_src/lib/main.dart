@@ -1,16 +1,59 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:date_format/date_format.dart';
+import 'package:fin_quote/fin_quote.dart';
+import 'package:http/http.dart' as http;
+
+int secondsInADay = 86400; // Used for adding secondsInADay to initial time stamp
 
 // Find closing prices of a supplied investment on a specified date
-double retrieveMarketValue(String ticker, DateTime date) {
-  double datePrice = 0.0;
+Future<double> retrieveMarketValue(String ticker, String dateStr) async {
+  double dateClosePrice = 0.0;
+  List dateSplit = dateStr.split('/');
+  DateTime date = DateTime(int.parse(dateSplit[2]), int.parse(dateSplit[0]), int.parse(dateSplit[1]));
+  int dateUnixStamp = date.toUtc().millisecondsSinceEpoch ~/ 1000;
+  print("this is unixTimeStamp for $dateStr: $dateUnixStamp ${dateUnixStamp+secondsInADay}");
 
-  // Want to use finquote to accomplish price retrieval
+  print("Ticker requested is: $ticker on date: $date\nThe output is:\n=========\n");
+  //Example url which is produced
+  //https://query2.finance.yahoo.com/v8/finance/chart/AAPL?symbol=AAPL&period1=1636704000&period2=1636790400&interval=1d&events=history
+  //String url = 'https://$authority/$unencodedPath/$ticker?&symbol=$ticker&period1=$dateUnixStamp&period2=${dateUnixStamp+secondsInADay}&interval=1d&events=history';
 
-  return datePrice;
+  // Build URI paremeters out
+  String authority = 'query2.finance.yahoo.com';
+  String unencodedPath = 'v8/finance/chart/$ticker';
+  var queryParemeters = {
+    'symbol': ticker, // Investment Symbol e.g. 'AAPL', '^GSPC', 'BTC-USD'
+    'period1': dateUnixStamp.toString(), // Start Date
+    'period2': (dateUnixStamp+secondsInADay).toString(), // End Date
+    'interval': '1d',
+    'events': 'history'
+  };
+
+  Uri uri = Uri.https(authority, unencodedPath, queryParemeters); // Build URI
+  print("This is uri: $uri");
+  http.Response res = await http.get(uri); // Run Get Request for Investment Data
+  if (res.statusCode == 200) { // If response is valid, parse body data for price
+    Map<String, dynamic> body = jsonDecode(res.body);
+    //print('This is body returned:\n==========\n$body');
+
+    // Extract quote dict with pricing info for desired date
+    Map<String, dynamic> quote = body['chart']['result'][0]['indicators']['quote'][0];
+    print('This is body returned:\n==========\n$quote');
+    dateClosePrice = quote['close'][0];
+  } else {
+    print('Response was invalid with status code: ${res.statusCode}');
+  }
+
+  return dateClosePrice;
+}
+
+Future<double> retrieveInvestmentPrice(String ticker, String dateStr) async {
+  return await retrieveMarketValue(ticker, dateStr); // Need to hold up main onPressed to wait for these price values before continuing
 }
 
 void main() => runApp(MaterialApp(
@@ -69,7 +112,7 @@ class _HomeState extends State<Home> {
   List<List> investments = [
     ['AAPL', '01/04/2021', '11/12/2021', false],
     ['AMZN', '01/04/2021', '11/12/2021', false],
-    ['VTI', '01/04/2021', '11/12/2021', false],
+    ['VTI', '01/04/2021', '11/12/2021', true],
     ['BTC-USD', '01/04/2021', '11/12/2021', false],
     ['AAPL', '01/06/2021', '11/15/2021', false],
     ['AMZN', '01/06/2021', '11/15/2021', false]];
@@ -178,6 +221,20 @@ class _HomeState extends State<Home> {
                   print("Computing Alpha Return");
                   // Want to queue computing for alpha return of each row in
                   // investments with investment[3] set to true
+                  List symbols = [];
+                  List buyPrices = [];
+                  List sellPrices = [];
+                  for (int i=0; i<investments.length; i++) {
+                    if (investments[i][3]) { // If investment selected, compute annual return
+                      List inv = investments[i];
+                      // Get buy and sell closing prices
+                      symbols.add(inv[0]);
+                      buyPrices.add(retrieveInvestmentPrice(inv[0], inv[1]));
+                      sellPrices.add(retrieveInvestmentPrice(inv[0], inv[2]));
+                    }
+                  }
+                  for (var i in buyPrices) print(i);
+                  for (var i in sellPrices) print(i);
 
                   // We would then like to build out a modified Dialog Example
                   // with annual return of each investment, of the benchmark, and
