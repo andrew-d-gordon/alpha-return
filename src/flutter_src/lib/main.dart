@@ -141,6 +141,7 @@ class _HomeState extends State<Home> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Alpha Return'),
         centerTitle: true,
@@ -433,6 +434,38 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
   }
 }
 
+// Error check +Inv investment, return error string, "" if no error
+String errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr) {
+  String nullError = "Bad input, each attribute must be filled";
+  String offsetDateError = "Bad input, buy date must occur before the sell date";
+  String sameDateError = "Bad input, buy and sell dates must be different";
+
+  if (ticker == '' || buyDateStr == '' || sellDateStr == '') { // Null input check
+    // Show alert dialog with null input message
+    return nullError;
+  }
+
+  List buyDateSplit = buyDateStr.split('/'); // Split buyDateStr for DateTime creation
+  List sellDateSplit = sellDateStr.split('/'); // Split sellDateStr for DateTime creation
+  DateTime buyDate = DateTime(int.parse(buyDateSplit[2]), // Create DateTime buyDate
+      int.parse(buyDateSplit[0]),
+      int.parse(buyDateSplit[1]));
+  DateTime sellDate = DateTime(int.parse(sellDateSplit[2]), // Create DateTime sellDate
+      int.parse(sellDateSplit[0]),
+      int.parse(sellDateSplit[1]));
+
+  // Error check dates
+  if (buyDate.compareTo(sellDate) > 0) { // If buyDate is after sellDate
+    // Show alert dialog with invalid dates message
+    return offsetDateError;
+  } else if (buyDate.compareTo(sellDate) == 0) { // If buyDate==sellDate
+    // Show alert dialog notifying user of same buy and sell date
+    return sameDateError;
+  } else {
+    return "";
+  }
+}
+
 // Button and Dialog Modal for Creating Investment Row Widget
 class DialogExample extends StatefulWidget {
   //final List<InvestmentRow> investmentRows;
@@ -453,7 +486,7 @@ class _DialogExampleState extends State<DialogExample> {
   final TextEditingController _b = TextEditingController();
   final TextEditingController _s = TextEditingController();
 
-  double dialogFontSize = 22.0;
+  double dialogFontSize = 20.0;
 
   @override
   Widget build(BuildContext context) {
@@ -465,8 +498,8 @@ class _DialogExampleState extends State<DialogExample> {
               context: context,
               builder: (context) {
                 return SizedBox(
-                  width: 50,
-                  height: 50,
+                  width: 100,
+                  height: 40,
                   child: Dialog(
                     elevation: 10,
                     insetAnimationCurve: Curves.easeInOutCubicEmphasized,
@@ -513,22 +546,39 @@ class _DialogExampleState extends State<DialogExample> {
                         TextButton(
                           child: Text("Add Investment", style: TextStyle(fontSize: dialogFontSize)),
                           onPressed: () {
+                            bool validInvestment = true;
+                            String error = "";
                             setState(() {
+                              // Error check investment
+                              error = errorCheckInvestment(_t.text, _b.text, _s.text);
+                              if (error != "") {
+                                validInvestment = false;
+                                return;
+                              }
+
                               _ticker = _t.text;
                               _buyDate = _b.text;
                               _sellDate= _s.text;
+
                               widget.investments.add([
-                                  _ticker,
-                                  _buyDate,
-                                  _sellDate,
-                                  true]);
+                                _ticker,
+                                _buyDate,
+                                _sellDate,
+                                true]);
                               widget.notify(); // Notify parent to update rows
                             });
-                            Navigator.pop(context); // if vars set correct
-                            print("New row: $_ticker $_buyDate $_sellDate");
 
-                            // Reset text in controllers
-                            _t.text = _b.text = _s.text = '';
+                            if (validInvestment) {
+                              // Pop Dialog Window
+                              Navigator.pop(context);
+                              print("New row: $_ticker $_buyDate $_sellDate");
+                              // Reset text in controllers
+                              _t.text = _b.text = _s.text = '';
+                            } else {
+                              // Display error message
+                              print(error);
+                            }
+
                           },
                         ),
                       ],
