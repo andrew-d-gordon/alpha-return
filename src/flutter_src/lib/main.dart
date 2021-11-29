@@ -61,12 +61,12 @@ class _HomeState extends State<Home> {
 
   refresh() {setState(() {});} // Refresh Callback for descendant widgets
   List<List> investments = [ // Symbol, BuyDate, SellDate, Selected (t/f)
-    /*['AAPL', '01/04/2021', '11/12/2021', false],
+    ['AAPL', '01/04/2021', '11/12/2021', false],
     ['AMZN', '01/04/2021', '11/12/2021', false],
     ['VTI', '01/04/2021', '11/12/2021', false],
     ['BTC-USD', '01/04/2021', '11/12/2021', false],
     ['AAPL', '01/06/2021', '11/15/2021', false],
-    ['AMZN', '01/06/2021', '11/15/2021', false]*/];
+    ['AMZN', '01/06/2021', '11/15/2021', false]];
   List<InvestmentRow> investmentRows = [];
   List<bool> investmentsSelected = []; // Holds selection status of investments
   int row = 0;
@@ -87,8 +87,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    for (int i=investmentCount; i<investments.length; i++) { //Refresh investment data
-      print("This is investment count: ${investmentCount}");
+    investmentRows = []; // Refresh investmentRows
+    for (int i=0; i<investments.length; i++) { //Refresh investment data
       List inv = investments[i];
       investmentRows.add(InvestmentRow(symbol: inv[0],
           buyDate: inv[1],
@@ -96,9 +96,7 @@ class _HomeState extends State<Home> {
           notify: refresh,
           investments: investments,
           row: i));
-      investmentCount+=1;
-      // For deletion of rows, decrement investment count by num deleted
-      // Delete in investments by shifting deleted elements to the end, chop end off and refresh
+      //investmentCount+=1;
     }
 
     return Scaffold(
@@ -113,9 +111,14 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           //Expanded(flex: 3, child: Image.asset('assets/alpha1.png')),
           Expanded(
-            flex: 2, // Portion of width we want it to take up '3/6'
+            flex: 3, // Portion of width we want it to take up '3/6'
             child: Center(
               child: Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(width: 2.0, color: Colors.black),
+                  )
+                ),
                 padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                 //color: Colors.cyan,
                 child: ListView(
@@ -142,11 +145,22 @@ class _HomeState extends State<Home> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  Container(
-                    width: 100,
-                    height: 60,
-                    alignment: Alignment.center,
-                    child: DialogExample(investments: investments, notify: refresh),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        width: 70,
+                        height: 57,
+                        alignment: Alignment.center,
+                        child: DialogExample(investments: investments, notify: refresh),
+                      ),
+                      Container(
+                        width: 70,
+                        height: 60,
+                        alignment: Alignment.center,
+                        child: DeleteInvestmentsButton(investments: investments, notify: refresh),
+                      )
+                    ],
                   ),
                 ],
               )
@@ -168,7 +182,7 @@ class _HomeState extends State<Home> {
                 child: const Text(
                   'Compute Alpha Return',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                     color: Colors.white,
@@ -213,7 +227,6 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
       onChanged: (String? newValue) {
         setState(() {
           dropdownValue = newValue!;
-          print("New Benchmark Selected");
           //Set investment benchmark job to be run against
         });
       },
@@ -325,18 +338,12 @@ class InvestmentCheckBox extends StatefulWidget { // Investment Checkbox class
 }
 
 class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
-  bool checkedValue = false;
-
-  @override
-  void initState() {
-    checkedValue = widget.investments[widget.row][3] as bool;
-  }
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: CheckboxListTile(
-        value: checkedValue,
+        value: widget.investments[widget.row][3],
         checkColor: Colors.black,
         contentPadding: const EdgeInsets.all(1.0),
         dense: false,
@@ -345,8 +352,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
         selectedTileColor: Colors.green,
         onChanged: (newValue) {
           setState(() {
-            checkedValue = newValue!;
-            widget.investments[widget.row][3] = newValue;
+            widget.investments[widget.row][3] = newValue; // Update value in list
             // Notify parent to take account of checkboxes
             widget.notify();
           });
@@ -385,67 +391,73 @@ class _DialogExampleState extends State<DialogExample> {
             showDialog(
               context: context,
               builder: (context) {
-                return Dialog(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      TextField(
-                        decoration: const InputDecoration(
-                          hintText: "Ticker Symbol",
-                          border: OutlineInputBorder(),
-                        ),
-                        controller: _t,
-                      ),
-                      TextField(
-                        decoration: const InputDecoration(
-                            hintText: "Buy Date as 'dd/mm/yy'",
+                return SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: Dialog(
+                    elevation: 10,
+                    insetAnimationCurve: Curves.easeInOutCubicEmphasized,
+                    insetAnimationDuration: const Duration(seconds: 1),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        TextField(
+                          decoration: const InputDecoration(
+                            hintText: "Ticker Symbol",
                             border: OutlineInputBorder(),
+                          ),
+                          controller: _t,
                         ),
-                        focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
-                        controller: _b,
-                        onTap: () {
-                          //_b.text = DateTime.now().toString();
-                          _b.text = formatDate(DateTime.now(), [mm, '/', dd, '/', yyyy]);
-                          _selectDate(context, _b);
-                        }
-                      ),
-                      TextField(
-                        decoration: const InputDecoration(
-                          hintText: "Sell Date as 'dd/mm/yy'",
-                          border: OutlineInputBorder(),
+                        TextField(
+                          decoration: const InputDecoration(
+                              hintText: "Buy Date as 'dd/mm/yy'",
+                              border: OutlineInputBorder(),
+                          ),
+                          focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
+                          controller: _b,
+                          onTap: () {
+                            //_b.text = DateTime.now().toString();
+                            _b.text = formatDate(DateTime.now(), [mm, '/', dd, '/', yyyy]);
+                            _selectDate(context, _b);
+                          }
                         ),
-                        focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
-                        controller: _s,
-                        onTap: () {
-                          //_s.text = DateTime.now().toString();
-                          _s.text = formatDate(DateTime.now(), [mm, '/', dd, '/', yyyy]);
-                          _selectDate(context, _s);
-                        }
-                      ),
-                      TextButton(
-                        child: const Text("Add Investment"),
-                        onPressed: () {
-                          setState(() {
-                            _ticker = _t.text;
-                            _buyDate = _b.text;
-                            _sellDate= _s.text;
-                            widget.investments.add([
-                                _ticker,
-                                _buyDate,
-                                _sellDate,
-                                true]);
-                            print(widget.investments);
-                            widget.notify(); // Notify parent to update rows
-                          });
-                          Navigator.pop(context); // if vars set correct
-                          print("$_ticker $_buyDate $_sellDate");
+                        TextField(
+                          decoration: const InputDecoration(
+                            hintText: "Sell Date as 'dd/mm/yy'",
+                            border: OutlineInputBorder(),
+                          ),
+                          focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
+                          controller: _s,
+                          onTap: () {
+                            //_s.text = DateTime.now().toString();
+                            _s.text = formatDate(DateTime.now(), [mm, '/', dd, '/', yyyy]);
+                            _selectDate(context, _s);
+                          }
+                        ),
+                        TextButton(
+                          child: const Text("Add Investment"),
+                          onPressed: () {
+                            setState(() {
+                              _ticker = _t.text;
+                              _buyDate = _b.text;
+                              _sellDate= _s.text;
+                              widget.investments.add([
+                                  _ticker,
+                                  _buyDate,
+                                  _sellDate,
+                                  true]);
+                              widget.notify(); // Notify parent to update rows
+                            });
+                            Navigator.pop(context); // if vars set correct
+                            print("New row: $_ticker $_buyDate $_sellDate");
 
-                          // Reset text in controllers
-                          _t.text = _b.text = _s.text = '';
-                        },
-                      ),
-                    ],
-                  )
+                            // Reset text in controllers
+                            _t.text = _b.text = _s.text = '';
+                          },
+                        ),
+                      ],
+                    )
+                  ),
                 );
               },
             );
@@ -495,3 +507,38 @@ class AlwaysDisabledFocusNode extends FocusNode { // Helps dismiss keyboard for 
   @override
   bool get hasFocus => false;
 }
+
+class DeleteInvestmentsButton extends StatefulWidget {
+  final List<List> investments;
+  final Function() notify;
+  const DeleteInvestmentsButton({Key? key,
+    required this.investments,
+    required this.notify}) : super(key: key);
+
+  @override
+  _DeleteInvestmentsButtonState createState() => _DeleteInvestmentsButtonState();
+}
+
+class _DeleteInvestmentsButtonState extends State<DeleteInvestmentsButton> {
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(onPressed: () {
+      setState(() {
+        print(widget.investments);
+        widget.investments.removeWhere((row) => row[3] == true); // Remove selected rows
+        print(widget.investments);
+        widget.notify(); // Notify parent of updates
+      });
+    },
+      child: const Icon(
+          Icons.delete_forever_rounded,
+        size: 40,
+      ),
+      backgroundColor: Colors.lightGreen,
+      hoverColor: Colors.greenAccent,
+      hoverElevation: 12.0,
+    );
+  }
+}
+
+
