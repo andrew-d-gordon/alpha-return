@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -8,13 +8,38 @@ import 'package:date_format/date_format.dart';
 import 'package:fin_quote/fin_quote.dart';
 import 'package:http/http.dart' as http;
 
+// To do:
+// Run compute alpha return calculations, perhaps modularize main.dart to multiple files
+
+// Make a dialog example clone but for editing fields of a row (must know row id) ?
+
+// investment input section/make modal area smaller
+// clear inv to be added/del'd when close out pressed
+
+// Dart with firebase, see if python backend possible for computing alpha return
+
+// If python not viable as backend, see if dart has built in api calls available for market data
+
+// Flutter integration with firebase to store user info/market data into firestore
+
+// Remember investment sets
+
+// Color scheme modifier
+
+// Time constants
 int secondsInADay = 86400; // Used for adding secondsInADay to initial time stamp
+double daysInAYear = 365.25;  // Used for computing annual return
+
+// Formats string date as 'mm/dd/yyyy' to DateTime
+DateTime stringToDateTime(String dateStr) {
+  List dateSplit = dateStr.split('/');
+  return DateTime(int.parse(dateSplit[2]), int.parse(dateSplit[0]), int.parse(dateSplit[1]));
+}
 
 // Find closing prices of a supplied investment on a specified date
 Future<double> retrieveMarketValue(String ticker, String dateStr) async {
   double dateClosePrice = 0.0;
-  List dateSplit = dateStr.split('/');
-  DateTime date = DateTime(int.parse(dateSplit[2]), int.parse(dateSplit[0]), int.parse(dateSplit[1]));
+  DateTime date = stringToDateTime(dateStr);
   int dateUnixStamp = date.toUtc().millisecondsSinceEpoch ~/ 1000;
   print("============================================\nTicker requested is: $ticker on date: $date\n");
   //Example url which is produced
@@ -33,15 +58,19 @@ Future<double> retrieveMarketValue(String ticker, String dateStr) async {
   };
 
   Uri uri = Uri.https(authority, unencodedPath, queryParemeters); // Build URI
+  print("This is uri: $uri");
   http.Response res = await http.get(uri); // Run Get Request for Investment Data
   if (res.statusCode == 200) { // If response is valid, parse body data for price
     Map<String, dynamic> body = jsonDecode(res.body);
-    //print('This is body returned:\n==========\n$body');
+    // Extract quote/adjclose dict with pricing info for desired date
+    //Map<String, dynamic> quote = body['chart']['result'][0]['indicators']['quote'][0];
+    //dateClosePrice = quote['close'][0];
+    Map<String, dynamic> indicators = body['chart']['result'][0]['indicators'];
+    print('This is indicators returned:\n$indicators\n\n');
 
-    // Extract quote dict with pricing info for desired date
-    Map<String, dynamic> quote = body['chart']['result'][0]['indicators']['quote'][0];
-    print('This is quote returned:\n$quote\n\n');
-    dateClosePrice = quote['close'][0];
+    // Retrieve adjusted close price for investment
+    Map<String, dynamic> adjCloseEntry = body['chart']['result'][0]['indicators']['adjclose'][0];
+    dateClosePrice = adjCloseEntry['adjclose'][0];
   } else {
     print('Response was invalid with status code: ${res.statusCode}');
   }
@@ -49,26 +78,39 @@ Future<double> retrieveMarketValue(String ticker, String dateStr) async {
   return dateClosePrice;
 }
 
+// Compute days between two dates
+int daysBetween(DateTime from, DateTime to) {
+  from = DateTime(from.year, from.month, from.day);
+  to = DateTime(to.year, to.month, to.day);
+  return (to.difference(from).inHours / 24).round();
+}
+
+// Round value to have specified number of places
+double round(double val, int places) {
+  num mod = pow(10.0, places);
+  return ((val * mod).round().toDouble() / mod);
+}
+
+// Compute annual return for investment by it's buyPrice, sellPrice and date differential
+double computeAnnualReturn(double buyPrice, double sellPrice, int daysDiff) {
+  // Set up compound interets 'magic', daily compound interest
+  num dailyCompoundInterest = pow((sellPrice/buyPrice), 1/daysDiff);
+
+  // Compute annual return
+  double annualReturn = round((dailyCompoundInterest-1)*(daysInAYear*1000000), 0);
+  annualReturn /= 10000;
+
+  return annualReturn;
+}
+
+// Computing Alpha Return for investment against benchmark
+double computeAlphaReturn(double investmentReturn, double benchmarkReturn) {
+  return round(investmentReturn-benchmarkReturn, 4);
+}
+
 void main() => runApp(MaterialApp(
   home: Home(),
 ));
-
-// Run compute alpha return calculations, perhaps modularize main.dart to multiple files
-
-// Make a dialog example clone but for editing fields of a row (must know row id) ?
-
-// investment input section/make modal area smaller
-// clear inv to be added/del'd when close out pressed
-
-// Dart with firebase, see if python backend possible for computing alpha return
-
-// If python not viable as backend, see if dart has built in api calls available for market data
-
-// Flutter integration with firebase to store user info/market data into firestore
-
-// Remember investment sets
-
-// Color scheme modifier
 
 BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoration Widget
   return BoxDecoration(
@@ -110,6 +152,16 @@ class _HomeState extends State<Home> {
 
   // Holds investmentRows built from investments
   List<InvestmentRow> investmentRows = [];
+
+  // Benchmark Investments
+  Map<String, String> benchmarks = {
+    "S&P500": "^GSPC",
+    "Dow Jones": "^DJI",
+    "NASDAQ": "^IXIC",
+    "Bitcoin": "BTC-USD"
+  };
+  List<String> benchmark = ["S&P500"];
+
 
   @override
   void initState() { // Would ideally fill investments with saved investments
@@ -178,7 +230,7 @@ class _HomeState extends State<Home> {
                 children: <Widget>[
                   Container(
                     padding: const EdgeInsets.all(10.0),
-                    child: const BenchmarkDropdown(),
+                    child: BenchmarkDropdown(benchmark: benchmark, notify: refresh),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(10.0),
@@ -191,7 +243,7 @@ class _HomeState extends State<Home> {
                         width: 70,
                         height: 57,
                         alignment: Alignment.center,
-                        child: DialogExample(investments: investments, notify: refresh),
+                        child: AddInvestmentDialog(investments: investments, notify: refresh),
                       ),
                       Container(
                         width: 70,
@@ -210,25 +262,37 @@ class _HomeState extends State<Home> {
             child: Center(
               child: TextButton(
                 onPressed: () async {
-                  print("Computing Alpha Return");
-                  // Want to queue computing for alpha return of each row in
-                  // investments with investment[3] set to true
-                  List symbols = [];
-                  List buyPrices = [];
-                  List sellPrices = [];
+                  /* Want to queue computing for alpha return of each row in
+                     investments with investment[3] set to true */
+                  Map investmentsAnalyzed = {}; // Holds analyzed investments
+                  String benchmarkTicker = benchmarks[benchmark[0]]!;
                   for (int i=0; i<investments.length; i++) {
-                    if (investments[i][3]) { // If investment selected, compute annual return
-                      List inv = investments[i];
+                    // If investment selected (investments[i][3] == true), compute annual return
+                    if (investments[i][3]) {
                       // Get buy and sell closing prices
-                      symbols.add(inv[0]);
-                      double buyPrice = await retrieveMarketValue(inv[0], inv[1]);
-                      double sellPrice = await retrieveMarketValue(inv[0], inv[2]);
-                      buyPrices.add(buyPrice);
-                      sellPrices.add(sellPrice);
+                      List inv = investments[i];
+                      double invBuyPrice = await retrieveMarketValue(inv[0], inv[1]);
+                      double invSellPrice = await retrieveMarketValue(inv[0], inv[2]);
+                      double benchBuyPrice = await retrieveMarketValue(benchmarkTicker, inv[1]);
+                      double benchSellPrice = await retrieveMarketValue(benchmarkTicker, inv[2]);
+                      int daysDiff = daysBetween(stringToDateTime(inv[1]), stringToDateTime(inv[2]));
+
+                      // Set Investment Analysis attributes in investmentsAnalyzed
+                      investmentsAnalyzed[inv[0]] = {};
+                      investmentsAnalyzed[inv[0]]['buyPrice'] = invBuyPrice;
+                      investmentsAnalyzed[inv[0]]['sellPrice'] = invSellPrice;
+                      investmentsAnalyzed[inv[0]]['daysDiff'] = daysBetween(stringToDateTime(inv[1]), stringToDateTime(inv[2]));
+                      investmentsAnalyzed[inv[0]]['annualReturn'] = computeAnnualReturn(invBuyPrice, invSellPrice, daysDiff);
+                      investmentsAnalyzed[inv[0]]['benchmark'] = benchmark[0]; // Make non null
+                      investmentsAnalyzed[inv[0]]['benchmarkAnnualReturn'] = computeAnnualReturn(benchBuyPrice, benchSellPrice, daysDiff);
+                      investmentsAnalyzed[inv[0]]['alphaReturn'] = computeAlphaReturn(
+                          investmentsAnalyzed[inv[0]]['annualReturn'],
+                          investmentsAnalyzed[inv[0]]['benchmarkAnnualReturn']
+                      );
                     }
                   }
-                  for (var i in buyPrices) print("Entry in Buy Prices: $i");
-                  for (var j in sellPrices) print("Entry in Sell Prices: $j");
+
+                  print(investmentsAnalyzed);
 
                   // We would then like to build out a modified Dialog Example
                   // with annual return of each investment, of the benchmark, and
@@ -268,19 +332,21 @@ class _HomeState extends State<Home> {
 
 // Benchmark Dropdown Widget
 class BenchmarkDropdown extends StatefulWidget {
-  const BenchmarkDropdown({Key? key}) : super(key: key);
+  final List<String> benchmark;
+  final Function() notify;
+  const BenchmarkDropdown({Key? key, required this.benchmark, required this.notify}) : super(key: key);
 
   @override
   State<BenchmarkDropdown> createState() => _BenchmarkDropdown();
 }
 
 class _BenchmarkDropdown extends State<BenchmarkDropdown> {
-  String dropdownValue = 'S&P500';
 
   @override
   Widget build(BuildContext context) {
+    print(widget.benchmark);
     return DropdownButton<String>(
-      value: dropdownValue,
+      value: widget.benchmark[0],
       icon: const Icon(Icons.arrow_downward),
       iconSize: 28,
       iconEnabledColor: Colors.black,
@@ -292,13 +358,14 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
         height: 2,
         color: Colors.black,
       ),
-      onChanged: (String? newValue) {
+      onChanged: (newValue) {
         setState(() {
-          dropdownValue = newValue!;
+          widget.benchmark[0] = newValue!;
+          widget.notify();
           //Set investment benchmark job to be run against
         });
       },
-      items: <String>['S&P500', 'DJI', 'NASDAQ', 'BTC-USD']
+      items: <String>['S&P500', 'Dow Jones', 'NASDAQ', 'Bitcoin']
           .map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -443,14 +510,8 @@ String errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr
     return nullError;
   }
 
-  List buyDateSplit = buyDateStr.split('/'); // Split buyDateStr for DateTime creation
-  List sellDateSplit = sellDateStr.split('/'); // Split sellDateStr for DateTime creation
-  DateTime buyDate = DateTime(int.parse(buyDateSplit[2]), // Create DateTime buyDate
-      int.parse(buyDateSplit[0]),
-      int.parse(buyDateSplit[1]));
-  DateTime sellDate = DateTime(int.parse(sellDateSplit[2]), // Create DateTime sellDate
-      int.parse(sellDateSplit[0]),
-      int.parse(sellDateSplit[1]));
+  DateTime buyDate = stringToDateTime(buyDateStr);
+  DateTime sellDate = stringToDateTime(sellDateStr);
 
   if (!(RegExp(r'^[A-Za-z^]+$').hasMatch(ticker))) { // Valid ticker characters check
     return badCharactersError;
@@ -466,18 +527,17 @@ String errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr
 }
 
 // Button and Dialog Modal for Creating Investment Row Widget
-class DialogExample extends StatefulWidget {
-  //final List<InvestmentRow> investmentRows;
+class AddInvestmentDialog extends StatefulWidget {
   final List<List> investments;
   final Function() notify;
-  const DialogExample({Key? key,
+  const AddInvestmentDialog({Key? key,
     required this.investments, required this.notify,}) : super(key: key);
 
   @override
-  _DialogExampleState createState() => _DialogExampleState();
+  _AddInvestmentDialogState createState() => _AddInvestmentDialogState();
 }
 
-class _DialogExampleState extends State<DialogExample> {
+class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
   String _ticker = "";
   String _buyDate = "";
   String _sellDate = "";
