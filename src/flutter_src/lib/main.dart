@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:date_format/date_format.dart';
 import 'package:fin_quote/fin_quote.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,10 +34,24 @@ import 'package:http/http.dart' as http;
 int secondsInADay = 86400; // Used for adding secondsInADay to initial time stamp
 double daysInAYear = 365.25;  // Used for computing annual return
 
-// Formats string date as 'mm/dd/yyyy' to DateTime
+// Request Headers
+Map<String, String> corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Methods': '*',
+  //'Access-Control-Allow-Credentials': 'true',
+  'Accept': 'application/json',
+};
+
+// Formats string date of form 'mm/dd/yyyy' to DateTime
 DateTime stringToDateTime(String dateStr) {
   List dateSplit = dateStr.split('/');
   return DateTime(int.parse(dateSplit[2]), int.parse(dateSplit[0]), int.parse(dateSplit[1]));
+}
+
+// Formats DateTime date to 'mm/dd/yyyy'
+String dateTimeToString(DateTime date) {
+  return "${date.month.toString()}/${date.day.toString()}/${date.year.toString()}";
 }
 
 // Find closing prices of a supplied investment on a specified date
@@ -64,7 +77,7 @@ Future<double> retrieveMarketValue(String ticker, String dateStr) async {
 
   Uri uri = Uri.https(authority, unencodedPath, queryParemeters); // Build URI
   print("This is uri: $uri");
-  http.Response res = await http.get(uri); // Run Get Request for Investment Data
+  http.Response res = await http.get(uri, headers: corsHeaders); // Run Get Request for Investment Data
   if (res.statusCode == 200) { // If response is valid, parse body data for price
     Map<String, dynamic> body = jsonDecode(res.body);
     // Extract quote/adjclose dict with pricing info for desired date
@@ -266,6 +279,7 @@ class _HomeState extends State<Home> {
             flex: 1,
             child: Center(
               child: TextButton(
+
                 onPressed: () async {
                   /* Want to queue computing for alpha return of each row in
                      investments with investment[3] set to true */
@@ -323,7 +337,7 @@ class _HomeState extends State<Home> {
                   // Where i(1->n) is a selected investment with an associated annual return and percentage of portfolio specified
                 },
                 style: TextButton.styleFrom(
-                  primary: Colors.white,
+                  primary: Colors.greenAccent,
                   backgroundColor: Colors.green,
                   shadowColor: Colors.black,
                   elevation: 5,
@@ -603,7 +617,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                           controller: _b,
                           onTap: () {
                             //_b.text = DateTime.now().toString();
-                            _b.text = formatDate(DateTime.now(), [mm, '/', dd, '/', yyyy]);
+                            _b.text = dateTimeToString(DateTime.now());
                             _selectDate(context, _b);
                           }
                         ),
@@ -617,7 +631,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                           controller: _s,
                           onTap: () {
                             //_s.text = DateTime.now().toString();
-                            _s.text = formatDate(DateTime.now(), [mm, '/', dd, '/', yyyy]);
+                            _s.text = dateTimeToString(DateTime.now());
                             _selectDate(context, _s);
                           }
                         ),
@@ -690,7 +704,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                 maximumDate: DateTime.now(),
                 onDateTimeChanged: (val) {
                   setState(() {
-                    t.text = formatDate(val, [mm, '/', dd, '/', yyyy]);
+                    t.text = dateTimeToString(val);
                   });
                 }),
             ),
