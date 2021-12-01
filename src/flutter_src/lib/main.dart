@@ -127,6 +127,7 @@ double computeAlphaReturn(double investmentReturn, double benchmarkReturn) {
 }
 
 void main() => runApp(MaterialApp(
+  debugShowCheckedModeBanner: false, // Removes Debug Banner
   home: Home(),
 ));
 
@@ -778,20 +779,7 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
 
   @override
   Widget build(BuildContext context) { // TBD whether we pass in context as parameter
-    alphaReturns = []; // Refresh alphaReturns Text widgets
-    // Build Title Widget
-    alphaReturns.add(const Text('Your Alpha Return', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)));
-    alphaReturns.add(const Divider(height: 20, thickness: 5, indent: 20, endIndent: 20, color: Colors.grey));
-    // Build alpha return widgets
-    for (var k in widget.investmentsAnalyzed.keys) { // Bold actual %, make it green
-      alphaReturns.add(Text('Alpha Return of Investment $k against Benchmark ${widget.investmentsAnalyzed[k]['benchmark']}:\n'
-          '${widget.investmentsAnalyzed[k]['alphaReturn']}',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: dialogFontSize)));
-    }
-    // If alphaReturns length is greater than one, add weighted alpha return derived from weighted annual returns for benchmark and investments
-    // Add exit button
-    alphaReturns.add(exitButton(context, TextStyle(fontSize: dialogFontSize)));
+    alphaReturns = investmentReturnsList(widget.investmentsAnalyzed, context);
 
     return SizedBox(
       width: 50,
@@ -827,4 +815,51 @@ TextButton exitButton(BuildContext context, TextStyle ts) {
       Navigator.pop(context);
     },
   );
+}
+
+class investmentReturnOutput extends StatelessWidget {
+  final Map investmentsAnalyzed;
+  const investmentReturnOutput({Key? key, required this.investmentsAnalyzed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+List<Widget> investmentReturnsList(Map investmentsAnalyzed, BuildContext context) {
+  double dialogFontSize = 20.0;
+  List<Widget> alphaReturns = []; // Refresh alphaReturns Text widgets
+  // Build Title Widget
+  alphaReturns.add(const Text('Your Alpha Return', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)));
+  alphaReturns.add(const Divider(height: 20, thickness: 5, indent: 20, endIndent: 20, color: Colors.grey));
+  // Build alpha return widgets
+  for (var k in investmentsAnalyzed.keys) {
+    Color returnColor = Colors.green;
+    if (investmentsAnalyzed[k]['alphaReturn'] < 0) // Bold actual %, make it green for + red for -
+      returnColor = Colors.red;
+
+    alphaReturns.add(Container(  // Add return widget to alphaReturns
+      color: const Color.fromARGB(20, 25, 25, 25),
+      child: SizedBox(
+        child: Column(
+          children: [
+            Text('Alpha Return of Investment $k against Benchmark ${investmentsAnalyzed[k]['benchmark']}:',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: dialogFontSize, fontWeight: FontWeight.bold)),
+            Text('${investmentsAnalyzed[k]['alphaReturn']}%',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: dialogFontSize+4.0,
+                    fontWeight: FontWeight.bold,
+                    color: returnColor,
+                    decorationColor: Colors.black))
+          ],
+        ),
+      ),
+    ));
+  }
+  // If alphaReturns length is greater than one, add weighted alpha return derived from weighted annual returns for benchmark and investments
+  // Add exit button
+  alphaReturns.add(exitButton(context, TextStyle(fontSize: dialogFontSize)));
+  return alphaReturns;
 }
