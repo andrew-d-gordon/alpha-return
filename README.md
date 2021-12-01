@@ -1,8 +1,20 @@
 # Alpha Return
 
-Compare your investments against the S&P500 to see if you are getting [Alpha](https://www.investopedia.com/terms/a/alpha.asp) returns. The returns from the benchmark (S&P500) and your investment are in the form of [Annual Return](https://www.investopedia.com/terms/a/annual-return.asp).
+Compare your investments against market indices such as the S&P500 or even cryptos like Bitcoin to see if you are getting [Alpha](https://www.investopedia.com/terms/a/alpha.asp) returns. The returns from the benchmark and investments are in the form of [Annual Return](https://www.investopedia.com/terms/a/annual-return.asp) which is computed from the price on the buy and sell dates of said investments.
 
-This a Python based application supported by Pandas datareader as well as WSJ's S&P500 historical data.
+# Cross Platform App Development
+
+Here is the current proof of concept for mobile and web being done with Flutter and Dart in Android Studio.
+
+![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta.png?raw=true)
+
+![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_add_investment.png?raw=true)
+
+![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_add_investment_2.png?raw=true)
+
+![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_alpha_return.png?raw=true)
+
+# Python Proof of Concept
 
 An example run of the program, utilizing src/Input_Investments/investments1.csv, utilizing the S&P500 as a benchmark looks like this.
 
@@ -57,13 +69,3 @@ Similarly, the Bitcoin row from investments1 against the S&P500 results in **src
 `Benchmark Annual Return: 27.5679`
 
 `Alpha Return: 47.4385`
-
-# Cross Platform App Development
-
-Here is the current proof of concept for mobile dev being done with Flutter and Dart in Android Studio.
-
-![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta.png?raw=true)
-
-![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_add_investment.png?raw=true)
-
-![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_add_investment_2.png?raw=true)
