@@ -327,6 +327,11 @@ class _HomeState extends State<Home> {
                   }
 
                   print(investmentsAnalyzed);
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return showAlphaReturnDialog(investmentsAnalyzed: investmentsAnalyzed);
+                  });
 
                   // We would then like to build out a modified Dialog Example
                   // with annual return of each investment, of the benchmark, and
@@ -758,4 +763,67 @@ class _DeleteInvestmentsButtonState extends State<DeleteInvestmentsButton> {
   }
 }
 
+class showAlphaReturnDialog extends StatefulWidget {
+  final Map investmentsAnalyzed;
+  const showAlphaReturnDialog({Key? key,
+    required this.investmentsAnalyzed}) : super(key: key);
 
+  @override
+  _showAlphaReturnDialogState createState() => _showAlphaReturnDialogState();
+}
+
+class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
+  double dialogFontSize = 20.0;
+  List<Widget> alphaReturns = []; // Holds investments alpha return Text widgets
+
+  @override
+  Widget build(BuildContext context) { // TBD whether we pass in context as parameter
+    alphaReturns = []; // Refresh alphaReturns Text widgets
+    // Build Title Widget
+    alphaReturns.add(const Text('Your Alpha Return', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)));
+    alphaReturns.add(const Divider(height: 20, thickness: 5, indent: 20, endIndent: 20, color: Colors.grey));
+    // Build alpha return widgets
+    for (var k in widget.investmentsAnalyzed.keys) { // Bold actual %, make it green
+      alphaReturns.add(Text('Alpha Return of Investment $k against Benchmark ${widget.investmentsAnalyzed[k]['benchmark']}:\n'
+          '${widget.investmentsAnalyzed[k]['alphaReturn']}',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: dialogFontSize)));
+    }
+    // Add exit button
+    alphaReturns.add(exitButton(context, TextStyle(fontSize: dialogFontSize)));
+
+    return SizedBox(
+      width: 50,
+      height: 50,
+      child: Dialog(
+        elevation: 10,
+        insetAnimationCurve: Curves.easeInOutCubicEmphasized,
+        insetAnimationDuration: const Duration(seconds: 1),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: alphaReturns.length,
+          itemBuilder: (BuildContext context, int index) {
+          return
+            Container(
+              padding: EdgeInsets.all(12.0),
+              child: alphaReturns[index],
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) { return SizedBox(height: 10); },
+        )
+      )
+    );
+  }
+}
+
+TextButton exitButton(BuildContext context, TextStyle ts) {
+  return TextButton( // Add Exit button for the bottom
+    child: Text("Exit", style: ts),
+    onPressed: () {
+      // Notify parent to update rows
+      Navigator.pop(context);
+    },
+  );
+}
