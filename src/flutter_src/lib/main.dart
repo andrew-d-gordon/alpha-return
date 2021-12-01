@@ -789,6 +789,7 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: dialogFontSize)));
     }
+    // If alphaReturns length is greater than one, add weighted alpha return derived from weighted annual returns for benchmark and investments
     // Add exit button
     alphaReturns.add(exitButton(context, TextStyle(fontSize: dialogFontSize)));
 
