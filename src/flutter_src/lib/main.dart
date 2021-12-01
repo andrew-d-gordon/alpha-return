@@ -64,6 +64,9 @@ Future<double> retrieveMarketValue(String ticker, String dateStr) async {
   //https://query2.finance.yahoo.com/v8/finance/chart/AAPL?symbol=AAPL&period1=1636704000&period2=1636790400&interval=1d&events=history
   //String url = 'https://$authority/$unencodedPath/$ticker?&symbol=$ticker&period1=$dateUnixStamp&period2=${dateUnixStamp+secondsInADay}&interval=1d&events=history';
 
+  // Reference on utilizing cors proxy
+  /*String authority = 'cors-anywhere.herokuapp.com';
+  String unencodedPath = 'query2.finance.yahoo.com/v8/finance/chart/$ticker';*/
   // Build URI paremeters out
   String authority = 'query2.finance.yahoo.com';
   String unencodedPath = 'v8/finance/chart/$ticker';
