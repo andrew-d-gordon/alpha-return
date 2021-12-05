@@ -9,10 +9,13 @@ import 'ui/ar_home.dart';
 
 // To do:
 
-// Add unique identifiers for symbols, probably just use counter as key instead of ticker
-// Add error message in AddInvestmentDialog to specify why investment invalid
+// Associate hash ids with rows to allow for better recall in local memory dict
+// Add error message in AddInvestmentDialog to specify why investment is invalid
 // Figure out how to interpolate binance/coincap market values like with yahoo
 // Unrequire dependency for fin_quote
+
+// Add more general investment addition (one where you input buy and sell prices along with arbitrary name for investment).
+// Include
 
 // Make a dialog example clone but for editing fields of a row (must know row id) ?
 
