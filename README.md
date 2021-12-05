@@ -12,8 +12,6 @@ Here is the current proof of concept for mobile and web being done with Flutter 
 
 ![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_add_investment_2.png?raw=true)
 
-![alt_text](https://github.com/andrew-d-gordon/alpha-return/blob/master/docs/images/nexus_demo_beta_alpha_return.png?raw=true)
-
 # Python Proof of Concept
 
 An example run of the program, utilizing src/Input_Investments/investments1.csv, utilizing the S&P500 as a benchmark looks like this.
