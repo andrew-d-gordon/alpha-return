@@ -173,7 +173,6 @@ class _ARHomeState extends State<ARHome> {
                       // Retrieve investment data and initialize analysis attributes
                       List inv = investments[i];
                       String key = investmentHash(inv);
-                      print('this is key: $key');
                       investmentsAnalyzed[key] = {};
                       DateTime buyDate = stringToDateTime(inv[1]);
                       DateTime sellDate = stringToDateTime(inv[2]);
@@ -214,7 +213,6 @@ class _ARHomeState extends State<ARHome> {
                     }
                   }
 
-                  print(investmentsAnalyzed);
                   showDialog(
                     context: context,
                     builder: (context) {

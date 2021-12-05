@@ -6,7 +6,6 @@ import 'package:crypto/crypto.dart';
 String hashInvestment(String ticker, String buyDateStr, String sellDateStr) {
   var investmentStrBytes = utf8.encode('$ticker $buyDateStr $sellDateStr');
   var digest = sha1.convert(investmentStrBytes);
-  print('Digest as Hex String: $digest');
   return digest.toString();
 }
 
