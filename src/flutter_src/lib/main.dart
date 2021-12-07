@@ -34,6 +34,6 @@ import 'ui/ar_home.dart';
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: false, // Removes Debug Banner
-  theme: ThemeData(fontFamily: 'ReadexPro'),
+  theme: ThemeData(fontFamily: 'Poppins'),
   home: ARHome(),
 ));
