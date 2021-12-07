@@ -335,7 +335,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                 ),
                               ],
                             ),
-                            DialogCloseOutButton(context),
+                            dialogCloseOutButton(context),
                           ]
                         )
                     ),
@@ -465,7 +465,7 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
                     return const SizedBox(height: 10);
                   },
                 ),
-                DialogCloseOutButton(context),
+                dialogCloseOutButton(context),
               ]
             )
         )
@@ -531,7 +531,7 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, BuildContext context
 }
 
 // Closeout button for dialogs windows
-Widget DialogCloseOutButton(BuildContext context) {
+Widget dialogCloseOutButton(BuildContext context) {
   return Positioned( // Closeout button
     right: 0.0,
     child: GestureDetector(
@@ -549,3 +549,4 @@ Widget DialogCloseOutButton(BuildContext context) {
     ),
   );
 }
+
