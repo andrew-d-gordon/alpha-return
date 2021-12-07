@@ -1,4 +1,10 @@
-#exposed files
+# return files
 docs/images/nexus_demo_beta_alpha_return.png
+docs/images/test_with_indian_stock_exchange.png
+docs/images/test_with_weekend_days_nyse_investments.png
+
+# console output 
 src/python_output.md
+
+# source code
 src/flutter_src/lib/common/fin_analysis.dart
