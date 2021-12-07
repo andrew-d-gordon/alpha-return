@@ -103,53 +103,62 @@ class _InvestmentRowState extends State<InvestmentRow> {
 
   @override
   Widget build(BuildContext context) {
-    return Row( // Convert rows to stateful objects with alterable vars
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
+    return GestureDetector(
+      onTap: (){ // If row is tapped, flip check status in investment, refresh
+        setState(() {
+          bool status = widget.investments[widget.row][3];
+          widget.investments[widget.row][3] = !status;
+          widget.notify();
+        });
+      },
+      child: Row( // Convert rows to stateful objects with alterable vars
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+              flex: 5,
+              child: Container(
+                margin: const EdgeInsets.all(0.0),
+                decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
+                child: Text(
+                  widget.symbol,
+                  style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
+          ),
+          Expanded(
+              flex: 5,
+              child: Container(
+                margin: const EdgeInsets.all(0.0),
+                decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
+                child: Text(
+                  widget.buyDate,
+                  style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
+          ),
+          Expanded(
             flex: 5,
             child: Container(
               margin: const EdgeInsets.all(0.0),
               decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
               child: Text(
-                widget.symbol,
+                widget.sellDate,
                 style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis,
               ),
-            )
-        ),
-        Expanded(
-            flex: 5,
-            child: Container(
-              margin: const EdgeInsets.all(0.0),
-              decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
-              child: Text(
-                widget.buyDate,
-                style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ),
-            )
-        ),
-        Expanded(
-          flex: 5,
-          child: Container(
-            margin: const EdgeInsets.all(0.0),
-            decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
-            child: Text(
-              widget.sellDate,
-              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
-        ),
-        Expanded(
-          flex: 2,
-          child: InvestmentCheckBox(notify: widget.notify,
-            investments: widget.investments,
-            row: widget.row,),
-        ),
-      ],
+          Expanded(
+            flex: 2,
+            child: InvestmentCheckBox(notify: widget.notify,
+              investments: widget.investments,
+              row: widget.row,),
+          ),
+        ],
+      )
     );
   }
 }
