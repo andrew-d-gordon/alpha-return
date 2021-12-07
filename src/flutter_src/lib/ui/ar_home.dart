@@ -282,7 +282,7 @@ class _ARHomeState extends State<ARHome> {
 // Set theme background
 bool lightTheme = true;
 Color lightThemeBackground = Colors.white;
-Color darkThemeBackground = const Color(0xFF121212);
+Color darkThemeBackground = const Color(0xFF363636);
 Color appBackgroundColor = lightTheme ? lightThemeBackground:darkThemeBackground;
 
 
@@ -381,7 +381,10 @@ class AddRowsNotice extends StatelessWidget {
     return const Center(
       child: Text(
         'Use +INV Button below to add investments.',
-        style: TextStyle(color: Colors.grey, fontSize: 22.0, fontWeight: FontWeight.bold)
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.grey,
+            fontSize: 22.0, fontWeight:
+            FontWeight.bold)
       )
     );
   }
