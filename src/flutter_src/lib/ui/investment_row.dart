@@ -243,107 +243,128 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
-            children: <Widget>[
-              FloatingActionButton(onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return SizedBox(
-                      width: 100,
-                      height: 40,
-                      child: Dialog(
-                          elevation: 10,
-                          insetAnimationCurve: Curves.easeInOutCubicEmphasized,
-                          insetAnimationDuration: const Duration(seconds: 1),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              TextField(
-                                style: TextStyle(fontSize: dialogFontSize),
-                                decoration: const InputDecoration(
-                                  hintText: "Ticker Symbol",
-                                  border: OutlineInputBorder(),
+          children: <Widget>[
+            FloatingActionButton(onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return SizedBox(
+                    width: 100,
+                    height: 40,
+                    child: Dialog(
+                        elevation: 10,
+                        insetAnimationCurve: Curves.easeInOutCubicEmphasized,
+                        insetAnimationDuration: const Duration(seconds: 1),
+                        child: Stack(
+                          children: <Widget>[
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                TextField(
+                                  style: TextStyle(fontSize: dialogFontSize),
+                                  decoration: const InputDecoration(
+                                    hintText: "Ticker Symbol",
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  controller: _t,
                                 ),
-                                controller: _t,
-                              ),
-                              TextField(
-                                  style: TextStyle(fontSize: dialogFontSize),
-                                  decoration: const InputDecoration(
-                                    hintText: "Buy Date as 'dd/mm/yy'",
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
-                                  controller: _b,
-                                  onTap: () {
-                                    //_b.text = DateTime.now().toString();
-                                    _b.text = dateTimeToString(DateTime.now());
-                                    _selectDate(context, _b);
-                                  }
-                              ),
-                              TextField(
-                                  style: TextStyle(fontSize: dialogFontSize),
-                                  decoration: const InputDecoration(
-                                    hintText: "Sell Date as 'dd/mm/yy'",
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
-                                  controller: _s,
-                                  onTap: () {
-                                    //_s.text = DateTime.now().toString();
-                                    _s.text = dateTimeToString(DateTime.now());
-                                    _selectDate(context, _s);
-                                  }
-                              ),
-                              TextButton(
-                                child: Text("Add Investment", style: TextStyle(fontSize: dialogFontSize)),
-                                onPressed: () {
-                                  bool validInvestment = true;
-                                  String error = "";
-                                  setState(() {
-                                    // Error check investment
-                                    error = errorCheckInvestment(_t.text, _b.text, _s.text);
-                                    if (error != "") {
-                                      validInvestment = false;
-                                      return;
+                                TextField(
+                                    style: TextStyle(fontSize: dialogFontSize),
+                                    decoration: const InputDecoration(
+                                      hintText: "Buy Date as 'dd/mm/yy'",
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
+                                    controller: _b,
+                                    onTap: () {
+                                      //_b.text = DateTime.now().toString();
+                                      _b.text = dateTimeToString(DateTime.now());
+                                      _selectDate(context, _b);
                                     }
+                                ),
+                                TextField(
+                                    style: TextStyle(fontSize: dialogFontSize),
+                                    decoration: const InputDecoration(
+                                      hintText: "Sell Date as 'dd/mm/yy'",
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
+                                    controller: _s,
+                                    onTap: () {
+                                      //_s.text = DateTime.now().toString();
+                                      _s.text = dateTimeToString(DateTime.now());
+                                      _selectDate(context, _s);
+                                    }
+                                ),
+                                TextButton(
+                                  child: Text("Add Investment", style: TextStyle(fontSize: dialogFontSize)),
+                                  onPressed: () {
+                                    bool validInvestment = true;
+                                    String error = "";
+                                    setState(() {
+                                      // Error check investment
+                                      error = errorCheckInvestment(_t.text, _b.text, _s.text);
+                                      if (error != "") {
+                                        validInvestment = false;
+                                        return;
+                                      }
 
-                                    _ticker = _t.text;
-                                    _buyDate = _b.text;
-                                    _sellDate= _s.text;
+                                      _ticker = _t.text;
+                                      _buyDate = _b.text;
+                                      _sellDate= _s.text;
 
-                                    widget.investments.add([
-                                      _ticker,
-                                      _buyDate,
-                                      _sellDate,
-                                      true]);
-                                    widget.notify(); // Notify parent to update rows
-                                  });
+                                      widget.investments.add([
+                                        _ticker,
+                                        _buyDate,
+                                        _sellDate,
+                                        true]);
+                                      widget.notify(); // Notify parent to update rows
+                                    });
 
-                                  if (validInvestment) {
-                                    // Pop Dialog Window
-                                    Navigator.pop(context);
-                                    print("New row: $_ticker $_buyDate $_sellDate");
-                                    // Reset text in controllers
-                                    _t.text = _b.text = _s.text = '';
-                                  } else {
-                                    // Display error message
-                                    print(error);
-                                  }
+                                    if (validInvestment) {
+                                      // Pop Dialog Window
+                                      Navigator.pop(context);
+                                      print("New row: $_ticker $_buyDate $_sellDate");
+                                      // Reset text in controllers
+                                      _t.text = _b.text = _s.text = '';
+                                    } else {
+                                      // Display error message
+                                      print(error);
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            Positioned(
+                              right: 0.0,
+                              child: GestureDetector(
+                                onTap: (){
+                                  Navigator.of(context).pop();
                                 },
+                                child: const Align(
+                                  alignment: Alignment.topRight,
+                                  child: CircleAvatar(
+                                    radius: 20.0,
+                                    backgroundColor: Colors.white,
+                                    child: Icon(Icons.close, color: Colors.lightGreen, size: 25.0,),
+                                  ),
+                                ),
                               ),
-                            ],
-                          )
-                      ),
-                    );
-                  },
-                );
-              },
-                child: const Text("+INV"),
-                backgroundColor: Colors.lightGreen,
-                hoverColor: Colors.greenAccent,
-                hoverElevation: 10.0,
-              )
-            ])
+                            ),
+                          ]
+                        )
+                    ),
+                  );
+                },
+              );
+            },
+              child: const Text("+INV"),
+              backgroundColor: Colors.lightGreen,
+              hoverColor: Colors.greenAccent,
+              hoverElevation: 10.0,
+            )
+          ]
+        )
     );
   }
 
@@ -441,19 +462,41 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
             elevation: 10,
             insetAnimationCurve: Curves.easeInOutCubicEmphasized,
             insetAnimationDuration: const Duration(seconds: 1),
-            child: ListView.separated(
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: alphaReturns.length,
-              itemBuilder: (BuildContext context, int index) {
-                return
-                  Container(
-                    padding: EdgeInsets.all(12.0),
-                    child: alphaReturns[index],
-                  );
-              },
-              separatorBuilder: (BuildContext context, int index) { return SizedBox(height: 10); },
+            child: Stack(
+              children: <Widget>[
+                ListView.separated(
+                  physics: const BouncingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: alphaReturns.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return
+                      Container(
+                        padding: const EdgeInsets.all(12.0),
+                        child: alphaReturns[index],
+                      );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const SizedBox(height: 10);
+                  },
+                ),
+                Positioned(
+                  right: 0.0,
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.of(context).pop();
+                    },
+                    child: const Align(
+                      alignment: Alignment.topRight,
+                      child: CircleAvatar(
+                        radius: 20.0,
+                        backgroundColor: Colors.white,
+                        child: Icon(Icons.close, color: Colors.lightGreen, size: 25.0,),
+                      ),
+                    ),
+                  ),
+                ),
+              ]
             )
         )
     );
