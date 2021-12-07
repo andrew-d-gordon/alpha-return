@@ -81,6 +81,21 @@ flutter:
     - family: MerriweatherBold
       fonts:
         - asset: fonts/Merriweather-Bold.ttf
+    - family: ReadexPro
+      fonts:
+        - asset: fonts/ReadexPro-ExtraLight.ttf
+          weight: 200
+        - asset: fonts/ReadexPro-Light.ttf
+          weight: 300
+        - asset: fonts/ReadexPro-Medium.ttf
+          weight: 400
+        - asset: fonts/ReadexPro-Regular.ttf
+          weight: 500
+        - asset: fonts/ReadexPro-SemiBold.ttf
+          weight: 600
+        - asset: fonts/ReadexPro-Bold.ttf
+          weight: 700
+
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

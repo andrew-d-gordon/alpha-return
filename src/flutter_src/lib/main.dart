@@ -32,7 +32,8 @@ import 'ui/ar_home.dart';
 
 // Color scheme modifier
 
-void main() => runApp(const MaterialApp(
+void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: false, // Removes Debug Banner
+  theme: ThemeData(fontFamily: 'ReadexPro'),
   home: ARHome(),
 ));

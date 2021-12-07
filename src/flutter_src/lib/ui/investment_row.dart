@@ -65,11 +65,10 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
               value,
               style: const TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w400,
                 letterSpacing: 2,
                 color: Colors.white,
                 backgroundColor: Colors.green,
-                //fontFamily: 'Merriweather',
               )
           ),
         );
@@ -173,14 +172,14 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CheckboxListTile(
+      child: Checkbox(
       value: widget.investments[widget.row][3],
         checkColor: Colors.black,
-        contentPadding: const EdgeInsets.all(0.0),
-        dense: false,
+        //contentPadding: const EdgeInsets.all(0.0),
+        //dense: false,
         activeColor: Colors.greenAccent,
-        tileColor: Colors.white,
-        selectedTileColor: Colors.green,
+        //tileColor: Colors.grey,
+        //selectedTileColor: Colors.green,
         onChanged: (newValue) {
           setState(() {
             widget.investments[widget.row][3] = newValue; // Update value in list

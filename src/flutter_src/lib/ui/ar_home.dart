@@ -275,10 +275,15 @@ class _ARHomeState extends State<ARHome> {
           ),
         ]
       ),
-    backgroundColor: Colors.white,
+    backgroundColor: appBackgroundColor,
     );
   }
 }
+
+// Set theme background
+Color lightThemeBackground = Colors.white;
+Color darkThemeBackground = const Color(0xFF121212);
+Color appBackgroundColor = lightThemeBackground;
 
 
 // Header row for investment row list
@@ -347,7 +352,7 @@ class _InvestmentRowKeysState extends State<InvestmentRowKeys> {
 
   _masterInvestmentCheckBox() { // Master sel all desel all checkbox
     return Container(
-      padding: const EdgeInsets.fromLTRB(6.0, 0.0, 0.0, 0.0),
+      //padding: const EdgeInsets.fromLTRB(6.0, 0.0, 0.0, 0.0),
       child: Checkbox(
         value: widget.status[0],
         checkColor: Colors.black,
