@@ -335,22 +335,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                 ),
                               ],
                             ),
-                            Positioned( // Closeout button
-                              right: 0.0,
-                              child: GestureDetector(
-                                onTap: (){
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Align(
-                                  alignment: Alignment.topRight,
-                                  child: CircleAvatar(
-                                    radius: 20.0,
-                                    backgroundColor: Colors.white,
-                                    child: Icon(Icons.close, color: Colors.lightGreen, size: 25.0,),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            DialogCloseOutButton(context),
                           ]
                         )
                     ),
@@ -480,22 +465,7 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
                     return const SizedBox(height: 10);
                   },
                 ),
-                Positioned( // Closeout button
-                  right: 0.0,
-                  child: GestureDetector(
-                    onTap: (){
-                      Navigator.of(context).pop();
-                    },
-                    child: const Align(
-                      alignment: Alignment.topRight,
-                      child: CircleAvatar(
-                        radius: 20.0,
-                        backgroundColor: Colors.white,
-                        child: Icon(Icons.close, color: Colors.lightGreen, size: 25.0,),
-                      ),
-                    ),
-                  ),
-                ),
+                DialogCloseOutButton(context),
               ]
             )
         )
@@ -558,4 +528,24 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, BuildContext context
   // Add exit button
   alphaReturns.add(exitButton(context, TextStyle(fontSize: dialogFontSize)));
   return alphaReturns;
+}
+
+// Closeout button for dialogs windows
+Widget DialogCloseOutButton(BuildContext context) {
+  return Positioned( // Closeout button
+    right: 0.0,
+    child: GestureDetector(
+      onTap: (){
+        Navigator.of(context).pop();
+      },
+      child: const Align(
+        alignment: Alignment.topRight,
+        child: CircleAvatar(
+          radius: 20.0,
+          backgroundColor: Colors.white30,
+          child: Icon(Icons.close, color: Colors.lightGreen, size: 25.0,),
+        ),
+      ),
+    ),
+  );
 }
