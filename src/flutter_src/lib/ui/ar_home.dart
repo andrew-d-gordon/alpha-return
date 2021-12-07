@@ -116,9 +116,9 @@ class _ARHomeState extends State<ARHome> {
             flex: 4, // Portion of width we want it to take up '3/6'
             child: Center(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(width: 2.0, color: Colors.black),
+                    bottom: BorderSide(width: 2.0, color: lightTheme ? darkThemeBackground:lightThemeBackground),
                   )
                 ),
                 padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
@@ -184,7 +184,6 @@ class _ARHomeState extends State<ARHome> {
             flex: 1,
             child: Center(
               child: TextButton(
-
                 onPressed: () async {
                   /* Want to queue computing for alpha return of each row in
                      investments with investment[3] set to true */
@@ -281,9 +280,10 @@ class _ARHomeState extends State<ARHome> {
 }
 
 // Set theme background
+bool lightTheme = true;
 Color lightThemeBackground = Colors.white;
 Color darkThemeBackground = const Color(0xFF121212);
-Color appBackgroundColor = lightThemeBackground;
+Color appBackgroundColor = lightTheme ? lightThemeBackground:darkThemeBackground;
 
 
 // Header row for investment row list
@@ -352,11 +352,12 @@ class _InvestmentRowKeysState extends State<InvestmentRowKeys> {
 
   _masterInvestmentCheckBox() { // Master sel all desel all checkbox
     return Container(
-      //padding: const EdgeInsets.fromLTRB(6.0, 0.0, 0.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 2.0, 0.0),
       child: Checkbox(
         value: widget.status[0],
         checkColor: Colors.black,
         activeColor: Colors.greenAccent,
+        //side: const BorderSide(color: Colors.blue, width: 2.0, style: BorderStyle.solid),
         onChanged: (newValue) {
           setState(() {  // Update values in list
             widget.status[0] = newValue!;

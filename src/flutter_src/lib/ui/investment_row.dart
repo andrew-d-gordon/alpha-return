@@ -2,6 +2,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:test_project/ui/ar_home.dart';
 
 // Formats string date of form 'mm/dd/yyyy' to DateTime
 DateTime stringToDateTime(String dateStr) {
@@ -66,7 +67,7 @@ class _BenchmarkDropdown extends State<BenchmarkDropdown> {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w400,
-                letterSpacing: 2,
+                //letterSpacing: 2,
                 color: Colors.white,
                 backgroundColor: Colors.green,
               )
@@ -173,8 +174,9 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
   Widget build(BuildContext context) {
     return Center(
       child: Checkbox(
-      value: widget.investments[widget.row][3],
+        value: widget.investments[widget.row][3],
         checkColor: Colors.black,
+        side: const BorderSide(color: Colors.grey, width: 2.0, style: BorderStyle.solid),
         //contentPadding: const EdgeInsets.all(0.0),
         //dense: false,
         activeColor: Colors.greenAccent,
@@ -244,6 +246,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: appBackgroundColor,
         body: Column(
           children: <Widget>[
             FloatingActionButton(onPressed: () {
