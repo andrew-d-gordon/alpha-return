@@ -280,7 +280,7 @@ class _ARHomeState extends State<ARHome> {
 }
 
 // Set theme background
-bool lightTheme = true;
+bool lightTheme = false;
 Color lightThemeBackground = Colors.white;
 Color darkThemeBackground = const Color(0xFF363636);
 Color appBackgroundColor = lightTheme ? lightThemeBackground:darkThemeBackground;
