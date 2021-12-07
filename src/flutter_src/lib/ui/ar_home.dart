@@ -77,6 +77,9 @@ class _ARHomeState extends State<ARHome> {
           investments: investments,
           row: i));
     }
+    if (investments.isEmpty) {
+      investmentRows.add(const AddRowsNotice());
+    }
   }
 
   @override
@@ -90,6 +93,9 @@ class _ARHomeState extends State<ARHome> {
           notify: refresh,
           investments: investments,
           row: i));
+    }
+    if (investments.isEmpty) { // If no investments added, place notice
+      investmentRows.add(const AddRowsNotice());
     }
 
     return Scaffold(
@@ -344,8 +350,6 @@ class _InvestmentRowKeysState extends State<InvestmentRowKeys> {
         value: widget.status[0],
         checkColor: Colors.black,
         activeColor: Colors.greenAccent,
-        //tileColor: Colors.white,
-        //selectedTileColor: Colors.green,
         onChanged: (newValue) {
           setState(() {  // Update values in list
             widget.status[0] = newValue!;
@@ -357,6 +361,20 @@ class _InvestmentRowKeysState extends State<InvestmentRowKeys> {
           });
         },
       ),
+    );
+  }
+}
+
+class AddRowsNotice extends StatelessWidget {
+  const AddRowsNotice({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text(
+        'Use +INV Button below to add investments.',
+        style: TextStyle(color: Colors.grey, fontSize: 22.0, fontWeight: FontWeight.bold)
+      )
     );
   }
 }
