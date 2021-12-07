@@ -243,14 +243,31 @@ class AddInvestmentDialog extends StatefulWidget {
 }
 
 class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
+  // Investment Attributes
   String _ticker = "";
   String _buyDate = "";
   String _sellDate = "";
+
+  // Textfield Error Message Placeholders
+  String _tError = "";
+  String _bError = "";
+  String _sError = "";
+
+  // Text controllers and dialog font size
   final TextEditingController _t = TextEditingController();
   final TextEditingController _b = TextEditingController();
   final TextEditingController _s = TextEditingController();
-
   double dialogFontSize = 20.0;
+
+  // Refresh Callback for error messages
+  refresh() {setState(() {});}
+  @override
+  void dispose() { // Dispose of controllers when unmounted
+    _t.dispose();
+    _b.dispose();
+    _s.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +281,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                 builder: (context) {
                   return SizedBox(
                     width: 100,
-                    height: 40,
+                    height: 50,
                     child: Dialog(
                         elevation: 10,
                         insetAnimationCurve: Curves.easeInOutCubicEmphasized,
@@ -276,16 +293,20 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                               children: <Widget>[
                                 TextField(
                                   style: TextStyle(fontSize: dialogFontSize),
-                                  decoration: const InputDecoration(
-                                    hintText: "Ticker Symbol",
+                                  decoration: InputDecoration(
+                                    labelText: "Investment Symbol",
+                                    hintText: "'AAPL', 'BTC-USD', 'TCS.NS'",
+                                    errorText: _tError,
                                     border: OutlineInputBorder(),
                                   ),
                                   controller: _t,
                                 ),
                                 TextField(
                                     style: TextStyle(fontSize: dialogFontSize),
-                                    decoration: const InputDecoration(
-                                      hintText: "Buy Date as 'dd/mm/yy'",
+                                    decoration: InputDecoration(
+                                      labelText: "Buy Date",
+                                      hintText: "Date as 'dd/mm/yyyy'",
+                                      errorText: _bError,
                                       border: OutlineInputBorder(),
                                     ),
                                     focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
@@ -298,8 +319,10 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                 ),
                                 TextField(
                                     style: TextStyle(fontSize: dialogFontSize),
-                                    decoration: const InputDecoration(
-                                      hintText: "Sell Date as 'dd/mm/yy'",
+                                    decoration: InputDecoration(
+                                      labelText: "Sell Date",
+                                      hintText: "Date as 'dd/mm/yyyy'",
+                                      errorText: _sError,
                                       border: OutlineInputBorder(),
                                     ),
                                     focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
@@ -320,6 +343,10 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                       error = errorCheckInvestment(_t.text, _b.text, _s.text);
                                       if (error != "") {
                                         validInvestment = false;
+                                        _tError = error;
+                                        _bError = error;
+                                        _sError = error;
+                                        refresh();
                                         return;
                                       }
 
@@ -367,6 +394,13 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
     );
   }
 
+  //errorText for text controllers
+  String? get _errorText {
+    // Error check investment
+    return errorCheckInvestment(_t.text, _b.text, _s.text);
+  }
+
+  // Cupertino date selector
   _selectDate(BuildContext context, TextEditingController t) { // Date picker
     showCupertinoModalPopup(
       context: context,
