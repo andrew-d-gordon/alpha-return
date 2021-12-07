@@ -17,6 +17,8 @@ import 'ui/ar_home.dart';
 // Add more general investment addition (one where you input buy and sell prices along with arbitrary name for investment).
 // Include
 
+// Make investment rows gesture tappable to set value of checkbox
+// Long tap to enable editing of investment
 // Make a dialog example clone but for editing fields of a row (must know row id) ?
 
 // Investment input section/make modal area smaller
@@ -29,6 +31,10 @@ import 'ui/ar_home.dart';
 // Flutter integration with firebase to store user info/market data into firestore
 
 // Remember investment sets
+
+// Add characteristic line premium alpha return output, custom benchmark besides sp500 and bitcoin
+// Once enough days filled in for investment compute beta and error to find expected returns on investment
+// For time being can do benchmark versus investment line curves on small graph in output
 
 // Color scheme modifier
 
