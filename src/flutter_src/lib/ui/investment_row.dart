@@ -205,7 +205,7 @@ String errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr
   DateTime buyDate = stringToDateTime(buyDateStr);
   DateTime sellDate = stringToDateTime(sellDateStr);
 
-  if (!(RegExp(r'^[A-Za-z^]+$').hasMatch(ticker))) { // Valid ticker characters check
+  if (!(RegExp(r'^[A-Za-z^-]+$').hasMatch(ticker))) { // Valid ticker characters check
     return badCharactersError;
   } else if (buyDate.compareTo(sellDate) > 0) { // If buyDate is after sellDate
     // Show alert dialog with invalid dates message
