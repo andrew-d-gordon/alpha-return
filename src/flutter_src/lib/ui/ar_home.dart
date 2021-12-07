@@ -54,6 +54,7 @@ class _ARHomeState extends State<ARHome> {
 
   // Holds investmentRows built from investments
   List<Widget> investmentRows = [];
+  List masterCheckBoxStatus = [false];
 
   // Benchmark Investments
   Map<String, String> benchmarks = {
@@ -123,10 +124,12 @@ class _ARHomeState extends State<ARHome> {
                       ],
                       scrollDirection: Axis.vertical,
                     ),
-                    const Positioned(
+                    Positioned(
                       child: Align(
                         alignment: Alignment.topCenter,
-                        child: InvestmentRowKeys(),
+                        child: InvestmentRowKeys(investments: investments,
+                                                notify: refresh,
+                                                status: masterCheckBoxStatus),
                       ),
                     ),
                   ]
@@ -272,7 +275,13 @@ class _ARHomeState extends State<ARHome> {
 
 // Header row for investment row list
 class InvestmentRowKeys extends StatefulWidget {
-  const InvestmentRowKeys({Key? key}) : super(key: key);
+  final Function() notify;
+  final List<List> investments;
+  final List status;
+  const InvestmentRowKeys({Key? key,
+    required this.notify,
+    required this.investments,
+    required this.status}) : super(key: key);
 
   @override
   State<InvestmentRowKeys> createState() => _InvestmentRowKeysState();
@@ -307,7 +316,7 @@ class _InvestmentRowKeysState extends State<InvestmentRowKeys> {
             Expanded(
               flex: 5,
               child: Text(
-                'BuyDate',
+                'Buy Date',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
               ),
             ),
@@ -320,13 +329,33 @@ class _InvestmentRowKeysState extends State<InvestmentRowKeys> {
             ),
             Expanded(
               flex: 2,
-              child: Text(
-                'Sel',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
-              ),
+              child: _masterInvestmentCheckBox(),
             ),
           ]
         ),
+      ),
+    );
+  }
+
+  _masterInvestmentCheckBox() { // Master sel all desel all checkbox
+    return Container(
+      padding: const EdgeInsets.fromLTRB(6.0, 0.0, 0.0, 0.0),
+      child: Checkbox(
+        value: widget.status[0],
+        checkColor: Colors.black,
+        activeColor: Colors.greenAccent,
+        //tileColor: Colors.white,
+        //selectedTileColor: Colors.green,
+        onChanged: (newValue) {
+          setState(() {  // Update values in list
+            widget.status[0] = newValue!;
+            for (int i=0; i<widget.investments.length; i++) {
+              widget.investments[i][3] = newValue;
+            }
+            // Notify parent to take account of checkboxes
+            widget.notify();
+          });
+        },
       ),
     );
   }

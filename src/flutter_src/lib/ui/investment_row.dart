@@ -171,7 +171,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
   Widget build(BuildContext context) {
     return Center(
       child: CheckboxListTile(
-        value: widget.investments[widget.row][3],
+      value: widget.investments[widget.row][3],
         checkColor: Colors.black,
         contentPadding: const EdgeInsets.all(0.0),
         dense: false,
