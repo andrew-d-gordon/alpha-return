@@ -442,10 +442,12 @@ class AlwaysDisabledFocusNode extends FocusNode { // Helps dismiss keyboard for 
 // Delete Investments Button Widget
 class DeleteInvestmentsButton extends StatefulWidget {
   final List<List> investments;
+  final List masterCheckStatus;
   final Function() notify;
   const DeleteInvestmentsButton({Key? key,
     required this.investments,
-    required this.notify}) : super(key: key);
+    required this.masterCheckStatus,
+    required this.notify,}) : super(key: key);
 
   @override
   _DeleteInvestmentsButtonState createState() => _DeleteInvestmentsButtonState();
@@ -457,6 +459,7 @@ class _DeleteInvestmentsButtonState extends State<DeleteInvestmentsButton> {
     return FloatingActionButton(onPressed: () {
       setState(() {
         widget.investments.removeWhere((row) => row[3] == true); // Remove selected rows
+        widget.masterCheckStatus[0] = false; // Ensure master select set to false
         widget.notify(); // Notify parent of updates
       });
     },

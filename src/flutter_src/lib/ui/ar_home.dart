@@ -172,7 +172,7 @@ class _ARHomeState extends State<ARHome> {
                         width: 70,
                         height: 60,
                         alignment: Alignment.center,
-                        child: DeleteInvestmentsButton(investments: investments, notify: refresh),
+                        child: DeleteInvestmentsButton(investments: investments, masterCheckStatus: masterCheckBoxStatus, notify: refresh),
                       )
                     ],
                   ),
