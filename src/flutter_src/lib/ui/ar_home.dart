@@ -43,14 +43,16 @@ class _ARHomeState extends State<ARHome> {
   // Variable data utilized to generate investment rows and their state variables
   // investments has an investment specified as: [Symbol, BuyDate, SellDate, Selected (t/f)]
   List<List> investments = [
-    ['AAPL', '01/04/2021', '11/12/2021', false],
+    ['AAPL', '01/04/2021', '11/12/2021', true],
+    ['RELIANCE.NS', '12/01/2021', '12/05/2021', true], // Non-US Market '_._' test
+    ['VTI', '12/04/2021', '12/05/2021', true], // Weekend days test, should be 0.0%
+    ['AAPL', '01/06/2021', '11/15/2021', true], // Duplicate ticker investment test
+    ['BTC-USD', '12/04/2021', '12/05/2021', true], // Bitcoin on weekend pricing test
     ['AMZN', '01/04/2021', '11/12/2021', false],
     ['VTI', '01/04/2021', '11/12/2021', false],
     ['BTC-USD', '01/04/2021', '11/12/2021', false],
-    ['AAPL', '01/06/2021', '11/15/2021', false],
     ['AMZN', '01/06/2021', '11/15/2021', false],
-    ['VTI', '12/04/2021', '12/05/2021', true], // Weekend days test
-    ['BTC-USD', '12/04/2021', '12/05/2021', true]]; // Weekend days test
+    ];
 
   // Holds investmentRows built from investments
   List<Widget> investmentRows = [];
