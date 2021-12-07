@@ -335,7 +335,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                 ),
                               ],
                             ),
-                            Positioned(
+                            Positioned( // Closeout button
                               right: 0.0,
                               child: GestureDetector(
                                 onTap: (){
@@ -480,7 +480,7 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
                     return const SizedBox(height: 10);
                   },
                 ),
-                Positioned(
+                Positioned( // Closeout button
                   right: 0.0,
                   child: GestureDetector(
                     onTap: (){
