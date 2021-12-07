@@ -42,15 +42,21 @@ Future<double> retrieveMarketValue(String ticker, DateTime date) async {
   http.Response res = await http.get(uri, headers: corsHeaders); // Run Get Request for Investment Data
   if (res.statusCode == 200) { // If response is valid, parse body data for price
     Map<String, dynamic> body = jsonDecode(res.body);
+    print(body['chart']['result']);
     // Extract quote/adjclose dict with pricing info for desired date
     //Map<String, dynamic> quote = body['chart']['result'][0]['indicators']['quote'][0];
     //dateClosePrice = quote['close'][0];
     Map<String, dynamic> indicators = body['chart']['result'][0]['indicators'];
     print('This is indicators returned:\n$indicators\n\n');
 
-    // Retrieve adjusted close price for investment
-    Map<String, dynamic> adjCloseEntry = body['chart']['result'][0]['indicators']['adjclose'][0];
-    dateClosePrice = adjCloseEntry['adjclose'][0];
+    try { // Retrieve adjusted close price for investment
+      Map<String, dynamic> adjCloseEntry = body['chart']['result'][0]['indicators']['adjclose'][0];
+      dateClosePrice = adjCloseEntry['adjclose'][0];
+    } on NoSuchMethodError { // If adj close == null on day (weekend days), retrieve previous closing price
+      dateClosePrice = body['chart']['result'][0]['meta']['chartPreviousClose'];
+    }
+
+    print("This is close price on date: $dateClosePrice");
   } else {
     print('Response was invalid with status code: ${res.statusCode}');
   }
