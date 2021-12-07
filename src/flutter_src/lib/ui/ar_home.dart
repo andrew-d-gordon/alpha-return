@@ -81,7 +81,6 @@ class _ARHomeState extends State<ARHome> {
   @override
   Widget build(BuildContext context) {
     investmentRows = []; // Refresh investmentRows
-    investmentRows.add(const InvestmentRowKeys());
     for (int i=0; i<investments.length; i++) { //Refresh investment data
       List inv = investments[i];
       investmentRows.add(InvestmentRow(symbol: inv[0],
@@ -113,14 +112,24 @@ class _ARHomeState extends State<ARHome> {
                     bottom: BorderSide(width: 2.0, color: Colors.black),
                   )
                 ),
-                padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                 //color: Colors.cyan,
-                child: ListView(
-                  padding: const EdgeInsets.all(1.0),
-                  children: <Widget>[ // Where Investments live...
-                    for (var r in investmentRows) r,
-                  ],
-                  scrollDirection: Axis.vertical,
+                child: Stack(
+                  children: <Widget>[
+                    ListView(
+                      padding: const EdgeInsets.fromLTRB(0.0, 40.0, 1.0, 1.0),
+                      children: <Widget>[ // Where Investments live...
+                        for (var r in investmentRows) r,
+                      ],
+                      scrollDirection: Axis.vertical,
+                    ),
+                    const Positioned(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: InvestmentRowKeys(),
+                      ),
+                    ),
+                  ]
                 )
               ),
             ),
@@ -215,12 +224,14 @@ class _ARHomeState extends State<ARHome> {
                       );
                     }
                   }
+                  if (investmentsAnalyzed.isNotEmpty) {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return showAlphaReturnDialog(investmentsAnalyzed: investmentsAnalyzed);
+                    });
+                  }
 
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return showAlphaReturnDialog(investmentsAnalyzed: investmentsAnalyzed);
-                  });
 
                   // We would then like to build out a modified Dialog Example
                   // with annual return of each investment, of the benchmark, and
@@ -260,47 +271,62 @@ class _ARHomeState extends State<ARHome> {
 
 
 // Header row for investment row list
-class InvestmentRowKeys extends StatelessWidget {
+class InvestmentRowKeys extends StatefulWidget {
   const InvestmentRowKeys({Key? key}) : super(key: key);
 
+  @override
+  State<InvestmentRowKeys> createState() => _InvestmentRowKeysState();
+}
+
+class _InvestmentRowKeysState extends State<InvestmentRowKeys> {
   final double rowFontSize = 22.0;
+
   @override
   Widget build(BuildContext context) { // Probably convert to stateless for sel all/desel all
-    return Container(
-      color: Colors.grey.shade200,
-      child: Row( // Convert rows to stateful objects with alterable vars
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-            flex: 5,
-            child: Text(
-              'Name',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
-            ),
+    return SizedBox(
+      height: 40.0,
+      child: Container(
+        decoration: BoxDecoration(
+          border: const Border(
+            bottom: BorderSide(width: 2.0, color: Colors.black),
+            top: BorderSide(width: 2.0, color: Colors.black),
           ),
-          Expanded(
-            flex: 5,
-            child: Text(
-              'BuyDate',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+          color: Colors.green.shade200,
+        ),
+        child: Row( // Convert rows to stateful objects with alterable vars
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              flex: 5,
+              child: Text(
+                'Name',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+              ),
             ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Text(
-              'Sell Date',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+            Expanded(
+              flex: 5,
+              child: Text(
+                'BuyDate',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+              ),
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              'Sel',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+            Expanded(
+              flex: 5,
+              child: Text(
+                'Sell Date',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+              ),
             ),
-          ),
-        ]
+            Expanded(
+              flex: 2,
+              child: Text(
+                'Sel',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+              ),
+            ),
+          ]
+        ),
       ),
     );
   }

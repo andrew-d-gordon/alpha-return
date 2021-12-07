@@ -173,7 +173,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
       child: CheckboxListTile(
         value: widget.investments[widget.row][3],
         checkColor: Colors.black,
-        contentPadding: const EdgeInsets.all(1.0),
+        contentPadding: const EdgeInsets.all(0.0),
         dense: false,
         activeColor: Colors.greenAccent,
         tileColor: Colors.white,
