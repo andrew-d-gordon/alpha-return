@@ -53,7 +53,7 @@ class _ARHomeState extends State<ARHome> {
     ['BTC-USD', '12/04/2021', '12/05/2021', true]]; // Weekend days test
 
   // Holds investmentRows built from investments
-  List<InvestmentRow> investmentRows = [];
+  List<Widget> investmentRows = [];
 
   // Benchmark Investments
   Map<String, String> benchmarks = {
@@ -81,6 +81,7 @@ class _ARHomeState extends State<ARHome> {
   @override
   Widget build(BuildContext context) {
     investmentRows = []; // Refresh investmentRows
+    investmentRows.add(const InvestmentRowKeys());
     for (int i=0; i<investments.length; i++) { //Refresh investment data
       List inv = investments[i];
       investmentRows.add(InvestmentRow(symbol: inv[0],
@@ -253,6 +254,54 @@ class _ARHomeState extends State<ARHome> {
         ]
       ),
     backgroundColor: Colors.white,
+    );
+  }
+}
+
+
+// Header row for investment row list
+class InvestmentRowKeys extends StatelessWidget {
+  const InvestmentRowKeys({Key? key}) : super(key: key);
+
+  final double rowFontSize = 22.0;
+  @override
+  Widget build(BuildContext context) { // Probably convert to stateless for sel all/desel all
+    return Container(
+      color: Colors.grey.shade200,
+      child: Row( // Convert rows to stateful objects with alterable vars
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            flex: 5,
+            child: Text(
+              'Name',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+            ),
+          ),
+          Expanded(
+            flex: 5,
+            child: Text(
+              'BuyDate',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+            ),
+          ),
+          Expanded(
+            flex: 5,
+            child: Text(
+              'Sell Date',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Sel',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+            ),
+          ),
+        ]
+      ),
     );
   }
 }

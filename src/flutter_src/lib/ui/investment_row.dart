@@ -108,12 +108,6 @@ class _InvestmentRowState extends State<InvestmentRow> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Expanded(
-          flex: 2,
-          child: InvestmentCheckBox(notify: widget.notify,
-            investments: widget.investments,
-            row: widget.row,),
-        ),
-        Expanded(
             flex: 5,
             child: Container(
               margin: const EdgeInsets.all(0.0),
@@ -145,6 +139,12 @@ class _InvestmentRowState extends State<InvestmentRow> {
               style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
           ),
+        ),
+        Expanded(
+          flex: 2,
+          child: InvestmentCheckBox(notify: widget.notify,
+            investments: widget.investments,
+            row: widget.row,),
         ),
       ],
     );
