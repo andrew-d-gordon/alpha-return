@@ -71,9 +71,6 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
   String _sellDate = "";
 
   // TextField Error Message Placeholders
-  String? _tError;
-  String? _bError;
-  String? _sError;
   bool _addPressed = false;
 
   // Text controllers and dialog font size
