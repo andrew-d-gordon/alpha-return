@@ -235,18 +235,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
     );
   }
 
-  // errorText for text controllers
-  String? get _tickerErrorText {
-    // Error check investment
-    return errorCheckInvestmentTicker(_t.text);
-  }
-
-  // errorText for date text controllers
-  String? get _dateErrorText {
-    return errorCheckInvestmentDate(_b.text, _s.text);
-  }
-
-  // Cupertino date selector
+  // Cupertino date selector for buy and sell dates
   _selectDate(BuildContext context, TextEditingController t) { // Date picker
     showCupertinoModalPopup(
       context: context,
