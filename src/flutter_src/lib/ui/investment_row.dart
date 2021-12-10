@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/ui/closeout_button.dart';
-import 'package:test_project/common/string_datetime.dart';
+import 'package:test_project/ui/edit_investment.dart';
 
 BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoration Widget
   return BoxDecoration(
@@ -100,6 +100,11 @@ class _InvestmentRowState extends State<InvestmentRow> {
           widget.investments[widget.row][3] = !status;
           widget.notify();
         });
+      },
+      onLongPress: () {
+        showDialog(
+            context: context,
+            builder: (context) { return EditInvestmentDialog(row: widget.row, notify: widget.notify, investments: widget.investments); });
       },
       child: Row( // Convert rows to stateful objects with alterable vars
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
