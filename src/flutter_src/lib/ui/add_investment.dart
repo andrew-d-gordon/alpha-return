@@ -1,37 +1,56 @@
+// Remote Imports
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
+
+// Local Imports
 import 'package:test_project/common/string_datetime.dart';
 import 'package:test_project/ui/closeout_button.dart';
 import 'package:test_project/ui/ar_home.dart';
 
-// Error check +Inv investment, return error string, "" if no error
-String? errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr) {
-  String nullError = "Bad input, each attribute must be filled";
-  String badCharactersError = "Bad input, invalid characters in ticker";
-  String offsetDateError = "Bad input, buy date must occur before the sell date";
-  String sameDateError = "Bad input, buy and sell dates must be different";
+// Error messages for add investment dialog
+String nullTickerError = "Investment symbol cannot be empty";
+String nullDateError = "Buy and Sell dates cannot be empty";
+String badCharactersError = "Ticker symbol has invalid characters";
+String offsetDateError = "Buy date must occur before the Sell date";
+String sameDateError = "Buy and Sell dates cannot be the same day";
 
-  if (ticker == '' || buyDateStr == '' || sellDateStr == '') { // Null input check
+// Error check +Inv investment, return error string, "" if no error
+String? errorCheckInvestmentTicker(String ticker) {
+  if (ticker == '') { // Null input check
     // Show alert dialog with null input message
-    return nullError;
+    return nullTickerError;
+  }
+
+  if (!(RegExp(r'^[.A-Za-z^-]+$').hasMatch(ticker))) { // Valid ticker characters check
+    return badCharactersError;
+  }
+
+  return null;
+}
+
+// Error checks investment date
+String? errorCheckInvestmentDate(String buyDateStr, String sellDateStr) {
+
+  if (buyDateStr == '' || sellDateStr == '') { // Null input check
+    // Show alert dialog with null input message
+    return nullDateError;
   }
 
   DateTime buyDate = stringToDateTime(buyDateStr);
   DateTime sellDate = stringToDateTime(sellDateStr);
 
-  if (!(RegExp(r'^[.A-Za-z^-]+$').hasMatch(ticker))) { // Valid ticker characters check
-    return badCharactersError;
-  } else if (buyDate.compareTo(sellDate) > 0) { // If buyDate is after sellDate
+  if (buyDate.compareTo(sellDate) > 0) { // If buyDate is after sellDate
     // Show alert dialog with invalid dates message
     return offsetDateError;
   } else if (buyDate.compareTo(sellDate) == 0) { // If buyDate==sellDate
     // Show alert dialog notifying user of same buy and sell date
     return sameDateError;
-  } else {
-    return null;
   }
+
+  // Valid date pairing
+  return null;
 }
 
 // Button and Dialog Modal for Creating Investment Row Widget
@@ -55,12 +74,44 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
   String? _tError;
   String? _bError;
   String? _sError;
+  bool _addPressed = false;
 
   // Text controllers and dialog font size
   final TextEditingController _t = TextEditingController();
   final TextEditingController _b = TextEditingController();
   final TextEditingController _s = TextEditingController();
   double dialogFontSize = 20.0;
+
+  // Form key and submission clause
+  final _formKey = GlobalKey<FormState>();
+  void _submit() {
+    // If all the text form fields are valid, add investment
+    setState(() => _addPressed = true);
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      // Valid Investment, add new row and notify
+      _ticker = _t.text;
+      _buyDate = _b.text;
+      _sellDate = _s.text;
+      widget.investments.add([
+        _ticker,
+        _buyDate,
+        _sellDate,
+        true]);
+
+      // Notify parent to update rows
+      widget.notify();
+
+      // Pop window and clear values for next add investment
+      Navigator.pop(context);
+      print("New row: $_ticker $_buyDate $_sellDate");
+      // Reset text in controllers
+      _t.text = _b.text = _s.text = '';
+      _tError = _bError = _sError = null;
+      _addPressed = false;
+    }
+  }
+
 
   // Refresh Callback for error messages
   refresh() {setState(() {});}
@@ -91,95 +142,80 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                           insetAnimationDuration: const Duration(seconds: 1),
                           child: Stack(
                               children: <Widget>[
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    TextField(
-                                      style: TextStyle(fontSize: dialogFontSize),
-                                      decoration: InputDecoration(
-                                        labelText: "Investment Symbol",
-                                        hintText: "'AAPL', 'BTC-USD', 'TCS.NS'",
-                                        errorText: _tError,
-                                        border: const OutlineInputBorder(),
+                                Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      TextFormField(
+                                        style: TextStyle(fontSize: dialogFontSize),
+                                        decoration: const InputDecoration(
+                                          labelText: "Investment Symbol",
+                                          hintText: "'AAPL', 'BTC-USD', 'TCS.NS'",
+                                          //errorText: _addPressed ? _tError : null,
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        controller: _t,
+                                        autovalidateMode: _addPressed
+                                                          ? AutovalidateMode.onUserInteraction
+                                                          : AutovalidateMode.disabled,
+                                        validator: (symbol) { // Validate investment symbol
+                                          return errorCheckInvestmentTicker(symbol!);
+                                        },
+                                        onChanged: (symbol) => setState(() => _t.text = symbol),
                                       ),
-                                      controller: _t,
-                                    ),
-                                    TextField(
-                                        style: TextStyle(fontSize: dialogFontSize),
-                                        decoration: InputDecoration(
-                                          labelText: "Buy Date",
-                                          hintText: "Date as 'dd/mm/yyyy'",
-                                          errorText: _bError,
-                                          border: const OutlineInputBorder(),
-                                        ),
-                                        focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
-                                        controller: _b,
-                                        onTap: () {
-                                          //_b.text = DateTime.now().toString();
-                                          _b.text = dateTimeToString(DateTime.now());
-                                          _selectDate(context, _b);
-                                        }
-                                    ),
-                                    TextField(
-                                        style: TextStyle(fontSize: dialogFontSize),
-                                        decoration: InputDecoration(
-                                          labelText: "Sell Date",
-                                          hintText: "Date as 'dd/mm/yyyy'",
-                                          errorText: _sError,
-                                          border: const OutlineInputBorder(),
-                                        ),
-                                        focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
-                                        controller: _s,
-                                        onTap: () {
-                                          //_s.text = DateTime.now().toString();
-                                          _s.text = dateTimeToString(DateTime.now());
-                                          _selectDate(context, _s);
-                                        }
-                                    ),
-                                    TextButton(
-                                      child: Text("Add Investment", style: TextStyle(fontSize: dialogFontSize)),
-                                      onPressed: () {
-                                        bool validInvestment = true;
-                                        String? error;
-                                        setState(() {
-                                          // Error check investment
-                                          error = errorCheckInvestment(_t.text, _b.text, _s.text);
-                                          if (error != null) {
-                                            validInvestment = false;
-                                            _tError = _bError = _sError = error;
-                                            refresh();
-                                            return;
+                                      TextFormField(
+                                          style: TextStyle(fontSize: dialogFontSize),
+                                          decoration: const InputDecoration(
+                                            labelText: "Buy Date",
+                                            hintText: "Date as 'dd/mm/yyyy'",
+                                            //errorText: _addPressed ? _bError:null,
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          // Shift focus to Date Picker
+                                          focusNode: AlwaysDisabledFocusNode(),
+                                          controller: _b,
+                                          autovalidateMode: _addPressed
+                                              ? AutovalidateMode.onUserInteraction
+                                              : AutovalidateMode.disabled,
+                                          validator: (dateStr) { // Validate buy date
+                                            return errorCheckInvestmentDate(dateStr!, _s.text);
+                                          },
+                                          onChanged: (dateStr) => setState(() => _b.text = dateStr),
+                                          onTap: () {
+                                            _b.text = dateTimeToString(DateTime.now());
+                                            _selectDate(context, _b);
                                           }
-
-                                          _ticker = _t.text;
-                                          _buyDate = _b.text;
-                                          _sellDate = _s.text;
-
-                                          widget.investments.add([
-                                            _ticker,
-                                            _buyDate,
-                                            _sellDate,
-                                            true]);
-                                          widget.notify(); // Notify parent to update rows
-                                        });
-
-                                        if (validInvestment) {
-                                          // Pop Dialog Window
-                                          Navigator.pop(context);
-                                          print("New row: $_ticker $_buyDate $_sellDate");
-                                          // Reset text in controllers
-                                          _t.text = _b.text = _s.text = '';
-                                          _tError = _bError = _sError = null;
-                                          refresh();
-                                        } else {
-                                          // Display error message
-                                          print(error);
-                                          _tError = _bError = _sError = error;
-                                          refresh();
-                                        }
-                                      },
-                                    ),
-                                  ],
+                                      ),
+                                      TextFormField(
+                                          style: TextStyle(fontSize: dialogFontSize),
+                                          decoration: const InputDecoration(
+                                            labelText: "Sell Date",
+                                            hintText: "Date as 'dd/mm/yyyy'",
+                                            //errorText: _addPressed ? _sError:null,
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          // Shift focus to Date Picker
+                                          focusNode: AlwaysDisabledFocusNode(),
+                                          controller: _s,
+                                          autovalidateMode: _addPressed
+                                              ? AutovalidateMode.onUserInteraction
+                                              : AutovalidateMode.disabled,
+                                          validator: (dateStr) { // Validate sell date
+                                            return errorCheckInvestmentDate(_b.text, dateStr!);
+                                          },
+                                          onChanged: (dateStr) => setState(() => _s.text = dateStr),
+                                          onTap: () {
+                                            _s.text = dateTimeToString(DateTime.now());
+                                            _selectDate(context, _s);
+                                          }
+                                      ),
+                                      TextButton(
+                                        child: Text("Add Investment", style: TextStyle(fontSize: dialogFontSize)),
+                                        onPressed: _submit,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 dialogCloseOutButton(context),
                               ]
@@ -199,10 +235,15 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
     );
   }
 
-  //errorText for text controllers
-  String? get _errorText {
+  // errorText for text controllers
+  String? get _tickerErrorText {
     // Error check investment
-    return errorCheckInvestment(_t.text, _b.text, _s.text);
+    return errorCheckInvestmentTicker(_t.text);
+  }
+
+  // errorText for date text controllers
+  String? get _dateErrorText {
+    return errorCheckInvestmentDate(_b.text, _s.text);
   }
 
   // Cupertino date selector
