@@ -104,7 +104,6 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
       print("New row: $_ticker $_buyDate $_sellDate");
       // Reset text in controllers
       _t.text = _b.text = _s.text = '';
-      _tError = _bError = _sError = null;
       _addPressed = false;
     }
   }
