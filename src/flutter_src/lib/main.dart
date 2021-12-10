@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fin_quote/fin_quote.dart';
 
 // Local Imports
 import 'ui/ar_home.dart';
@@ -10,27 +9,18 @@ import 'ui/ar_home.dart';
 // To do:
 
 // Associate hash ids with rows to allow for better recall in local memory dict
-// Add error message in AddInvestmentDialog to specify why investment is invalid
 // Figure out how to interpolate binance/coincap market values like with yahoo
 // Unrequire dependency for fin_quote
 
-// Add more general investment addition (one where you input buy and sell prices along with arbitrary name for investment).
-// Include
-
-// Make investment rows gesture tappable to set value of checkbox
-// Long tap to enable editing of investment
-// Make a dialog example clone but for editing fields of a row (must know row id) ?
+// Add buy and sell price as entry for investments, update logic in ar_home when processing investments
+// to not go out and find buy and sell price for investment when it is specified.
 
 // Investment input section/make modal area smaller
 // clear inv to be added/del'd when close out pressed
 
-// Dart with firebase, see if python backend possible for computing alpha return
-
-// If python not viable as backend, see if dart has built in api calls available for market data
-
 // Flutter integration with firebase to store user info/market data into firestore
 
-// Remember investment sets
+// Remember investment sets (security investments by hashid)
 
 // Add characteristic line premium alpha return output, custom benchmark besides sp500 and bitcoin
 // Once enough days filled in for investment compute beta and error to find expected returns on investment

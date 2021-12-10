@@ -6,8 +6,10 @@ import 'package:flutter/cupertino.dart';
 
 // Local Imports
 import 'package:test_project/common/string_datetime.dart';
+import 'package:test_project/common/is_numeric.dart';
 import 'package:test_project/ui/closeout_button.dart';
 import 'package:test_project/ui/ar_home.dart';
+
 
 // Error messages for add investment dialog
 String nullTickerError = "Investment symbol cannot be empty";
@@ -204,7 +206,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                             _selectDate(context, _s);
                                           }
                                       ),
-                                      Column(
+                                      Column( // Optional buy and sell price inputs
                                         children: [
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -219,10 +221,14 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                                     border: OutlineInputBorder(),
                                                   ),
                                                   controller: _bp,
+                                                  keyboardType: TextInputType.number,
                                                   autovalidateMode: _addPressed
                                                       ? AutovalidateMode.onUserInteraction
                                                       : AutovalidateMode.disabled,
-                                                  validator: (symbol) { // Validate investment symbol
+                                                  validator: (price) { // Validate buy price (optional)
+                                                    if (price != '') { // If price specified, numeric check
+                                                      return isNumeric(price) ? null:'Must be numeric';
+                                                    }
                                                     return null;
                                                   },
                                                 ),
@@ -237,10 +243,14 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                                     border: OutlineInputBorder(),
                                                   ),
                                                   controller: _sp,
+                                                  keyboardType: TextInputType.number,
                                                   autovalidateMode: _addPressed
                                                       ? AutovalidateMode.onUserInteraction
                                                       : AutovalidateMode.disabled,
-                                                  validator: (symbol) { // Validate investment symbol
+                                                  validator: (price) { // Validate investment symbol
+                                                    if (price != '') { // If price specified, numeric check
+                                                      return isNumeric(price) ? null:'Must be numeric';
+                                                    }
                                                     return null;
                                                   },
                                                 ),

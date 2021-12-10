@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 
 // Local Imports
 import 'package:test_project/common/string_datetime.dart';
+import 'package:test_project/common/is_numeric.dart';
 import 'package:test_project/ui/closeout_button.dart';
 import 'package:test_project/ui/ar_home.dart';
 
@@ -204,7 +205,7 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                             _selectDate(context, _s);
                           }
                       ),
-                      Column(
+                      Column( // Optional buy and sell price inputs
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -219,10 +220,14 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                                     border: OutlineInputBorder(),
                                   ),
                                   controller: _bp,
+                                  keyboardType: TextInputType.number,
                                   autovalidateMode: _addPressed
                                       ? AutovalidateMode.onUserInteraction
                                       : AutovalidateMode.disabled,
-                                  validator: (symbol) { // Validate investment symbol
+                                  validator: (price) { // Validate investment symbol
+                                    if (price != '') { // If price specified, numeric check
+                                      return isNumeric(price) ? null:'Must be numeric';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -237,10 +242,14 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                                     border: OutlineInputBorder(),
                                   ),
                                   controller: _sp,
+                                  keyboardType: TextInputType.number,
                                   autovalidateMode: _addPressed
                                       ? AutovalidateMode.onUserInteraction
                                       : AutovalidateMode.disabled,
-                                  validator: (symbol) { // Validate investment symbol
+                                  validator: (price) { // Validate investment symbol
+                                    if (price != '') { // If price specified, numeric check
+                                      return isNumeric(price) ? null:'Must be numeric';
+                                    }
                                     return null;
                                   },
                                 ),
