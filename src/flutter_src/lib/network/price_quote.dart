@@ -29,10 +29,10 @@ Future<double> retrieveMarketValue(String ticker, DateTime date) async {
   // Reference on utilizing cors proxy
   /*String authority = 'cors-anywhere.herokuapp.com';
   String unencodedPath = 'query2.finance.yahoo.com/v8/finance/chart/$ticker';*/
-  // Build URI paremeters out
+  // Build URI parameters out
   String authority = 'query2.finance.yahoo.com';
   String unencodedPath = 'v8/finance/chart/$ticker';
-  var queryParemeters = {
+  var queryParameters = {
     'symbol': ticker, // Investment Symbol e.g. 'AAPL', '^GSPC', 'BTC-USD'
     'period1': dateUnixStamp.toString(), // Start Date
     'period2': (dateUnixStamp+secondsInADay).toString(), // End Date
@@ -41,7 +41,7 @@ Future<double> retrieveMarketValue(String ticker, DateTime date) async {
   };
 
   // Build URI
-  Uri uri = Uri.https(authority, unencodedPath, queryParemeters);
+  Uri uri = Uri.https(authority, unencodedPath, queryParameters);
   //print("This is uri: $uri");
   // Run Get Request for Investment Data
   http.Response res;
@@ -70,7 +70,6 @@ Future<double> retrieveMarketValue(String ticker, DateTime date) async {
     } on NoSuchMethodError { // If adj close == null on day (weekend days), retrieve previous closing price
       dateClosePrice = body['chart']['result'][0]['meta']['chartPreviousClose'];
     }
-
     print("This is close price on date: $dateClosePrice");
   } else {
     print('Response was invalid with status code: ${res.statusCode}');
