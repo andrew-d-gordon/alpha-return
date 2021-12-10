@@ -253,26 +253,29 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
             elevation: 10,
             insetAnimationCurve: Curves.easeInOutCubicEmphasized,
             insetAnimationDuration: const Duration(seconds: 1),
-            child: Stack(
-              children: <Widget>[
-                ListView.separated(
-                  physics: const BouncingScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: alphaReturns.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return
-                      Container(
-                        padding: const EdgeInsets.all(12.0),
-                        child: alphaReturns[index],
-                      );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return const SizedBox(height: 10);
-                  },
-                ),
-                dialogCloseOutButton(context),
-              ]
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+              child: Stack(
+                children: <Widget>[
+                  ListView.separated(
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: alphaReturns.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return
+                        Container(
+                          padding: const EdgeInsets.all(12.0),
+                          child: alphaReturns[index],
+                        );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(height: 10);
+                    },
+                  ),
+                  dialogCloseOutButton(context),
+                ]
+              ),
             )
         )
     );
@@ -302,14 +305,17 @@ class investmentReturnOutput extends StatelessWidget {
 List<Widget> investmentReturnsList(Map investmentsAnalyzed, BuildContext context) {
   double dialogFontSize = 20.0;
   List<Widget> alphaReturns = []; // Refresh alphaReturns Text widgets
+
   // Build Title Widget
   alphaReturns.add(const Text('Your Alpha Return', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)));
   alphaReturns.add(const Divider(height: 20, thickness: 5, indent: 20, endIndent: 20, color: Colors.grey));
+
   // Build alpha return widgets
   for (var k in investmentsAnalyzed.keys) {
     Color returnColor = Colors.green;
-    if (investmentsAnalyzed[k]['alphaReturn'] < 0) // Bold actual %, make it green for + red for -
+    if (investmentsAnalyzed[k]['alphaReturn'] < 0) {
       returnColor = Colors.red;
+    }
 
     alphaReturns.add(Container(  // Add return widget to alphaReturns
       color: const Color.fromARGB(20, 25, 25, 25),

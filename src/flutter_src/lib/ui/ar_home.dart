@@ -183,6 +183,7 @@ class _ARHomeState extends State<ARHome> {
                      investments with investment[3] set to true */
                   Map investmentsAnalyzed = {}; // Holds analyzed investments
                   String benchmarkTicker = benchmarks[benchmark[0]]!;
+                  print(benchmarkTicker);
                   for (int i=0; i<investments.length; i++) {
                     // If investment selected (investments[i][3] == true), compute annual return
                     if (investments[i][3]) {
@@ -207,7 +208,7 @@ class _ARHomeState extends State<ARHome> {
                         investmentsAnalyzed[key]['benchSellPrice'] = val
                       });
                       int daysDiff = daysBetween(stringToDateTime(inv[1]), stringToDateTime(inv[2]));
-
+                      print("Processing ${inv[0]} and ${benchmark[0]}");
                       // Set Investment Analysis attributes in investmentsAnalyzed
                       investmentsAnalyzed[key]['ticker'] = inv[0];
                       investmentsAnalyzed[key]['daysDiff'] = daysDiff;

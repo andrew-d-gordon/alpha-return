@@ -36,23 +36,38 @@ class _InvestmentRowKeysState extends State<InvestmentRowKeys> {
             children: <Widget>[
               Expanded(
                 flex: 5,
-                child: Text(
-                  'Name',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                  child: Text(
+                    'Name',
+                    style: TextStyle(fontWeight: FontWeight.bold,
+                        fontSize: rowFontSize, decoration:
+                        TextDecoration.underline),
+                  ),
                 ),
               ),
               Expanded(
                 flex: 5,
-                child: Text(
-                  'Buy Date',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                  child: Text(
+                    'Buy Date',
+                    style: TextStyle(fontWeight: FontWeight.bold,
+                        fontSize: rowFontSize,
+                        decoration: TextDecoration.underline),
+                  ),
                 ),
               ),
               Expanded(
                 flex: 5,
-                child: Text(
-                  'Sell Date',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: rowFontSize, decoration: TextDecoration.underline),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                  child: Text(
+                    'Sell Date',
+                    style: TextStyle(fontWeight: FontWeight.bold,
+                        fontSize: rowFontSize,
+                        decoration: TextDecoration.underline),
+                  ),
                 ),
               ),
               Expanded(
