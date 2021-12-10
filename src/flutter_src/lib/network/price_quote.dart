@@ -1,16 +1,19 @@
 //Imports
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 
 // Time Constants
 int secondsInADay = 86400; // Used for adding secondsInADay to initial time stamp
+Duration quoteWait = const Duration(seconds: 10);
 
 // Request Headers
 Map<String, String> corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   'Access-Control-Allow-Headers': '*',
   'Access-Control-Allow-Methods': '*',
-  //'Access-Control-Allow-Credentials': 'true',
+  'Access-Control-Allow-Credentials': 'true',
   'Accept': 'application/json',
 };
 
@@ -37,13 +40,25 @@ Future<double> retrieveMarketValue(String ticker, DateTime date) async {
     'events': 'history'
   };
 
-  Uri uri = Uri.https(authority, unencodedPath, queryParemeters); // Build URI
+  // Build URI
+  Uri uri = Uri.https(authority, unencodedPath, queryParemeters);
   print("This is uri: $uri");
-  http.Response res = await http.get(uri, headers: corsHeaders); // Run Get Request for Investment Data
+  // Run Get Request for Investment Data
+  http.Response res;
+  try {
+    res = await http.get(uri, headers: corsHeaders).timeout(quoteWait);
+  } on TimeoutException { // Timeout
+    print('Timeout on attempt to retrieve quote for $ticker on ${date.toString()}');
+    return -1.0;
+  } on SocketException {
+    print('Socket error on attempt to retrieve quote for $ticker on ${date.toString()}');
+    return -1.0;
+  }
+
   if (res.statusCode == 200) { // If response is valid, parse body data for price
     Map<String, dynamic> body = jsonDecode(res.body);
     print(body['chart']['result']);
-    // Extract quote/adjclose dict with pricing info for desired date
+    // Extract quote/adjusted closing dict with pricing info for desired date
     //Map<String, dynamic> quote = body['chart']['result'][0]['indicators']['quote'][0];
     //dateClosePrice = quote['close'][0];
     Map<String, dynamic> indicators = body['chart']['result'][0]['indicators'];

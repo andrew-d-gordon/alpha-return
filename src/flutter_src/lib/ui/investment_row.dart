@@ -204,7 +204,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
 }
 
 // Error check +Inv investment, return error string, "" if no error
-String errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr) {
+String? errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr) {
   String nullError = "Bad input, each attribute must be filled";
   String badCharactersError = "Bad input, invalid characters in ticker";
   String offsetDateError = "Bad input, buy date must occur before the sell date";
@@ -227,7 +227,7 @@ String errorCheckInvestment(String ticker, String buyDateStr, String sellDateStr
     // Show alert dialog notifying user of same buy and sell date
     return sameDateError;
   } else {
-    return "";
+    return null;
   }
 }
 
@@ -248,10 +248,10 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
   String _buyDate = "";
   String _sellDate = "";
 
-  // Textfield Error Message Placeholders
-  String _tError = "";
-  String _bError = "";
-  String _sError = "";
+  // TextField Error Message Placeholders
+  String? _tError;
+  String? _bError;
+  String? _sError;
 
   // Text controllers and dialog font size
   final TextEditingController _t = TextEditingController();
@@ -297,7 +297,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                     labelText: "Investment Symbol",
                                     hintText: "'AAPL', 'BTC-USD', 'TCS.NS'",
                                     errorText: _tError,
-                                    border: OutlineInputBorder(),
+                                    border: const OutlineInputBorder(),
                                   ),
                                   controller: _t,
                                 ),
@@ -307,7 +307,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                       labelText: "Buy Date",
                                       hintText: "Date as 'dd/mm/yyyy'",
                                       errorText: _bError,
-                                      border: OutlineInputBorder(),
+                                      border: const OutlineInputBorder(),
                                     ),
                                     focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
                                     controller: _b,
@@ -323,7 +323,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                       labelText: "Sell Date",
                                       hintText: "Date as 'dd/mm/yyyy'",
                                       errorText: _sError,
-                                      border: OutlineInputBorder(),
+                                      border: const OutlineInputBorder(),
                                     ),
                                     focusNode: AlwaysDisabledFocusNode(), // Shift focus to Datepicker
                                     controller: _s,
@@ -337,22 +337,20 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                   child: Text("Add Investment", style: TextStyle(fontSize: dialogFontSize)),
                                   onPressed: () {
                                     bool validInvestment = true;
-                                    String error = "";
+                                    String? error;
                                     setState(() {
                                       // Error check investment
                                       error = errorCheckInvestment(_t.text, _b.text, _s.text);
-                                      if (error != "") {
+                                      if (error != null) {
                                         validInvestment = false;
-                                        _tError = error;
-                                        _bError = error;
-                                        _sError = error;
+                                        _tError = _bError = _sError = error;
                                         refresh();
                                         return;
                                       }
 
                                       _ticker = _t.text;
                                       _buyDate = _b.text;
-                                      _sellDate= _s.text;
+                                      _sellDate = _s.text;
 
                                       widget.investments.add([
                                         _ticker,
@@ -368,9 +366,13 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                       print("New row: $_ticker $_buyDate $_sellDate");
                                       // Reset text in controllers
                                       _t.text = _b.text = _s.text = '';
+                                      _tError = _bError = _sError = null;
+                                      refresh();
                                     } else {
                                       // Display error message
                                       print(error);
+                                      _tError = _bError = _sError = error;
+                                      refresh();
                                     }
                                   },
                                 ),
