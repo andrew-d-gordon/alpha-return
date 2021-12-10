@@ -112,12 +112,12 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
   // Refresh Callback for error messages
   refresh() {setState(() {});}
   @override
-  void dispose() { // Dispose of controllers when unmounted
+  /*void dispose() { // Dispose of controllers when unmounted
     _t.dispose();
     _b.dispose();
     _s.dispose();
     super.dispose();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +158,6 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                         validator: (symbol) { // Validate investment symbol
                                           return errorCheckInvestmentTicker(symbol!);
                                         },
-                                        onChanged: (symbol) => setState(() => _t.text = symbol),
                                       ),
                                       TextFormField(
                                           style: TextStyle(fontSize: dialogFontSize),
