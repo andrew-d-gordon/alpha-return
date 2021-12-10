@@ -147,7 +147,7 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                         style: TextStyle(fontSize: dialogFontSize),
                         decoration: const InputDecoration(
                           labelText: "Investment Symbol",
-                          hintText: "'AAPL', 'BTC-USD', 'TCS.NS'",
+                          hintText: "AAPL, BTC-USD, TCS.NS",
                           border: OutlineInputBorder(),
                         ),
                         controller: _t,

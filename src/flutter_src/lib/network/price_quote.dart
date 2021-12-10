@@ -42,7 +42,7 @@ Future<double> retrieveMarketValue(String ticker, DateTime date) async {
 
   // Build URI
   Uri uri = Uri.https(authority, unencodedPath, queryParemeters);
-  print("This is uri: $uri");
+  //print("This is uri: $uri");
   // Run Get Request for Investment Data
   http.Response res;
   try {
@@ -57,12 +57,12 @@ Future<double> retrieveMarketValue(String ticker, DateTime date) async {
 
   if (res.statusCode == 200) { // If response is valid, parse body data for price
     Map<String, dynamic> body = jsonDecode(res.body);
-    print(body['chart']['result']);
+    //print(body['chart']['result']);
     // Extract quote/adjusted closing dict with pricing info for desired date
     //Map<String, dynamic> quote = body['chart']['result'][0]['indicators']['quote'][0];
     //dateClosePrice = quote['close'][0];
     Map<String, dynamic> indicators = body['chart']['result'][0]['indicators'];
-    print('This is indicators returned:\n$indicators\n\n');
+    //print('This is indicators returned:\n$indicators\n\n');
 
     try { // Retrieve adjusted close price for investment
       Map<String, dynamic> adjCloseEntry = body['chart']['result'][0]['indicators']['adjclose'][0];
