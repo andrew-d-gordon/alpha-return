@@ -5,28 +5,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 
 // Local Imports
-import 'investment_row.dart';
-import '../network/price_quote.dart';
-import '../common/fin_analysis.dart';
-import '../common/hash_investment.dart';
-
-// Formats string date of form 'mm/dd/yyyy' to DateTime
-DateTime stringToDateTime(String dateStr) {
-  List dateSplit = dateStr.split('/');
-  return DateTime(int.parse(dateSplit[2]), int.parse(dateSplit[0]), int.parse(dateSplit[1]));
-}
-
-// Formats DateTime date to 'mm/dd/yyyy'
-String dateTimeToString(DateTime date) {
-  return "${date.month.toString()}/${date.day.toString()}/${date.year.toString()}";
-}
-
-// Compute days between two dates
-int daysBetween(DateTime from, DateTime to) {
-  from = DateTime(from.year, from.month, from.day);
-  to = DateTime(to.year, to.month, to.day);
-  return (to.difference(from).inHours / 24).round();
-}
+import 'package:test_project/ui/investment_row.dart';
+import 'package:test_project/ui/add_investment.dart';
+import 'package:test_project/common/string_datetime.dart';
+import 'package:test_project/common/days_between.dart';
+import 'package:test_project/common/hash_investment.dart';
+import 'package:test_project/common/fin_analysis.dart';
+import 'package:test_project/network/price_quote.dart';
 
 class ARHome extends StatefulWidget {
   const ARHome({Key? key}) : super(key: key);
@@ -380,7 +365,7 @@ class AddRowsNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        'Use +INV Button below to add investments.',
+        'Use +INV button below to add investments.',
         textAlign: TextAlign.center,
         style: TextStyle(color: Colors.grey,
             fontSize: 22.0, fontWeight:
