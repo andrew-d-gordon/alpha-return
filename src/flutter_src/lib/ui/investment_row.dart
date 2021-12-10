@@ -181,11 +181,7 @@ class _InvestmentCheckBoxState extends State<InvestmentCheckBox> {
         value: widget.investments[widget.row][3],
         checkColor: Colors.black,
         side: const BorderSide(color: Colors.grey, width: 2.0, style: BorderStyle.solid),
-        //contentPadding: const EdgeInsets.all(0.0),
-        //dense: false,
         activeColor: Colors.greenAccent,
-        //tileColor: Colors.grey,
-        //selectedTileColor: Colors.green,
         onChanged: (newValue) {
           setState(() {
             widget.investments[widget.row][3] = newValue; // Update value in list
