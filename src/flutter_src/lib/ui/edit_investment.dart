@@ -148,7 +148,6 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                         decoration: const InputDecoration(
                           labelText: "Investment Symbol",
                           hintText: "'AAPL', 'BTC-USD', 'TCS.NS'",
-                          //errorText: _addPressed ? _tError : null,
                           border: OutlineInputBorder(),
                         ),
                         controller: _t,
@@ -164,7 +163,6 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                           decoration: const InputDecoration(
                             labelText: "Buy Date",
                             hintText: "Date as 'dd/mm/yyyy'",
-                            //errorText: _addPressed ? _bError:null,
                             border: OutlineInputBorder(),
                           ),
                           // Shift focus to Date Picker
@@ -187,7 +185,6 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                           decoration: const InputDecoration(
                             labelText: "Sell Date",
                             hintText: "Date as 'dd/mm/yyyy'",
-                            //errorText: _addPressed ? _sError:null,
                             border: OutlineInputBorder(),
                           ),
                           // Shift focus to Date Picker
