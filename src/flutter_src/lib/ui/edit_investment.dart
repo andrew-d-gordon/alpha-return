@@ -78,6 +78,8 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
   final TextEditingController _t = TextEditingController();
   final TextEditingController _b = TextEditingController();
   final TextEditingController _s = TextEditingController();
+  final TextEditingController _bp = TextEditingController();
+  final TextEditingController _sp = TextEditingController();
   double dialogFontSize = 20.0;
 
   // Form key and submission clause
@@ -201,6 +203,52 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                             _s.text = dateTimeToString(DateTime.now());
                             _selectDate(context, _s);
                           }
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: TextFormField(
+                                  style: TextStyle(fontSize: dialogFontSize),
+                                  decoration: const InputDecoration(
+                                    labelText: "Buy Price",
+                                    hintText: "\$",
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  controller: _bp,
+                                  autovalidateMode: _addPressed
+                                      ? AutovalidateMode.onUserInteraction
+                                      : AutovalidateMode.disabled,
+                                  validator: (symbol) { // Validate investment symbol
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: TextFormField(
+                                  style: TextStyle(fontSize: dialogFontSize),
+                                  decoration: const InputDecoration(
+                                    labelText: "Sell Price",
+                                    hintText: "\$",
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  controller: _sp,
+                                  autovalidateMode: _addPressed
+                                      ? AutovalidateMode.onUserInteraction
+                                      : AutovalidateMode.disabled,
+                                  validator: (symbol) { // Validate investment symbol
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Text('Optional use for non-stock investments'),
+                        ],
                       ),
                       TextButton(
                         child: Text("Update Investment", style: TextStyle(fontSize: dialogFontSize)),

@@ -184,7 +184,6 @@ class _ARHomeState extends State<ARHome> {
                      investments with investment[3] set to true */
                   Map investmentsAnalyzed = {}; // Holds analyzed investments
                   String benchmarkTicker = benchmarks[benchmark[0]]!;
-                  print(benchmarkTicker);
                   for (int i=0; i<investments.length; i++) {
                     // If investment selected (investments[i][3] == true), compute annual return
                     if (investments[i][3]) {
