@@ -36,17 +36,17 @@ class _ARHomeState extends State<ARHome> {
 
   // Variable data utilized to generate investment rows and their state variables
   // Investments has an investment specified as:
-  // [Symbol, BuyDate, SellDate, Selected (t/f), Manual (t/f)]
+  // [Symbol, BuyDate, SellDate, Selected (t/f), Buy Price (double), Sell Price (double), Manual (t/f)]
   List<List> investments = [
-    ['AAPL', '01/04/2021', '11/12/2021', true, false],
-    ['RELIANCE.NS', '12/01/2021', '12/05/2021', true, false], // Non-US Market '_._' test
-    ['VTI', '12/04/2021', '12/05/2021', true, false], // Weekend days test, should be 0.0%
-    ['AAPL', '01/06/2021', '11/15/2021', true, false], // Duplicate ticker investment test
-    ['BTC-USD', '12/04/2021', '12/05/2021', true, false], // Bitcoin on weekend pricing test
-    ['AMZN', '01/04/2021', '11/12/2021', false, false],
-    ['VTI', '01/04/2021', '11/12/2021', false, false],
-    ['BTC-USD', '01/04/2021', '11/12/2021', false, false],
-    ['AMZN', '01/06/2021', '11/15/2021', false, false],
+    ['AAPL', '01/04/2021', '11/12/2021', true, 0.0, 0.0, false],
+    ['RELIANCE.NS', '12/01/2021', '12/05/2021', true, 0.0, 0.0, false], // Non-US Market '_._' test
+    ['VTI', '12/04/2021', '12/05/2021', true, 0.0, 0.0, false], // Weekend days test, should be 0.0%
+    ['AAPL', '01/06/2021', '11/15/2021', true, 0.0, 0.0, false], // Duplicate ticker investment test
+    ['BTC-USD', '12/04/2021', '12/05/2021', true, 0.0, 0.0, false], // Bitcoin on weekend pricing test
+    ['AMZN', '01/04/2021', '11/12/2021', false, 0.0, 0.0, false],
+    ['VTI', '01/04/2021', '11/12/2021', false, 0.0, 0.0, false],
+    ['BTC-USD', '01/04/2021', '11/12/2021', false, 0.0, 0.0, false],
+    ['AMZN', '01/06/2021', '11/15/2021', false, 0.0, 0.0, false],
     ];
 
   // Holds investmentRows built from investments

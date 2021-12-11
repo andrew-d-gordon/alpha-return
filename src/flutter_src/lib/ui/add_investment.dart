@@ -17,6 +17,7 @@ String nullDateError = "Buy and Sell dates cannot be empty";
 String badCharactersError = "Ticker symbol has invalid characters";
 String offsetDateError = "Buy date must occur before the Sell date";
 String sameDateError = "Buy and Sell dates cannot be the same day";
+String onePriceOnlyError = "Cannot specify Buy or Sell price without the other";
 
 // Error check +Inv investment, return error string, "" if no error
 String? errorCheckInvestmentTicker(String ticker) {
@@ -55,6 +56,15 @@ String? errorCheckInvestmentDate(String buyDateStr, String sellDateStr) {
   return null;
 }
 
+String? errorCheckBuySellPrice(String buyPrice, String sellPrice) {
+  // If one price specified without the other
+  if ((buyPrice == '' && sellPrice != '') || (buyPrice != '' && sellPrice == '')) {
+    return onePriceOnlyError;
+  }
+
+  return null;
+}
+
 // Button and Dialog Modal for Creating Investment Row Widget
 class AddInvestmentDialog extends StatefulWidget {
   final List<List> investments;
@@ -67,11 +77,6 @@ class AddInvestmentDialog extends StatefulWidget {
 }
 
 class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
-  // Investment Attributes
-  String _ticker = "";
-  String _buyDate = "";
-  String _sellDate = "";
-
   // TextField Error Message Placeholders
   bool _addPressed = false;
 
@@ -91,23 +96,35 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       // Valid Investment, add new row and notify
-      _ticker = _t.text;
-      _buyDate = _b.text;
-      _sellDate = _s.text;
-      widget.investments.add([
-        _ticker,
-        _buyDate,
-        _sellDate,
-        true]);
+      if (_bp.text.isNotEmpty && _sp.text.isNotEmpty) { // Optional buy and sell price set
+        widget.investments.add([
+          _t.text,
+          _b.text,
+          _s.text,
+          true,
+          double.parse(_bp.text), // Optional buy price as double
+          double.parse(_sp.text), // Optional sell price as double
+          true // Custom investment t/f (true if buy price and sell price specified)
+        ]);
+      } else { // Optional buy and sell price not specified
+        widget.investments.add([
+          _t.text,
+          _b.text,
+          _s.text,
+          true,
+          0.0, // Optional buy price as double
+          0.0, // Optional sell price as double
+          false // Custom investment t/f (false if buy price and sell price not specified)
+        ]);
+      }
 
       // Notify parent to update rows
       widget.notify();
 
       // Pop window and clear values for next add investment
       Navigator.pop(context);
-      print("New row: $_ticker $_buyDate $_sellDate");
       // Reset text in controllers
-      _t.text = _b.text = _s.text = '';
+      _t.text = _b.text = _s.text = _bp.text = _sp.text = '';
       _addPressed = false;
     }
   }

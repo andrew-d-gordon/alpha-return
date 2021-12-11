@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'ui/ar_home.dart';
 
 // To do:
-
 // Associate hash ids with rows to allow for better recall in local memory dict
 // Figure out how to interpolate binance/coincap market values like with yahoo
 // Unrequire dependency for fin_quote
