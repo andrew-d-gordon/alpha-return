@@ -6,64 +6,9 @@ import 'package:flutter/cupertino.dart';
 
 // Local Imports
 import 'package:test_project/common/string_datetime.dart';
-import 'package:test_project/common/is_numeric.dart';
+import 'package:test_project/common/errorcheck_investment.dart';
 import 'package:test_project/ui/closeout_button.dart';
 import 'package:test_project/ui/ar_home.dart';
-
-
-// Error messages for add investment dialog
-String nullTickerError = "Investment symbol cannot be empty";
-String nullDateError = "Buy and Sell dates cannot be empty";
-String badCharactersError = "Ticker symbol has invalid characters";
-String offsetDateError = "Buy date must occur before the Sell date";
-String sameDateError = "Buy and Sell dates cannot be the same day";
-String onePriceOnlyError = "Cannot specify Buy or Sell price without the other";
-
-// Error check +Inv investment, return error string, "" if no error
-String? errorCheckInvestmentTicker(String ticker) {
-  if (ticker == '') { // Null input check
-    // Show alert dialog with null input message
-    return nullTickerError;
-  }
-
-  if (!(RegExp(r'^[.A-Za-z^-]+$').hasMatch(ticker))) { // Valid ticker characters check
-    return badCharactersError;
-  }
-
-  return null;
-}
-
-// Error checks investment date
-String? errorCheckInvestmentDate(String buyDateStr, String sellDateStr) {
-
-  if (buyDateStr == '' || sellDateStr == '') { // Null input check
-    // Show alert dialog with null input message
-    return nullDateError;
-  }
-
-  DateTime buyDate = stringToDateTime(buyDateStr);
-  DateTime sellDate = stringToDateTime(sellDateStr);
-
-  if (buyDate.compareTo(sellDate) > 0) { // If buyDate is after sellDate
-    // Show alert dialog with invalid dates message
-    return offsetDateError;
-  } else if (buyDate.compareTo(sellDate) == 0) { // If buyDate==sellDate
-    // Show alert dialog notifying user of same buy and sell date
-    return sameDateError;
-  }
-
-  // Valid date pairing
-  return null;
-}
-
-String? errorCheckBuySellPrice(String buyPrice, String sellPrice) {
-  // If one price specified without the other
-  if ((buyPrice == '' && sellPrice != '') || (buyPrice != '' && sellPrice == '')) {
-    return onePriceOnlyError;
-  }
-
-  return null;
-}
 
 // Button and Dialog Modal for Creating Investment Row Widget
 class AddInvestmentDialog extends StatefulWidget {
@@ -96,13 +41,14 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       // Valid Investment, add new row and notify
-      if (_bp.text.isNotEmpty && _sp.text.isNotEmpty) { // Optional buy and sell price set
+      // Optional buy and sell price specified
+      if ((_bp.text != '' && _sp.text != '') && (_bp.text != '0.0' && _sp.text != '0.0')) {
         widget.investments.add([
           _t.text,
           _b.text,
           _s.text,
-          true,
-          double.parse(_bp.text), // Optional buy price as double
+          true, // Selected
+          double.parse(_bp.text), // Optional buy price as double, add try catch last ditch effort
           double.parse(_sp.text), // Optional sell price as double
           true // Custom investment t/f (true if buy price and sell price specified)
         ]);
@@ -111,9 +57,9 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
           _t.text,
           _b.text,
           _s.text,
-          true,
-          0.0, // Optional buy price as double
-          0.0, // Optional sell price as double
+          true, // Selected
+          null, // Optional buy price as double
+          null, // Optional sell price as double
           false // Custom investment t/f (false if buy price and sell price not specified)
         ]);
       }
@@ -243,10 +189,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                                       ? AutovalidateMode.onUserInteraction
                                                       : AutovalidateMode.disabled,
                                                   validator: (price) { // Validate buy price (optional)
-                                                    if (price != '') { // If price specified, numeric check
-                                                      return isNumeric(price) ? null:'Must be numeric';
-                                                    }
-                                                    return null;
+                                                    return errorCheckBuySellPrice(_bp.text, _sp.text);
                                                   },
                                                 ),
                                               ),
@@ -265,10 +208,7 @@ class _AddInvestmentDialogState extends State<AddInvestmentDialog> {
                                                       ? AutovalidateMode.onUserInteraction
                                                       : AutovalidateMode.disabled,
                                                   validator: (price) { // Validate investment symbol
-                                                    if (price != '') { // If price specified, numeric check
-                                                      return isNumeric(price) ? null:'Must be numeric';
-                                                    }
-                                                    return null;
+                                                    return errorCheckBuySellPrice(_bp.text, _sp.text);
                                                   },
                                                 ),
                                               ),

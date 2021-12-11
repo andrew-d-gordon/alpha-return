@@ -36,17 +36,17 @@ class _ARHomeState extends State<ARHome> {
 
   // Variable data utilized to generate investment rows and their state variables
   // Investments has an investment specified as:
-  // [Symbol, BuyDate, SellDate, Selected (t/f), Buy Price (double), Sell Price (double), Manual (t/f)]
+  // [Symbol, BuyDate, SellDate, Selected (t/f), Buy Price (double?), Sell Price (double?), Manual (t/f)]
   List<List> investments = [
-    ['AAPL', '01/04/2021', '11/12/2021', true, 0.0, 0.0, false],
-    ['RELIANCE.NS', '12/01/2021', '12/05/2021', true, 0.0, 0.0, false], // Non-US Market '_._' test
-    ['VTI', '12/04/2021', '12/05/2021', true, 0.0, 0.0, false], // Weekend days test, should be 0.0%
-    ['AAPL', '01/06/2021', '11/15/2021', true, 0.0, 0.0, false], // Duplicate ticker investment test
-    ['BTC-USD', '12/04/2021', '12/05/2021', true, 0.0, 0.0, false], // Bitcoin on weekend pricing test
-    ['AMZN', '01/04/2021', '11/12/2021', false, 0.0, 0.0, false],
-    ['VTI', '01/04/2021', '11/12/2021', false, 0.0, 0.0, false],
-    ['BTC-USD', '01/04/2021', '11/12/2021', false, 0.0, 0.0, false],
-    ['AMZN', '01/06/2021', '11/15/2021', false, 0.0, 0.0, false],
+    ['AAPL', '01/04/2021', '11/12/2021', true, null, null, false],
+    ['RELIANCE.NS', '12/01/2021', '12/05/2021', true, null, null, false], // Non-US Market '_._' test
+    ['VTI', '12/04/2021', '12/05/2021', true, null, null, false], // Weekend days test, should be 0.0%
+    ['AAPL', '01/06/2021', '11/15/2021', true, null, null, false], // Duplicate ticker investment test
+    ['BTC-USD', '12/04/2021', '12/05/2021', true, null, null, false], // Bitcoin on weekend pricing test
+    ['AMZN', '01/04/2021', '11/12/2021', false, null, null, false],
+    ['VTI', '01/04/2021', '11/12/2021', false, null, null, false],
+    ['BTC-USD', '01/04/2021', '11/12/2021', false, null, null, false],
+    ['AMZN', '01/06/2021', '11/15/2021', false, null, null, false],
     ];
 
   // Holds investmentRows built from investments
@@ -195,18 +195,25 @@ class _ARHomeState extends State<ARHome> {
                       DateTime sellDate = stringToDateTime(inv[2]);
 
                       // Get buy and sell closing prices
-                      await retrieveMarketValue(inv[0], buyDate).then((val) => { // Add error checks, continue on error, remove error prone rows/notify user
-                        investmentsAnalyzed[key]['buyPrice'] = val
-                      });
-                      await retrieveMarketValue(inv[0], sellDate).then((val) => {
-                        investmentsAnalyzed[key]['sellPrice'] = val
-                      });
+                      if (inv[6]) { // Investment has specified buy and sell price
+                        investmentsAnalyzed[key]['buyPrice'] = inv[4];
+                        investmentsAnalyzed[key]['sellPrice'] = inv[5];
+                      } else { // Investment does not have specified buy and sell price
+                        await retrieveMarketValue(inv[0], buyDate).then((val) => { // Add error checks, continue on error, remove error prone rows/notify user
+                          investmentsAnalyzed[key]['buyPrice'] = val
+                        });
+                        await retrieveMarketValue(inv[0], sellDate).then((val) => {
+                          investmentsAnalyzed[key]['sellPrice'] = val
+                        });
+                      }
+
                       await retrieveMarketValue(benchmarkTicker, buyDate).then((val) => {
                         investmentsAnalyzed[key]['benchBuyPrice'] = val
                       });
                       await retrieveMarketValue(benchmarkTicker, sellDate).then((val) => {
                         investmentsAnalyzed[key]['benchSellPrice'] = val
                       });
+
                       int daysDiff = daysBetween(stringToDateTime(inv[1]), stringToDateTime(inv[2]));
                       print("Processing ${inv[0]} with buy and sell price: ${investmentsAnalyzed[key]['buyPrice']}, ${investmentsAnalyzed[key]['sellPrice']}");
                       // Set Investment Analysis attributes in investmentsAnalyzed
@@ -216,6 +223,7 @@ class _ARHomeState extends State<ARHome> {
                           investmentsAnalyzed[key]['buyPrice'],
                           investmentsAnalyzed[key]['sellPrice'],
                           daysDiff);
+
                       print("Processing ${benchmark[0]} with buy and sell price: ${investmentsAnalyzed[key]['benchBuyPrice']}, ${investmentsAnalyzed[key]['benchSellPrice']}");
                       investmentsAnalyzed[key]['benchmark'] = benchmark[0]; // Make non null
                       investmentsAnalyzed[key]['benchmarkAnnualReturn'] = computeAnnualReturn(

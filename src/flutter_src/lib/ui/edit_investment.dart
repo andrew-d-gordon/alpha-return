@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 
 // Local Imports
 import 'package:test_project/common/string_datetime.dart';
+import 'package:test_project/common/errorcheck_investment.dart';
 import 'package:test_project/common/is_numeric.dart';
 import 'package:test_project/ui/closeout_button.dart';
 import 'package:test_project/ui/ar_home.dart';
@@ -90,24 +91,36 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
     setState(() => _addPressed = true);
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // Valid Investment, edit existing row and notify
-      _ticker = _t.text;
-      _buyDate = _b.text;
-      _sellDate = _s.text;
-      widget.investments[widget.row] = [
-        _ticker,
-        _buyDate,
-        _sellDate,
-        widget.investments[widget.row][3]];
-
+      // Optional buy and sell price specified
+      if ((_bp.text != '' && _sp.text != '') && (_bp.text != '0.0' && _sp.text != '0.0')) {
+        widget.investments[widget.row] = [
+          _t.text,
+          _b.text,
+          _s.text,
+          widget.investments[widget.row][3], // Selected
+          double.parse(_bp.text), // Optional buy price as double, add try catch last ditch effort
+          double.parse(_sp.text), // Optional sell price as double
+          true // Custom investment t/f (true if buy price and sell price specified)
+        ];
+      } else { // Optional buy and sell price not specified
+        widget.investments[widget.row] = [
+          _t.text,
+          _b.text,
+          _s.text,
+          widget.investments[widget.row][3], // Selected
+          null, // Optional buy price as double
+          null, // Optional sell price as double
+          false // Custom investment t/f (false if buy price and sell price not specified)
+        ];
+      }
       // Notify parent to update rows
       widget.notify();
 
       // Pop window and clear values for next add investment
       Navigator.pop(context);
-      print("Edited row ${widget.row} with: $_ticker $_buyDate $_sellDate");
+      // print("Edited row ${widget.row} with: $_ticker $_buyDate $_sellDate");
       // Reset text in controllers
-      _t.text = _b.text = _s.text = '';
+      _t.text = _b.text = _s.text = _sp.text = _bp.text = '';
       _addPressed = false;
     }
   }
@@ -128,6 +141,9 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
     _t.text = widget.investments[widget.row][0];
     _b.text = widget.investments[widget.row][1];
     _s.text = widget.investments[widget.row][2];
+    print("These are buy and sell prices normally: ${widget.investments[widget.row][4]} and ${widget.investments[widget.row][5]}");
+    _bp.text = (widget.investments[widget.row][4]??'').toString(); // Null check converts to '' if bp is null
+    _sp.text = (widget.investments[widget.row][5]??'').toString(); // Null check converts to '' if sp is null
   }
 
   @override
@@ -225,10 +241,7 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                                       ? AutovalidateMode.onUserInteraction
                                       : AutovalidateMode.disabled,
                                   validator: (price) { // Validate investment symbol
-                                    if (price != '') { // If price specified, numeric check
-                                      return isNumeric(price) ? null:'Must be numeric';
-                                    }
-                                    return null;
+                                    return errorCheckBuySellPrice(_bp.text, _sp.text);
                                   },
                                 ),
                               ),
@@ -247,10 +260,7 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                                       ? AutovalidateMode.onUserInteraction
                                       : AutovalidateMode.disabled,
                                   validator: (price) { // Validate investment symbol
-                                    if (price != '') { // If price specified, numeric check
-                                      return isNumeric(price) ? null:'Must be numeric';
-                                    }
-                                    return null;
+                                    return errorCheckBuySellPrice(_bp.text, _sp.text);
                                   },
                                 ),
                               ),
