@@ -7,21 +7,18 @@ import 'package:flutter/cupertino.dart';
 import 'ui/ar_home.dart';
 
 // To do:
-// Associate hash ids with rows to allow for better recall in local memory dict
-// Figure out how to interpolate binance/coincap market values like with yahoo
-// Unrequire dependency for fin_quote
-
-// Add buy and sell price as entry for investments, update logic in ar_home when processing investments
-// to not go out and find buy and sell price for investment when it is specified.
-
 // Investment input section/make modal area smaller
 // clear inv to be added/del'd when close out pressed
+
+// Add 2x2 table with benchmark and investment, total gain loss %, annual ret %, below show alpha return
+// Add weighted annual return benchmark for whole portfolio tile when more than one investment selected
 
 // Flutter integration with firebase to store user info/market data into firestore
 
 // Remember investment sets (security investments by hashid)
 
 // Add characteristic line premium alpha return output, custom benchmark besides sp500 and bitcoin
+// Add global market indices as benchmarks, remove $ from buy sell hint
 // Once enough days filled in for investment compute beta and error to find expected returns on investment
 // For time being can do benchmark versus investment line curves on small graph in output
 

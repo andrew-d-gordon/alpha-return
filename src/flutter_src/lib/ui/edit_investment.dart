@@ -232,7 +232,7 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                                   style: TextStyle(fontSize: dialogFontSize),
                                   decoration: const InputDecoration(
                                     labelText: "Buy Price",
-                                    hintText: "\$",
+                                    //hintText: "",
                                     border: OutlineInputBorder(),
                                   ),
                                   controller: _bp,
@@ -251,7 +251,7 @@ class _EditInvestmentDialogState extends State<EditInvestmentDialog> {
                                   style: TextStyle(fontSize: dialogFontSize),
                                   decoration: const InputDecoration(
                                     labelText: "Sell Price",
-                                    hintText: "\$",
+                                    //hintText: "",
                                     border: OutlineInputBorder(),
                                   ),
                                   controller: _sp,
