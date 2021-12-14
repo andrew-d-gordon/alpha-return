@@ -98,7 +98,7 @@ class _ARHomeState extends State<ARHome> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Alpha Return'),
+        title: const Text('Alpha Return', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.0)),
         centerTitle: true,
         backgroundColor: const Color(0xff66b366),
       ),
@@ -180,23 +180,21 @@ class _ARHomeState extends State<ARHome> {
             child: Center(
               child: TextButton(
                 onPressed: () async {
+                  // Show loading dialog while we wait for investment data to be retrieved.
                   showLoaderDialog(context);
-                  /* Want to queue computing for alpha return of each row in
-                     investments with investment[3] set to true */
                   // Holds analyzed investments
-
                   Map investmentsAnalyzed = {};
                   // Benchmark ticker to retrieve benchmark prices from api
                   String benchmarkTicker = benchmarks[benchmark[0]]!;
                   // Used to determine computation of weightedAlphaReturn
                   int investmentCount = 0;
 
-                  // Iterate through investments, compute alpha return for selected investments
+                  // Iterate through investments, compute alpha return for selected investments (inv[3]==true)
                   for (int i=0; i<investments.length; i++) {
-                    // Increment number of investments analyzed
-                    investmentCount += 1;
                     // If investment selected (investments[i][3] == true), compute annual return
                     if (investments[i][3]) {
+                      // Increment number of investments analyzed
+                      investmentCount += 1;
                       // Retrieve investment data and initialize analysis attributes
                       List inv = investments[i];
                       String key = investmentHash(inv);
@@ -257,8 +255,10 @@ class _ARHomeState extends State<ARHome> {
 
                   if (investmentCount == 0) { // No investments analyzed, show alert to user
                     print('No investments selected to analyze.');
+                    Navigator.pop(context); // Pop loading alert dialog now that data is loaded
+                    showNoneSelectedAlert(context); // Show none selected dialog
                   } else { // Investments were analyzed, show alpha return
-                    Navigator.pop(context);
+                    Navigator.pop(context); // Pop loading alert dialog now that data is loaded
                     if (investmentsAnalyzed.isNotEmpty) {
                       showDialog(
                         context: context,
@@ -311,8 +311,13 @@ showLoaderDialog(BuildContext context){
     content: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const CircularProgressIndicator(),
-        Container(margin: const EdgeInsets.only(left: 7),child:const Text("Calculating your return..." , textAlign: TextAlign.center,)),
+        const CircularProgressIndicator(
+          color: Colors.greenAccent,
+        ),
+        Container(margin: const EdgeInsets.only(left: 7),
+            child:const Text("Calculating your return..." ,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18.0))),
       ],),
   );
   showDialog(barrierDismissible: false,
@@ -320,5 +325,36 @@ showLoaderDialog(BuildContext context){
     builder:(BuildContext context){
       return alert;
     },
+  );
+}
+
+// Notify user of no investments selected to analyze
+showNoneSelectedAlert(BuildContext context){
+  AlertDialog alert = AlertDialog(
+      title: const Text("No investments selected.",
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+      content: const Text("Investments must be selected to compute alpha return.",
+            style: TextStyle(fontSize: 18.0)),
+      actions: [
+        continueButton(context, const TextStyle(fontSize: 18.0)),
+      ],
+  );
+  showDialog(barrierDismissible: false,
+    context:context,
+    builder:(BuildContext context){
+      return alert;
+    },
+  );
+}
+
+Center continueButton(BuildContext context, TextStyle ts) {
+  return Center(
+    child: TextButton( // Add Exit button for the bottom
+      child: Text("Continue", style: ts),
+      onPressed: () {
+        // Notify parent to update rows
+        Navigator.pop(context);
+      },
+    ),
   );
 }
