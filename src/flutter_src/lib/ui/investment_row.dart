@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/ui/closeout_button.dart';
 import 'package:test_project/ui/edit_investment.dart';
+import 'package:test_project/common/fin_analysis.dart';
 
 BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoration Widget
   return BoxDecoration(
@@ -231,8 +232,9 @@ class _DeleteInvestmentsButtonState extends State<DeleteInvestmentsButton> {
 
 class showAlphaReturnDialog extends StatefulWidget {
   final Map investmentsAnalyzed;
+  final String benchmark;
   const showAlphaReturnDialog({Key? key,
-    required this.investmentsAnalyzed}) : super(key: key);
+    required this.investmentsAnalyzed, required this.benchmark}) : super(key: key);
 
   @override
   _showAlphaReturnDialogState createState() => _showAlphaReturnDialogState();
@@ -244,7 +246,21 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
 
   @override
   Widget build(BuildContext context) { // TBD whether we pass in context as parameter
-    alphaReturns = investmentReturnsList(widget.investmentsAnalyzed, context);
+    double? weightedAvgAR; // Use to hold weighted average alpha return
+    // If we have more than one investment analyzed, set flag to show weighted alpha return
+    bool showWeightedAlphaReturn = (widget.investmentsAnalyzed.keys.length>1)?true:false;
+    if (showWeightedAlphaReturn) { // More than one investment selected, show weighted alpha return
+      List<List<double>> returnsAndVolumes = []; // Holds alpha return and percentage makeup of portfolio for each investment
+      double defaultVolume = 1/widget.investmentsAnalyzed.keys.length; // 1/(num investments analyzed) equates investments in percentage makeup for portfolio
+      for (var i in widget.investmentsAnalyzed.keys) { // Find alpha return and volume of each investment
+        returnsAndVolumes.add([widget.investmentsAnalyzed[i]['alphaReturn'], defaultVolume]);
+      }
+      weightedAvgAR = computeWeightedAlphaReturn(returnsAndVolumes);
+      print("This is weighted average alpha return: $weightedAvgAR");
+      // Add display widget to alphaReturnsList if successful
+    }
+
+    alphaReturns = investmentReturnsList(widget.investmentsAnalyzed, widget.benchmark, weightedAvgAR, context);
 
     return SizedBox(
         width: 50,
@@ -302,12 +318,13 @@ class investmentReturnOutput extends StatelessWidget {
   }
 }
 
-List<Widget> investmentReturnsList(Map investmentsAnalyzed, BuildContext context) {
+// Use to return output list boxes showing AR for investments and weighted average return (if >1 investment)
+List<Widget> investmentReturnsList(Map investmentsAnalyzed, String benchmark, double? weightedAvgAR, BuildContext context) {
   double dialogFontSize = 20.0;
   List<Widget> alphaReturns = []; // Refresh alphaReturns Text widgets
 
   // Build Title Widget
-  alphaReturns.add(const Text('Your Alpha Return', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)));
+  alphaReturns.add(const Text('Your Returns', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)));
   alphaReturns.add(const Divider(height: 20, thickness: 5, indent: 20, endIndent: 20, color: Colors.grey));
 
   // Build alpha return widgets
@@ -322,9 +339,16 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, BuildContext context
       child: SizedBox(
         child: Column(
           children: [
-            Text('Alpha Return of Investment ${investmentsAnalyzed[k]['ticker']} against Benchmark ${investmentsAnalyzed[k]['benchmark']}:',
+            Text('Return of Investment ${investmentsAnalyzed[k]['ticker']} against Benchmark $benchmark:',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: dialogFontSize, fontWeight: FontWeight.bold)),
+            investmentReturnTable(
+                investmentsAnalyzed[k]['ticker'],
+                benchmark,
+                investmentsAnalyzed[k]['totalGain'],
+                investmentsAnalyzed[k]['benchmarkTotalGain'],
+                investmentsAnalyzed[k]['annualReturn'],
+                investmentsAnalyzed[k]['benchmarkAnnualReturn']),
             Text('${investmentsAnalyzed[k]['alphaReturn']}%',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: dialogFontSize+4.0,
@@ -336,8 +360,83 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, BuildContext context
       ),
     ));
   }
-  // If alphaReturns length is greater than one, add weighted alpha return derived from weighted annual returns for benchmark and investments
+
+  // If weighted avg return available, add widget display to output
+  if (weightedAvgAR!=null) {
+    Color returnColor = Colors.green;
+    if (weightedAvgAR < 0) { // If negative weightedAvgAR, return color red
+      returnColor = Colors.red;
+    }
+
+    alphaReturns.add(Container(
+      color: const Color.fromARGB(20, 25, 25, 25),
+      child: SizedBox(
+        child: Column(
+          children: [
+            Text('Weighted Average Alpha Return of Investments against Benchmark $benchmark:',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: dialogFontSize, fontWeight: FontWeight.bold)),
+            Text('$weightedAvgAR%',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: dialogFontSize+4.0,
+                    fontWeight: FontWeight.bold,
+                    color: returnColor,
+                    decorationColor: Colors.black))
+          ],
+        ),
+      ),
+    ));
+  }
   // Add exit button
   alphaReturns.add(exitButton(context, TextStyle(fontSize: dialogFontSize)));
   return alphaReturns;
+}
+
+// Returns table for alpha return dialog with investment
+Table investmentReturnTable(String investmentSymbol,
+                            String benchmark,
+                            double investmentGain,
+                            double benchmarkGain,
+                            double investmentCompound,
+                            double benchmarkCompound) {
+  BoxDecoration tableBackgroundColor = const BoxDecoration(
+    color: Color.fromARGB(20, 25, 25, 25),);
+
+  return Table(
+    border: TableBorder.all(),
+    columnWidths: const <int, TableColumnWidth>{
+      0: FlexColumnWidth(),
+      1: FlexColumnWidth(),
+      2: FlexColumnWidth(),
+      //3: FixedColumnWidth(64),
+    },
+    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+    children: <TableRow>[
+      TableRow( // Header Row: Returns | Investment | Benchmark
+        children: <Widget>[
+          const Text(''),
+          Center(child: Text(investmentSymbol)),
+          Center(child: Text(benchmark)),
+        ],
+      ),
+      TableRow( // Total % Gain Row: Total Gain | investmentGain% | benchmarkGain%
+        decoration: tableBackgroundColor,
+        children: <Widget>[
+          const Center(child: Text('Total Gain')),
+          Center(child: Text('$investmentGain%')),
+          Center(
+            child: Text('$benchmarkGain%')
+          ),
+        ],
+      ),
+      TableRow( // Annual Return % Row: Annual Return | investmentCompound% | benchmarkCompound%
+        decoration: tableBackgroundColor,
+        children: <Widget>[
+          const Center(child: Text('Annual Return')),
+          Center(child: Text('$investmentCompound%')),
+          Center(child: Text('$benchmarkCompound%')),
+        ]
+      )
+    ],
+  );
 }

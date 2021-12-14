@@ -182,9 +182,17 @@ class _ARHomeState extends State<ARHome> {
                 onPressed: () async {
                   /* Want to queue computing for alpha return of each row in
                      investments with investment[3] set to true */
-                  Map investmentsAnalyzed = {}; // Holds analyzed investments
+                  // Holds analyzed investments
+                  Map investmentsAnalyzed = {};
+                  // Benchmark ticker to retrieve benchmark prices from api
                   String benchmarkTicker = benchmarks[benchmark[0]]!;
+                  // Used to determine computation of weightedAlphaReturn
+                  int investmentCount = 0;
+
+                  // Iterate through investments, compute alpha return for selected investments
                   for (int i=0; i<investments.length; i++) {
+                    // Increment number of investments analyzed
+                    investmentCount += 1;
                     // If investment selected (investments[i][3] == true), compute annual return
                     if (investments[i][3]) {
                       // Retrieve investment data and initialize analysis attributes
@@ -194,12 +202,12 @@ class _ARHomeState extends State<ARHome> {
                       DateTime buyDate = stringToDateTime(inv[1]);
                       DateTime sellDate = stringToDateTime(inv[2]);
 
-                      // Get buy and sell closing prices
                       if (inv[6]) { // Investment has specified buy and sell price
                         investmentsAnalyzed[key]['buyPrice'] = inv[4];
                         investmentsAnalyzed[key]['sellPrice'] = inv[5];
                       } else { // Investment does not have specified buy and sell price
-                        await retrieveMarketValue(inv[0], buyDate).then((val) => { // Add error checks, continue on error, remove error prone rows/notify user
+                        // Add error checks, continue on error, remove error prone rows/notify user
+                        await retrieveMarketValue(inv[0], buyDate).then((val) => {
                           investmentsAnalyzed[key]['buyPrice'] = val
                         });
                         await retrieveMarketValue(inv[0], sellDate).then((val) => {
@@ -215,21 +223,26 @@ class _ARHomeState extends State<ARHome> {
                       });
 
                       int daysDiff = daysBetween(stringToDateTime(inv[1]), stringToDateTime(inv[2]));
-                      print("Processing ${inv[0]} with buy and sell price: ${investmentsAnalyzed[key]['buyPrice']}, ${investmentsAnalyzed[key]['sellPrice']}");
                       // Set Investment Analysis attributes in investmentsAnalyzed
                       investmentsAnalyzed[key]['ticker'] = inv[0];
                       investmentsAnalyzed[key]['daysDiff'] = daysDiff;
-                      investmentsAnalyzed[key]['annualReturn'] = computeAnnualReturn(
+                      investmentsAnalyzed[key]['annualReturn'] = computeAnnualReturn( // Annual Return
                           investmentsAnalyzed[key]['buyPrice'],
                           investmentsAnalyzed[key]['sellPrice'],
                           daysDiff);
+                      investmentsAnalyzed[key]['totalGain'] = totalGain( // Total % Gain
+                        investmentsAnalyzed[key]['buyPrice'],
+                        investmentsAnalyzed[key]['sellPrice']);
 
-                      print("Processing ${benchmark[0]} with buy and sell price: ${investmentsAnalyzed[key]['benchBuyPrice']}, ${investmentsAnalyzed[key]['benchSellPrice']}");
-                      investmentsAnalyzed[key]['benchmark'] = benchmark[0]; // Make non null
-                      investmentsAnalyzed[key]['benchmarkAnnualReturn'] = computeAnnualReturn(
+                      investmentsAnalyzed[key]['benchmark'] = benchmark[0];
+                      investmentsAnalyzed[key]['benchmarkAnnualReturn'] = computeAnnualReturn( // Annual Return
                           investmentsAnalyzed[key]['benchBuyPrice'],
                           investmentsAnalyzed[key]['benchSellPrice'],
                           daysDiff);
+                      investmentsAnalyzed[key]['benchmarkTotalGain'] = totalGain( // Total % Gain
+                        investmentsAnalyzed[key]['benchBuyPrice'],
+                        investmentsAnalyzed[key]['benchSellPrice'],
+                      );
 
                       investmentsAnalyzed[key]['alphaReturn'] = computeAlphaReturn(
                           investmentsAnalyzed[key]['annualReturn'],
@@ -237,20 +250,26 @@ class _ARHomeState extends State<ARHome> {
                       );
                     }
                   }
-                  if (investmentsAnalyzed.isNotEmpty) {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return showAlphaReturnDialog(investmentsAnalyzed: investmentsAnalyzed);
-                    });
-                  }
 
+                  if (investmentCount == 0) { // No investments analyzed, show alert to user
+                    print('No investments selected to analyze.');
+                  } else { // Investments were analyzed, show alpha return
+                    if (investmentsAnalyzed.isNotEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return showAlphaReturnDialog(
+                            investmentsAnalyzed: investmentsAnalyzed,
+                            benchmark: benchmark[0],);
+                        });
+                    }
+                  }
 
                   // We would then like to build out a modified Dialog Example
                   // with annual return of each investment, of the benchmark, and
                   // the inherent alpha return.
 
-                  // Weighted Annual return would be computed as follows (would need % of portfolio metric on investments)
+                  // Weighted annual return would be computed as follows (would need % of portfolio metric on investments)
                   // (percentage_i1*i1_annual_return + percentage_i2*i2_annual_return + ... + percentage_in*in_annual_return)
                   // Where i(1->n) is a selected investment with an associated annual return and percentage of portfolio specified
                 },
