@@ -224,6 +224,8 @@ class _ARHomeState extends State<ARHome> {
 
                       int daysDiff = daysBetween(stringToDateTime(inv[1]), stringToDateTime(inv[2]));
                       // Set Investment Analysis attributes in investmentsAnalyzed
+                      investmentsAnalyzed[key]['buyDateStr'] = inv[1];
+                      investmentsAnalyzed[key]['sellDateStr'] = inv[2];
                       investmentsAnalyzed[key]['ticker'] = inv[0];
                       investmentsAnalyzed[key]['daysDiff'] = daysDiff;
                       investmentsAnalyzed[key]['annualReturn'] = computeAnnualReturn( // Annual Return

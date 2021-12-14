@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:test_project/ui/closeout_button.dart';
 import 'package:test_project/ui/edit_investment.dart';
 import 'package:test_project/common/fin_analysis.dart';
+import 'package:test_project/common/round.dart';
 
 BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoration Widget
   return BoxDecoration(
@@ -321,6 +322,7 @@ class investmentReturnOutput extends StatelessWidget {
 // Use to return output list boxes showing AR for investments and weighted average return (if >1 investment)
 List<Widget> investmentReturnsList(Map investmentsAnalyzed, String benchmark, double? weightedAvgAR, BuildContext context) {
   double dialogFontSize = 20.0;
+  int tableCellPlaces = 2;
   List<Widget> alphaReturns = []; // Refresh alphaReturns Text widgets
 
   // Build Title Widget
@@ -339,22 +341,35 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, String benchmark, do
       child: SizedBox(
         child: Column(
           children: [
-            Text('Return of Investment ${investmentsAnalyzed[k]['ticker']} against Benchmark $benchmark:',
+            Text('${investmentsAnalyzed[k]['ticker']} against $benchmark: ${investmentsAnalyzed[k]['buyDateStr']} to ${investmentsAnalyzed[k]['sellDateStr']}',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: dialogFontSize, fontWeight: FontWeight.bold)),
             investmentReturnTable(
                 investmentsAnalyzed[k]['ticker'],
                 benchmark,
-                investmentsAnalyzed[k]['totalGain'],
-                investmentsAnalyzed[k]['benchmarkTotalGain'],
-                investmentsAnalyzed[k]['annualReturn'],
-                investmentsAnalyzed[k]['benchmarkAnnualReturn']),
-            Text('${investmentsAnalyzed[k]['alphaReturn']}%',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: dialogFontSize+4.0,
+                round(investmentsAnalyzed[k]['totalGain'], tableCellPlaces),
+                round(investmentsAnalyzed[k]['benchmarkTotalGain'], tableCellPlaces),
+                round(investmentsAnalyzed[k]['annualReturn'], tableCellPlaces),
+                round(investmentsAnalyzed[k]['benchmarkAnnualReturn'], tableCellPlaces)),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                text: 'Alpha Return: ',
+                style: TextStyle(fontSize: dialogFontSize+2.0,
                     fontWeight: FontWeight.bold,
-                    color: returnColor,
-                    decorationColor: Colors.black))
+                    fontFamily: 'Poppins',
+                    color: Colors.black,
+                    decorationColor: Colors.black),
+                children: [
+                  TextSpan(
+                    text: '${round(investmentsAnalyzed[k]['alphaReturn'], tableCellPlaces)}%',
+                    style: TextStyle(fontSize: dialogFontSize+2.0,
+                        fontWeight: FontWeight.bold,
+                        color: returnColor,
+                        decorationColor: Colors.black),
+                    ),
+                ])
+              )
           ],
         ),
       ),
@@ -373,7 +388,7 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, String benchmark, do
       child: SizedBox(
         child: Column(
           children: [
-            Text('Weighted Average Alpha Return of Investments against Benchmark $benchmark:',
+            Text('Weighted Average Alpha Return of Investments against $benchmark:',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: dialogFontSize, fontWeight: FontWeight.bold)),
             Text('$weightedAvgAR%',
@@ -401,6 +416,9 @@ Table investmentReturnTable(String investmentSymbol,
                             double benchmarkCompound) {
   BoxDecoration tableBackgroundColor = const BoxDecoration(
     color: Color.fromARGB(20, 25, 25, 25),);
+  double dialogFontSize = 18.0;
+  Color gainColor = Colors.green;
+  Color lossColor = Colors.red;
 
   return Table(
     border: TableBorder.all(),
@@ -422,19 +440,42 @@ Table investmentReturnTable(String investmentSymbol,
       TableRow( // Total % Gain Row: Total Gain | investmentGain% | benchmarkGain%
         decoration: tableBackgroundColor,
         children: <Widget>[
-          const Center(child: Text('Total Gain')),
-          Center(child: Text('$investmentGain%')),
-          Center(
-            child: Text('$benchmarkGain%')
+          Center(child: Text('Total Gain',
+            style: TextStyle(fontSize: dialogFontSize,
+            //fontWeight: FontWeight.bold,
+            color: Colors.black,
+            decorationColor: Colors.black))),
+          Center(child: Text('$investmentGain%',
+              style: TextStyle(fontSize: dialogFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: investmentGain>=0 ? gainColor:lossColor,
+                  decorationColor: Colors.black))),
+          Center(child: Text('$benchmarkGain%',
+              style: TextStyle(fontSize: dialogFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: benchmarkGain>=0 ? gainColor:lossColor,
+                  decorationColor: Colors.black))
           ),
         ],
       ),
       TableRow( // Annual Return % Row: Annual Return | investmentCompound% | benchmarkCompound%
         decoration: tableBackgroundColor,
         children: <Widget>[
-          const Center(child: Text('Annual Return')),
-          Center(child: Text('$investmentCompound%')),
-          Center(child: Text('$benchmarkCompound%')),
+          Center(child: Text('Annual Ret',
+            style: TextStyle(fontSize: dialogFontSize,
+            //fontWeight: FontWeight.bold,
+            color: Colors.black,
+            decorationColor: Colors.black))),
+          Center(child: Text('$investmentCompound%',
+              style: TextStyle(fontSize: dialogFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: investmentCompound>=0 ? gainColor:lossColor,
+                  decorationColor: Colors.black))),
+          Center(child: Text('$benchmarkCompound%',
+              style: TextStyle(fontSize: dialogFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: benchmarkCompound>=0 ? gainColor:lossColor,
+                  decorationColor: Colors.black))),
         ]
       )
     ],
