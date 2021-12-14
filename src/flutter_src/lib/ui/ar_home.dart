@@ -180,9 +180,11 @@ class _ARHomeState extends State<ARHome> {
             child: Center(
               child: TextButton(
                 onPressed: () async {
+                  showLoaderDialog(context);
                   /* Want to queue computing for alpha return of each row in
                      investments with investment[3] set to true */
                   // Holds analyzed investments
+
                   Map investmentsAnalyzed = {};
                   // Benchmark ticker to retrieve benchmark prices from api
                   String benchmarkTicker = benchmarks[benchmark[0]]!;
@@ -256,6 +258,7 @@ class _ARHomeState extends State<ARHome> {
                   if (investmentCount == 0) { // No investments analyzed, show alert to user
                     print('No investments selected to analyze.');
                   } else { // Investments were analyzed, show alpha return
+                    Navigator.pop(context);
                     if (investmentsAnalyzed.isNotEmpty) {
                       showDialog(
                         context: context,
@@ -267,13 +270,13 @@ class _ARHomeState extends State<ARHome> {
                     }
                   }
 
-                  // We would then like to build out a modified Dialog Example
-                  // with annual return of each investment, of the benchmark, and
-                  // the inherent alpha return.
-
-                  // Weighted annual return would be computed as follows (would need % of portfolio metric on investments)
-                  // (percentage_i1*i1_annual_return + percentage_i2*i2_annual_return + ... + percentage_in*in_annual_return)
-                  // Where i(1->n) is a selected investment with an associated annual return and percentage of portfolio specified
+                  // // We would then like to build out a modified Dialog Example
+                  // // with annual return of each investment, of the benchmark, and
+                  // // the inherent alpha return.
+                  //
+                  // // Weighted annual return would be computed as follows (would need % of portfolio metric on investments)
+                  // // (percentage_i1*i1_annual_return + percentage_i2*i2_annual_return + ... + percentage_in*in_annual_return)
+                  // // Where i(1->n) is a selected investment with an associated annual return and percentage of portfolio specified
                 },
                 style: TextButton.styleFrom(
                   primary: Colors.greenAccent,
@@ -301,4 +304,21 @@ class _ARHomeState extends State<ARHome> {
     backgroundColor: appBackgroundColor,
     );
   }
+}
+
+showLoaderDialog(BuildContext context){
+  AlertDialog alert=AlertDialog(
+    content: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const CircularProgressIndicator(),
+        Container(margin: const EdgeInsets.only(left: 7),child:const Text("Calculating your return..." , textAlign: TextAlign.center,)),
+      ],),
+  );
+  showDialog(barrierDismissible: false,
+    context:context,
+    builder:(BuildContext context){
+      return alert;
+    },
+  );
 }

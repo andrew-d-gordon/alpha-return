@@ -35,6 +35,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   fin_quote: ^0.1.4
   crypto: ^3.0.1
+  futuristic: ^0.1.3
   # http: ^0.13.4
 
 dev_dependencies:
