@@ -7,6 +7,10 @@ import 'package:test_project/ui/edit_investment.dart';
 import 'package:test_project/common/fin_analysis.dart';
 import 'package:test_project/common/round.dart';
 
+// Constant colors and style attributes
+Color rowBackgroundColor = const Color(0xC64AF927);
+
+// Create investment row box decoration
 BoxDecoration investmentBoxDecoration(Color c, Color borderC) { // Box Decoration Widget
   return BoxDecoration(
     border: Border.all(
@@ -116,7 +120,7 @@ class _InvestmentRowState extends State<InvestmentRow> {
               flex: 5,
               child: Container(
                 margin: const EdgeInsets.all(0.0),
-                decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
+                decoration: investmentBoxDecoration(rowBackgroundColor, Colors.black),
                 child: Text(
                   widget.symbol,
                   style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
@@ -128,7 +132,7 @@ class _InvestmentRowState extends State<InvestmentRow> {
               flex: 5,
               child: Container(
                 margin: const EdgeInsets.all(0.0),
-                decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
+                decoration: investmentBoxDecoration(rowBackgroundColor, Colors.black),
                 child: Text(
                   widget.buyDate,
                   style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
@@ -140,7 +144,7 @@ class _InvestmentRowState extends State<InvestmentRow> {
             flex: 5,
             child: Container(
               margin: const EdgeInsets.all(0.0),
-              decoration: investmentBoxDecoration(Colors.lightGreen, Colors.black),
+              decoration: investmentBoxDecoration(rowBackgroundColor, Colors.black),
               child: Text(
                 widget.sellDate,
                 style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
