@@ -39,7 +39,8 @@ class _ARHomeState extends State<ARHome> {
   // [Symbol, BuyDate, SellDate, Selected (t/f), Buy Price (double?), Sell Price (double?), Manual (t/f)]
   List<List> investments = [
     ['AAPL', '01/04/2021', '11/12/2021', true, null, null, false],
-    ['RELIANCE.NS', '12/01/2021', '12/05/2021', true, null, null, false], // Non-US Market '_._' test
+    ['SIEGY', '01/04/2021', '06/15/2021', true, null, null, false],
+    ['TCS.NS', '12/01/2021', '12/05/2021', true, null, null, false], // Non-US Market '_._' test, overflow
     ['VTI', '12/04/2021', '12/05/2021', true, null, null, false], // Weekend days test, should be 0.0%
     ['AAPL', '01/06/2021', '11/15/2021', true, null, null, false], // Duplicate ticker investment test
     ['BTC-USD', '12/04/2021', '12/05/2021', true, null, null, false], // Bitcoin on weekend pricing test
@@ -47,7 +48,7 @@ class _ARHomeState extends State<ARHome> {
     ['VTI', '01/04/2021', '11/12/2021', false, null, null, false],
     ['BTC-USD', '01/04/2021', '11/12/2021', false, null, null, false],
     ['AMZN', '01/06/2021', '11/15/2021', false, null, null, false],
-    ];
+    ['RELIANCE.NS', '12/01/2021', '12/05/2021', true, null, null, false]];
 
   // Holds investmentRows built from investments
   List<Widget> investmentRows = [];

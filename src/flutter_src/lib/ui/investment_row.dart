@@ -344,6 +344,7 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, String benchmark, do
             Text('${investmentsAnalyzed[k]['ticker']} against $benchmark: ${investmentsAnalyzed[k]['buyDateStr']} to ${investmentsAnalyzed[k]['sellDateStr']}',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: dialogFontSize, fontWeight: FontWeight.bold)),
+            whiteSpaceDiv(),
             investmentReturnTable(
                 investmentsAnalyzed[k]['ticker'],
                 benchmark,
@@ -351,6 +352,7 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, String benchmark, do
                 round(investmentsAnalyzed[k]['benchmarkTotalGain'], tableCellPlaces),
                 round(investmentsAnalyzed[k]['annualReturn'], tableCellPlaces),
                 round(investmentsAnalyzed[k]['benchmarkAnnualReturn'], tableCellPlaces)),
+            whiteSpaceDiv(),
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
@@ -480,4 +482,8 @@ Table investmentReturnTable(String investmentSymbol,
       )
     ],
   );
+}
+
+Divider whiteSpaceDiv() {
+  return const Divider(height: 10, color: Colors.transparent);
 }
