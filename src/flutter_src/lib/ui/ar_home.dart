@@ -9,12 +9,12 @@ import 'package:test_project/ui/investment_row.dart';
 import 'package:test_project/ui/add_investment.dart';
 import 'package:test_project/ui/addrows_notice.dart';
 import 'package:test_project/ui/investmentrow_keys.dart';
+import 'package:test_project/ui/custom_button.dart';
 import 'package:test_project/common/string_datetime.dart';
 import 'package:test_project/common/days_between.dart';
 import 'package:test_project/common/hash_investment.dart';
 import 'package:test_project/common/fin_analysis.dart';
 import 'package:test_project/network/price_quote.dart';
-
 
 // Set theme background
 bool lightTheme = false;
@@ -337,7 +337,7 @@ showNoneSelectedAlert(BuildContext context){
       content: const Text("Investments must be selected to compute alpha return.",
             style: TextStyle(fontSize: 18.0)),
       actions: [
-        continueButton(context, const TextStyle(fontSize: 18.0)),
+        customButton(context, "Continue", const TextStyle(fontSize: 18.0)),
       ],
   );
   showDialog(barrierDismissible: false,
@@ -345,17 +345,5 @@ showNoneSelectedAlert(BuildContext context){
     builder:(BuildContext context){
       return alert;
     },
-  );
-}
-
-Center continueButton(BuildContext context, TextStyle ts) {
-  return Center(
-    child: TextButton( // Add Exit button for the bottom
-      child: Text("Continue", style: ts),
-      onPressed: () {
-        // Notify parent to update rows
-        Navigator.pop(context);
-      },
-    ),
   );
 }

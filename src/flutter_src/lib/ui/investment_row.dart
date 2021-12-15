@@ -2,8 +2,12 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+// Local Imports
 import 'package:test_project/ui/closeout_button.dart';
 import 'package:test_project/ui/edit_investment.dart';
+import 'package:test_project/ui/white_space.dart';
+import 'package:test_project/ui/custom_button.dart';
 import 'package:test_project/common/fin_analysis.dart';
 import 'package:test_project/common/round.dart';
 
@@ -303,16 +307,7 @@ class _showAlphaReturnDialogState extends State<showAlphaReturnDialog> {
   }
 }
 
-TextButton exitButton(BuildContext context, TextStyle ts) {
-  return TextButton( // Add Exit button for the bottom
-    child: Text("Exit", style: ts),
-    onPressed: () {
-      // Notify parent to update rows
-      Navigator.pop(context);
-    },
-  );
-}
-
+// Investment return output creates data displays for each analyzed investment
 class investmentReturnOutput extends StatelessWidget {
   final Map investmentsAnalyzed;
   const investmentReturnOutput({Key? key, required this.investmentsAnalyzed}) : super(key: key);
@@ -409,7 +404,7 @@ List<Widget> investmentReturnsList(Map investmentsAnalyzed, String benchmark, do
     ));
   }
   // Add exit button
-  alphaReturns.add(exitButton(context, TextStyle(fontSize: dialogFontSize)));
+  alphaReturns.add(customButton(context, "Exit", TextStyle(fontSize: dialogFontSize)));
   return alphaReturns;
 }
 
@@ -486,8 +481,4 @@ Table investmentReturnTable(String investmentSymbol,
       )
     ],
   );
-}
-
-Divider whiteSpaceDiv() {
-  return const Divider(height: 10, color: Colors.transparent);
 }
