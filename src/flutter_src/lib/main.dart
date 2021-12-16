@@ -10,9 +10,8 @@ import 'ui/ar_home.dart';
 // Investment input section/make modal area smaller
 // clear inv to be added/del'd when close out pressed
 
-// Add 2x2 table with benchmark and investment, total gain loss %, annual ret %, below show alpha return
-// Add weighted annual return benchmark for whole portfolio tile when more than one investment selected
-
+// Utilize flutterfire authentication and cloud firestore as well as cloud functions to handle these operations
+// Links: https://firebase.google.com/docs/flutter/setup?platform=ios, https://firebase.flutter.dev/
 // Flutter integration with firebase to store user info/market data into firestore
 
 // Remember investment sets (security investments by hashid)
