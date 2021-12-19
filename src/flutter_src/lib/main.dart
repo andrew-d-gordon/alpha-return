@@ -13,6 +13,7 @@ import 'ui/ar_home.dart';
 // Utilize flutterfire authentication and cloud firestore as well as cloud functions to handle these operations
 // Links: https://firebase.google.com/docs/flutter/setup?platform=ios, https://firebase.flutter.dev/
 // Flutter integration with firebase to store user info/market data into firestore
+// Validate Alpha Return correctness via complete gain function, see if beta values necessary provision in alpha return
 
 // Remember investment sets (security investments by hashid)
 
