@@ -42,11 +42,12 @@ Future<double> retrieveMarketValue(String ticker, DateTime date) async {
 
   // Build URI
   Uri uri = Uri.https(authority, unencodedPath, queryParameters);
-  //print("This is uri: $uri");
+  // print("This is uri: $uri");
   // Run Get Request for Investment Data
   http.Response res;
   try {
-    res = await http.get(uri, headers: corsHeaders).timeout(quoteWait);
+    res = await http.get(uri).timeout(quoteWait);
+    //res = await http.get(uri, headers: corsHeaders).timeout(quoteWait);
   } on TimeoutException { // Timeout
     print('Timeout on attempt to retrieve quote for $ticker on ${date.toString()}');
     return -1.0;
