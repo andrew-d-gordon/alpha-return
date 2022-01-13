@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 // Time Constants
 int secondsInADay = 86400; // Used for adding secondsInADay to initial time stamp
-Duration quoteWait = const Duration(seconds: 10);
+Duration quoteWait = const Duration(seconds: 2);
 
 // Request Headers
 Map<String, String> corsHeaders = {
